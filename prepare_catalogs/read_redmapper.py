@@ -79,13 +79,21 @@ if filter_cosmoDC2_small == True:
      member_data = member_data[filter_arr]
 
 #create clevar catalog
-c1 = ClCatalog('Cat1', ra=cluster_data['ra'], dec=cluster_data['dec'], z=cluster_data['redshift'], mass = cluster_data['richness'], id=cluster_data['cluster_id'])
+#c1 = ClCatalog('Cat1', ra=cluster_data['ra'], dec=cluster_data['dec'], z=cluster_data['redshift'], mass = cluster_data['richness'], id=cluster_data['cluster_id'])
+c1 = Table([cluster_data['cluster_id'],cluster_data['ra'],cluster_data['dec'],cluster_data['redshift'],cluster_data['richness']],names=('id','ra','dec','z','mass'))
 
 #add members
-c1.add_members(id=member_data['id_member'], id_cluster=member_data['cluster_id_member'], ra=member_data['ra_member'], dec=member_data['dec_member'])
+#c1.add_members(id=member_data['id_member'], id_cluster=member_data['cluster_id_member'], ra=member_data['ra_member'], dec=member_data['dec_member'])
+c1_members = Table([member_data['id_member'],member_data['cluster_id_member'],member_data['ra_member'],member_data['dec_member']],names=('id','id_cluster','ra','dec'))
+c1_members.add_column(1.0, name='pmem', index=4)
 
+#print(c1)
+#print(c1.members)
+#c1.write(outpath + 'ClCatalog.fits', overwrite=True)
+#c1.members.write(outpath + 'ClCatalog_members.fits', overwrite=True)
 print(c1)
-print(c1.members)
-c1.write(outpath + 'ClCatalog.fits', overwrite=True)
+print(c1_members)
+c1.write(outpath + 'Catalog.fits', overwrite=True)
+c1_members.write(outpath + 'Catalog_members.fits', overwrite=True)
 
 sys.exit()
