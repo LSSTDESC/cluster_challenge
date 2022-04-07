@@ -33,8 +33,8 @@ os.makedirs(outpath)
 print('outpath = ' + outpath)
 
 #select the catalogs to match
-wazp_cosmoDC2 = True
-redmapper_cosmoDC2 = False
+wazp_cosmoDC2 = False
+redmapper_cosmoDC2 = True
 wazp_redmapper = False
 
 if wazp_cosmoDC2 == True:
@@ -43,9 +43,14 @@ if wazp_cosmoDC2 == True:
      #c2 = ClCatalog.read_full(inpath+'cosmoDC2/cosmoDC2_v1.1.4_small/ClCatalog.fits')
      #c2_members = ClCatalog.read_full(inpath+'cosmoDC2/cosmoDC2_v1.1.4_small/ClCatalog_members.fits')
      c1  = ClCatalog.read(inpath+'wazp/6685/Catalog.fits', 'c1', id='id', ra='ra', dec='dec', z='z', mass='mass')
-     c1_members = ClCatalog.read(inpath+'wazp/6685/Catalog_members.fits', 'c1_members', id='id', id_cluster='id_cluster', ra='ra', dec='dec', z='z',pmem='pmem')
+     c1_members = ClCatalog.read(inpath+'wazp/6685/Catalog_members.fits', 'c1_members', id='id', id_cluster='id_cluster', ra='ra', dec='dec', z='z', pmem='pmem')
      c2  = ClCatalog.read(inpath+'cosmoDC2/cosmoDC2_v1.1.4_small/Catalog.fits', 'c2', id='id', ra='ra', dec='dec', z='z', mass='mass')
-     c2_members = ClCatalog.read(inpath+'cosmoDC2/cosmoDC2_v1.1.4_small/Catalog_members.fits', 'c2_members', id='id', id_cluster='id_cluster', ra='ra', dec='dec', z='z')
+     c2_members = ClCatalog.read(inpath+'cosmoDC2/cosmoDC2_v1.1.4_small/Catalog_members.fits', 'c2_members', id='id', id_cluster='id_cluster', ra='ra', dec='dec', z='z', pmem='pmem')
+elif redmapper_cosmoDC2 == True:
+     c1  = ClCatalog.read(inpath+'redmapper/cosmoDC2_v1.1.4_redmapper_v0.8.1/Catalog.fits', 'c1', id='id', ra='ra', dec='dec', z='z', mass='mass')
+     c1_members = ClCatalog.read(inpath+'redmapper/cosmoDC2_v1.1.4_redmapper_v0.8.1/Catalog_members.fits', 'c1_members', id='id', id_cluster='id_cluster', ra='ra', dec='dec',pmem='pmem')
+     c2  = ClCatalog.read(inpath+'cosmoDC2/cosmoDC2_v1.1.4_small/Catalog.fits', 'c2', id='id', ra='ra', dec='dec', z='z', mass='mass')
+     c2_members = ClCatalog.read(inpath+'cosmoDC2/cosmoDC2_v1.1.4_small/Catalog_members.fits', 'c2_members', id='id', id_cluster='id_cluster', ra='ra', dec='dec', z='z', pmem='pmem')
 else:
      print('Catalog selection is wrong.')
      sys.exit()
@@ -73,15 +78,12 @@ mt.unique(c2, c1, preference='angular_proximity')
 c1.cross_match()
 c2.cross_match()
 
-c1.write(outpath + 'wazp.fits', overwrite=True)
-c2.write(outpath + 'halos.fits', overwrite=True)
+c1.write(outpath + 'c1.fits', overwrite=True)
+c2.write(outpath + 'c2.fits', overwrite=True)
 mt.save_matches(c1, c2, out_dir=outpath, overwrite=True)
                
 #to print summary
 mt.load_matches(c1, c2, out_dir=outpath)
-display(c1)
-display(c2)
-
 sys.exit()
 
 
