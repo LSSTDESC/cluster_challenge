@@ -50,12 +50,21 @@ truth_data, gc_truth = DC2_cat_open(DC2_cat_name, min_halo_mass, cluster_only=Fa
 #halo table
 halo_data = truth_data[truth_data['is_central']==True]
 galaxy_data = truth_data[truth_data['is_central']==False]
-print(galaxy_data)
-c1 = ClCatalog('Cat1', ra=halo_data['ra'], dec=halo_data['dec'], z=halo_data['redshift'], mass=halo_data['halo_mass'], id=halo_data['halo_id'])
-c1.add_members(id=galaxy_data['galaxy_id'], id_cluster=galaxy_data['halo_id'], ra=galaxy_data['ra'], dec=galaxy_data['dec'])
 
+#c1 = ClCatalog('Cat1', ra=halo_data['ra'], dec=halo_data['dec'], z=halo_data['redshift'], mass=halo_data['halo_mass'], id=halo_data['halo_id'])
+c1 = Table([halo_data['halo_id'],halo_data['ra'],halo_data['dec'],halo_data['redshift'],halo_data['halo_mass']],names=('id','ra','dec','z','mass'))
+
+#c1.add_members(id=galaxy_data['galaxy_id'], id_cluster=galaxy_data['halo_id'], ra=galaxy_data['ra'], dec=galaxy_data['dec'])
+c1_members = Table([galaxy_data['galaxy_id'],galaxy_data['halo_id'],galaxy_data['ra'],galaxy_data['dec'],galaxy_data['redshift']],names=('id','id_cluster','ra','dec','z')) 
+c1_members.add_column(1.0, name='pmem', index=5)
+
+#print(c1)
+#print(c1.members)
+#c1.write(outpath + 'ClCatalog.fits', overwrite=True)
+#c1.members.write(outpath + 'ClCatalog_members.fits', overwrite=True) 
 print(c1)
-print(c1.members)
-c1.write(outpath + 'ClCatalog.fits', overwrite=True)
+print(c1_members)
+c1.write(outpath + 'Catalog.fits', overwrite=True)
+c1_members.write(outpath + 'Catalog_members.fits', overwrite=True)
 
 sys.exit()

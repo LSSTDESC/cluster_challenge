@@ -66,13 +66,19 @@ print("Number of WaZP clusters = ", len(wazp_data))
 print("Number of WaZP cluster members = ", len(wazp_members_data))
 
 #create clevar catalog
-c1 = ClCatalog('Cat1', ra=wazp_data['ra'], dec=wazp_data['dec'], z=wazp_data['redshift'], mass = wazp_data['NGALS'], id=wazp_data['ID'])
+#c1 = ClCatalog('Cat1', ra=wazp_data['ra'], dec=wazp_data['dec'], z=wazp_data['redshift'], mass = wazp_data['NGALS'], id=wazp_data['ID'])
+c1 = Table([wazp_data['ID'],wazp_data['ra'],wazp_data['dec'],wazp_data['redshift'],wazp_data['NGALS']],names=('id','ra','dec','z','mass'))
 
 #add members
-c1.add_members(id=wazp_members_data['ID_g'], id_cluster=wazp_members_data['ID_CLUSTER'], ra=wazp_members_data['ra'], dec=wazp_members_data['dec'], pmem=wazp_members_data['PMEM'])
-
+#c1.add_members(id=wazp_members_data['ID_g'], id_cluster=wazp_members_data['ID_CLUSTER'], ra=wazp_members_data['ra'], dec=wazp_members_data['dec'], pmem=wazp_members_data['PMEM'])
+c1_members = Table([wazp_members_data['ID_g'],wazp_members_data['ID_CLUSTER'],wazp_members_data['ra'],wazp_members_data['dec'],wazp_members_data['redshift'],wazp_members_data['PMEM']],names=('id','id_cluster','ra','dec','z','pmem'))
+#print(c1)
+#print(c1.members)
+#c1.write(outpath + 'ClCatalog.fits', overwrite=True)
+#c1.members.write(outpath + 'ClCatalog_members.fits', overwrite=True)
 print(c1)
-print(c1.members)
-c1.write(outpath + 'ClCatalog.fits', overwrite=True)
+print(c1_members)
+c1.write(outpath + 'Catalog.fits', overwrite=True)
+c1_members.write(outpath + 'Catalog_members.fits', overwrite=True)
 
 sys.exit()
