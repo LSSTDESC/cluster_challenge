@@ -2,8 +2,6 @@
 # coding: utf-8
 
 ###import
-import GCRCatalogs
-from GCRCatalogs.helpers.tract_catalogs import tract_filter, sample_filter
 import numpy as np
 import matplotlib.pyplot as plt
 from astropy.table import Table, hstack
@@ -13,7 +11,6 @@ from astropy.io import fits
 from astropy.io import ascii
 import numpy as np
 from scipy.optimize import curve_fit
-#import esutil
 import sys
 import os
 import shutil
@@ -29,20 +26,7 @@ from clevar.match_metrics import scaling
 from clevar.match_metrics import recovery
 from clevar.match_metrics import distances
 
-###plot style
-plt.rcParams['figure.figsize'] = [9.5, 6]
-plt.rcParams.update({'font.size': 18})
-
-def line(x,a,b):
-             return a*x+b
-def line_log(x,a,b):
-             return a*np.log10(x)+b
-def line_log_plot(x,a,b):
-             return 10**(a*np.log10(x)+b)
-def line_log_log(x,a,b):
-             return 10**b*(x**a)
-
-matching_folder = '/sps/lsst/users/tguillem/DESC/desc_may_2021/cluster_challenge/clevar_catalogs/after_matching/'
+matching_folder = '/sps/lsst/users/tguillem/DESC/desc_april_2022/cluster_challenge/clevar_catalogs/after_matching/'
 
 ##########select case
 #catalog1 = 'wazp.fits'
@@ -54,7 +38,7 @@ catalog1 = 'c1.fits'
 catalog2 = 'c2.fits'
 ##########
 
-outpath = "/sps/lsst/users/tguillem/DESC/desc_may_2021/cluster_challenge/plots/"
+outpath = "/sps/lsst/users/tguillem/DESC/desc_april_2022/cluster_challenge/plots/"
 if os.path.exists(outpath):
      shutil.rmtree(outpath)
 os.makedirs(outpath)
@@ -62,11 +46,19 @@ os.makedirs(outpath)
 #load c1 and c2
 c1 = ClCatalog.read_full(matching_folder + catalog1)
 c2 = ClCatalog.read_full(matching_folder + catalog2)
-print(c1)
-print(c2)
 
-del c1['mt_cross'], c2['mt_cross']
-mt1, mt2 = get_matched_pairs(c1, c2, 'cross')
+plt.figure()
+info = scaling.mass_density_metrics(
+            c2, c1, 'cross', ax_rotation=45,
+            add_fit=False, fit_bins1=8)
+plt.savefig(outpath+'mass_richness.png', bbox_inches='tight')
+plt.close()
+
+sys.exit()
+
+
+#del c1['mt_cross'], c2['mt_cross']
+#mt1, mt2 = get_matched_pairs(c1, c2, 'cross')
 
 #c1_cross = c1[c1['mt_cross']!=None]
 #print(c1_cross)
@@ -77,13 +69,13 @@ mt1, mt2 = get_matched_pairs(c1, c2, 'cross')
 #mt.load_matches(c1, c2, out_dir=matching_folder)
 #now restrict to matched pairs
 from clevar.match import get_matched_pairs
-mt1, mt2 = get_matched_pairs(c1, c2, 'cross')
+mt1, mt2 = get_matched_pairs(c1, c2, 'cross', None, None)
 
 #count clusters
-filter1 = mt1['z'] > 1.15
-c_clusters_z = mt1[filter1]
-print(len(mt1))
-print(len(c_clusters_z))
+#filter1 = mt1['z'] > 1.15
+#c_clusters_z = mt1[filter1]
+#print(len(mt1))
+#print(len(c_clusters_z))
 
 #mass-richness plot
 plt.figure()
@@ -92,13 +84,12 @@ plt.scatter(mt2['mass'], mt1['mass'], marker='.',color = 'blue', s=10, alpha=0.3
 plt.xscale('log')
 plt.yscale('log')
 plt.xlim([10, 200])
-plt.ylim([10, 200])
+#plt.ylim([10, 200])
 plt.xlabel('r')
 #plt.ylabel('r_RM')
 #plt.xlim([1, 2.5])
 #plt.ylim([1, 2.5])
-#plt.ylim([1.0e13, 2.0e15])
-#plt.ylim([10**13, 300])
+plt.ylim([1.0e13, 2.0e15])
 #plt.ylim([10, 300])
 plt.xlabel('r_RM')
 plt.ylabel('r_WaZP')
@@ -156,6 +147,7 @@ info = scaling.mass_density_metrics(
         add_fit=False, fit_bins1=8)
 plt.savefig(outpath+'mass_richness_clevar.png', bbox_inches='tight')
 plt.close()
+sys.exit()
 
 #create unmatched catalogs
 wazp_unmatched = c1[c1['mt_cross']==None]
@@ -336,7 +328,7 @@ plt.savefig(outpath+'redshift_cluster_halo_fix.png', bbox_inches='tight')
 plt.close()
 #debug delta_z
 #merged_delta_z = c_merged.data[(c_merged.data['cat1_z']-c_merged.data['cat2_z'])>0.02*(1+c_merged.data['cat2_z'])]
-#print(merged_delta_z['cat1_z','cat2_z'])
+4#print(merged_delta_z['cat1_z','cat2_z'])
 #print(merged_delta_z['cat1_z','cat2_z',math.fabs(c_merged.data['cat1_z']-c_merged.data['cat2_z']),0.05*(1+c_merged.data['cat2_z'])])
 
 ###study the unmatched clusters of wazp
