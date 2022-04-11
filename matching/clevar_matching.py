@@ -25,6 +25,7 @@ from clevar.match_metrics import scaling
 from clevar.match_metrics import recovery
 from clevar.match_metrics import distances
 from clevar.cosmology import AstroPyCosmology
+from clevar.match import output_catalog_with_matching
 
 inpath = "/sps/lsst/users/tguillem/DESC/desc_april_2022/cluster_challenge/clevar_catalogs/"
 outpath = "/sps/lsst/users/tguillem/DESC/desc_april_2022/cluster_challenge/clevar_catalogs/after_matching/"
@@ -61,8 +62,12 @@ else:
      print('Catalog selection is wrong.')
      sys.exit()
 
+#define catalogs without members
+c1_raw = c1.raw()
+c2_raw = c2.raw()
+
 ###perform proximity matching
-if True:
+if False:
      mt = ProximityMatch()
 
      #old way but working     
@@ -94,11 +99,11 @@ if True:
           }
      cosmo = AstroPyCosmology()
           
-     mt.match_from_config(c1, c2, match_config, cosmo=cosmo)
+     mt.match_from_config(c1_raw, c2_raw, match_config, cosmo=cosmo)
           
      c1.write(outpath + 'c1.fits', overwrite=True)
      c2.write(outpath + 'c2.fits', overwrite=True)
-     mt.save_matches(c1, c2, out_dir=outpath, overwrite=True)
+     mt.save_matches(c1_raw, c2_raw, out_dir=outpath, overwrite=True)
      
      #to print summary
      mt.load_matches(c1, c2, out_dir=outpath)
@@ -113,7 +118,13 @@ if True:
           'match_members_kwargs': {'method':'id'},
           }
      mt.match_from_config(c1, c2, match_config)
-     
+     c1.write(outpath + 'c1.fits', overwrite=True)
+     c2.write(outpath + 'c2.fits', overwrite=True)
+
+
+
+
+
      
 sys.exit()
 
