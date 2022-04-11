@@ -25,7 +25,7 @@ from opening_catalogs_functions import *
 
 ###clevar
 import clevar
-from clevar.catalog import ClCatalog
+from clevar import ClCatalog
 from clevar.match import ProximityMatch
 from clevar.match_metrics import scaling
 from clevar.match_metrics import recovery
@@ -39,7 +39,7 @@ RM_cat_name = 'cosmoDC2_v1.1.4_redmapper_v0.8.1'
 #catalog from images
 #RM_cat_name = 'dc2_redmapper_run2.2i_dr6_wfd_v0.8.1'
 
-outpath = "/sps/lsst/users/tguillem/DESC/desc_may_2021/cluster_challenge/clevar_catalogs/redmapper/" + RM_cat_name + "/"
+outpath = "/sps/lsst/users/tguillem/DESC/desc_april_2022/cluster_challenge/clevar_catalogs/redmapper/" + RM_cat_name + "/"
 
 if os.path.exists(outpath):
      shutil.rmtree(outpath)
