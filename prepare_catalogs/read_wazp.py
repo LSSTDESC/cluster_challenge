@@ -25,7 +25,7 @@ from wazp_functions import *
 
 ###clevar
 import clevar
-from clevar.catalog import ClCatalog
+from clevar import ClCatalog
 from clevar.match import ProximityMatch
 from clevar.match_metrics import scaling
 from clevar.match_metrics import recovery
@@ -36,7 +36,7 @@ algo = 'WaZP'
 #6563 / 6684 / 6685 / 6688 / 6561
 catalog_wazp = '6685'
 
-outpath = "/sps/lsst/users/tguillem/DESC/desc_may_2021/cluster_challenge/clevar_catalogs/wazp/" + catalog_wazp + "/"
+outpath = "/sps/lsst/users/tguillem/DESC/desc_april_2022/cluster_challenge/clevar_catalogs/wazp/" + catalog_wazp + "/"
 
 if os.path.exists(outpath):
      shutil.rmtree(outpath)
