@@ -47,14 +47,14 @@ os.makedirs(outpath)
 print('outpath = ' + outpath)
 
 #richness and mass cuts
-min_richness = 0
+min_richness = 20
 cluster_data, member_data, gc = RM_cat_open(RM_cat_name, min_richness, cluster_only=True)
 print("Number of Redmapper clusters = ", len(cluster_data))
 print("Number of Redmapper cluster members = ", len(member_data))
 print("Redmapper sky area = ", gc.sky_area, "deg2")
 
 #restrict to small cosmoDC2 footprint
-filter_cosmoDC2_small = False
+filter_cosmoDC2_small = True
 if filter_cosmoDC2_small == True:
      healpix_pixels = [9559,  9686,  9687,  9814,  9815,  9816,  9942,  9943, 10070, 10071, 10072, 10198, 10199, 10200, 10326, 10327, 10450]
      nside = 32
@@ -65,8 +65,6 @@ if filter_cosmoDC2_small == True:
                filter_arr.append(True)
           else:
                filter_arr.append(False)
-               if ( pix not in all_healpix_pixels ):
-                    all_healpix_pixels.append(pix)
      cluster_data = cluster_data[filter_arr]
 
      filter_arr = []
@@ -86,6 +84,14 @@ c1 = Table([cluster_data['cluster_id'],cluster_data['ra'],cluster_data['dec'],cl
 #c1.add_members(id=member_data['id_member'], id_cluster=member_data['cluster_id_member'], ra=member_data['ra_member'], dec=member_data['dec_member'])
 c1_members = Table([member_data['id_member'],member_data['cluster_id_member'],member_data['ra_member'],member_data['dec_member']],names=('id','id_cluster','ra','dec'))
 c1_members.add_column(1.0, name='pmem', index=4)
+#restrict members to halos above richness requirement
+filter_arr = []
+for element in c1_members:
+     if (element['id_cluster'] in c1['id']):
+          filter_arr.append(True)
+     else:
+          filter_arr.append(False)
+c1_members = c1_members[filter_arr]
 
 #print(c1)
 #print(c1.members)
