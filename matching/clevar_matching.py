@@ -36,8 +36,8 @@ os.makedirs(outpath)
 print('outpath = ' + outpath)
 
 #select the catalogs to match
-wazp_cosmoDC2 = False
-redmapper_cosmoDC2 = True
+wazp_cosmoDC2 = True
+redmapper_cosmoDC2 = False
 wazp_redmapper = False
 
 if wazp_cosmoDC2 == True:
@@ -67,7 +67,7 @@ c1_raw = c1.raw()
 c2_raw = c2.raw()
 
 ###perform proximity matching
-if True:
+if False:
      mt = ProximityMatch()
 
      #old way but working     
@@ -110,7 +110,7 @@ if True:
      #mt.load_matches(c1, c2, out_dir=outpath)
 
 ###perform member matching
-if False:
+if True:
      mt = MembershipMatch()
      match_config = {
           'type': 'cross', # options are cross, cat1, cat2
