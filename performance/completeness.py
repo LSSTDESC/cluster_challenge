@@ -38,8 +38,10 @@ matching_folder = '/sps/lsst/users/tguillem/DESC/desc_april_2022/cluster_challen
 catalog1 = 'c1.fits'
 catalog2 = 'c2.fits'
 ##########
+#matching = 'redMaPPer cosmoDC2 small: $\Lambda>0$, $m_{halo}>10^{13}$'
+matching = 'WaZP cosmoDC2 small: NGALS>0, $m_{halo}>10^{13}$'
 
-outpath = "/pbs/home/t/tguillem/web/clusters/cluster_challenge/debug/redmapper_cosmoDC2/"
+outpath = "/pbs/home/t/tguillem/web/clusters/cluster_challenge/debug/wazp_cosmoDC2/"
 if os.path.exists(outpath):
      shutil.rmtree(outpath)
 os.makedirs(outpath)
@@ -47,20 +49,30 @@ os.makedirs(outpath)
 #load c1 and c2
 c1 = ClCatalog.read_full(matching_folder + catalog1)
 c2 = ClCatalog.read_full(matching_folder + catalog2)
-print(c1.data)
-print(c2.data)
+#print(c1.data)
+#print(c2.data)
 
 #restrict to matched pairs
 #mt1, mt2 = get_matched_pairs(c1, c2, 'cross', None, None) 
 
+#plot style
+figx=10
+figy=7
+
 #recovery_plot
-zbins = np.linspace(0, 1.6, 9)
-mbins = np.logspace(14, 15, 5)
-plt.figure()
-info = r_cf.plot(c2, col1='z', col2='mass', bins1=zbins, bins2=mbins,
-                matching_type='cross', legend_format=lambda x: f'10^{{{np.log10(x)}}}')
+zbins = np.linspace(0.2,1.5,14)
+mbins = [10**13,10**13.5,10**14,10**14.5,10**15]
+#zbins = np.linspace(0, 1.6, 9)
+#mbins = np.logspace(14, 15, 5)
+fig = plt.figure(figsize=(figx,figy))
+info = r_cf.plot(c2, col1='z', col2='mass', bins1=zbins, bins2=mbins, matching_type='cross', legend_format=lambda x: f'10^{{{np.log10(x)}}}', lines_kwargs_list = [{'color':'black'}, {'color':'red'}, {'color':'blue'}, {'color':'purple'}])
+info['ax'].set_xlabel('$z_{halo}$')
+info['ax'].set_ylabel('Completeness') 
+info['ax'].set_ylim(0,1.2)
+info['ax'].set_xlim(0.2,1.6) 
+info['ax'].set_title(matching)
 plt.savefig(outpath+'recovery_plot.png', bbox_inches='tight')
-plt.close()
+plt.close(fig)
 
 #recovery_plot_panel
 plt.figure()
