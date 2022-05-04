@@ -26,9 +26,10 @@ from clevar.match_metrics import recovery
 from clevar.match_metrics import distances
 from clevar.cosmology import AstroPyCosmology
 from clevar.match import output_catalog_with_matching
+from IPython.display import display
 
 inpath = "/sps/lsst/users/tguillem/DESC/desc_april_2022/cluster_challenge/clevar_catalogs/"
-outpath = "/sps/lsst/users/tguillem/DESC/desc_april_2022/cluster_challenge/clevar_catalogs/after_matching/"
+outpath = "/sps/lsst/users/tguillem/DESC/desc_april_2022/cluster_challenge/clevar_catalogs/after_matching/proximity/mgt14/"
 
 if os.path.exists(outpath):
      shutil.rmtree(outpath)
@@ -36,9 +37,9 @@ os.makedirs(outpath)
 print('outpath = ' + outpath)
 
 #select the catalogs to match
-wazp_cosmoDC2 = True
+wazp_cosmoDC2 = False
 redmapper_cosmoDC2 = False
-wazp_redmapper = False
+amico_cosmoDC2 = True
 
 if wazp_cosmoDC2 == True:
      #c1 = ClCatalog.read_full(inpath+'wazp/6685/ClCatalog.fits')
@@ -58,16 +59,38 @@ elif redmapper_cosmoDC2 == True:
      c2  = ClCatalog.read(inpath+'cosmoDC2/cosmoDC2_v1.1.4_small/Catalog.fits', 'c2', id='id', ra='ra', dec='dec', z='z', mass='mass')
      #c2_members = ClCatalog.read(inpath+'cosmoDC2/cosmoDC2_v1.1.4_small/Catalog_members.fits', 'c2_members', id='id', id_cluster='id_cluster', ra='ra', dec='dec', z='z', pmem='pmem')
      c2.read_members(inpath+'cosmoDC2/cosmoDC2_v1.1.4_small/Catalog_members.fits', id='id', id_cluster='id_cluster', ra='ra', dec='dec', z='z', pmem='pmem')
+elif amico_cosmoDC2 == True:
+     c1  = ClCatalog.read(inpath+'amico/test/Catalog.fits', 'c1', id='id', ra='ra', dec='dec', z='z', mass='mass')
+     #c1_members = ClCatalog.read(inpath+'redmapper/cosmoDC2_v1.1.4_redmapper_v0.8.1/Catalog_members.fits', 'c1_members', id='id', id_cluster='id_cluster', ra='ra', dec='dec',pmem='pmem')
+     #c1.read_members(inpath+'redmapper/cosmoDC2_v1.1.4_redmapper_v0.8.1/Catalog_members.fits', id='id', id_cluster='id_cluster', ra='ra', dec='dec',pmem='pmem')
+     c2  = ClCatalog.read(inpath+'cosmoDC2/mgt14/cosmoDC2_v1.1.4_small/Catalog.fits', 'c2', id='id', ra='ra', dec='dec', z='z', mass='mass')
+     #c2_members = ClCatalog.read(inpath+'cosmoDC2/cosmoDC2_v1.1.4_small/Catalog_members.fits', 'c2_members', id='id', id_cluster='id_cluster', ra='ra', dec='dec', z='z', pmem='pmem')
+     c2.read_members(inpath+'cosmoDC2/mgt14/cosmoDC2_v1.1.4_small/Catalog_members.fits', id='id', id_cluster='id_cluster', ra='ra', dec='dec', z='z', pmem='pmem')
 else:
      print('Catalog selection is wrong.')
      sys.exit()
+
+#create final output folder
+matching = 'default'
+if (wazp_cosmoDC2 == True):
+     matching = 'wazp_cosmoDC2'
+elif (redmapper_cosmoDC2 == True):
+     matching = 'redmapper_cosmoDC2'
+elif (amico_cosmoDC2 == True):
+     matching = 'amico_cosmoDC2'
+outpath = outpath + matching + '/'
+
+if os.path.exists(outpath):
+     shutil.rmtree(outpath)
+os.makedirs(outpath)
+print('outpath = ' + outpath)
 
 #define catalogs without members
 c1_raw = c1.raw()
 c2_raw = c2.raw()
 
 ###perform proximity matching
-if False:
+if True:
      mt = ProximityMatch()
 
      #old way but working     
@@ -104,13 +127,15 @@ if False:
      c2_raw.cross_match()
      c1_raw.write(outpath + 'c1.fits', overwrite=True)
      c2_raw.write(outpath + 'c2.fits', overwrite=True)
-     #mt.save_matches(c1_raw, c2_raw, out_dir=outpath, overwrite=True)
+     mt.save_matches(c1_raw, c2_raw, out_dir=outpath, overwrite=True)
      
      #to print summary
-     #mt.load_matches(c1, c2, out_dir=outpath)
+     mt.load_matches(c1_raw, c2_raw, out_dir=outpath)
+     display(c1_raw)
+     display(c2_raw)
 
 ###perform member matching
-if True:
+if False:
      mt = MembershipMatch()
      match_config = {
           'type': 'cross', # options are cross, cat1, cat2
