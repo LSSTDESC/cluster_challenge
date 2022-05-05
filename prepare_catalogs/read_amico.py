@@ -55,7 +55,12 @@ print("Number of AMICO clusters = ", len(amico_data))
 
 #create clevar catalog
 #c1 = ClCatalog('Cat1', ra=wazp_data['ra'], dec=wazp_data['dec'], z=wazp_data['redshift'], mass = wazp_data['NGALS'], id=wazp_data['ID'])
-c1 = Table([amico_data['ID'],amico_data['Xphys'],amico_data['Yphys'],amico_data['Zphys'],amico_data['LAMB']],names=('id','ra','dec','z','mass'))
+c1 = Table([amico_data['ID'],amico_data['Xphys'],amico_data['Yphys'],amico_data['Zphys'],amico_data['LAMBSTAR']],names=('id_bug','ra','dec','z','mass'))
+#fix the id issue
+c1.add_column(1.0, name='id', index=1)
+for i in range(0,len(c1)):
+     c1['id'][i]=i+1
+c1['id']=c1['id'].astype(int)
 
 #add members
 #c1.add_members(id=wazp_members_data['ID_g'], id_cluster=wazp_members_data['ID_CLUSTER'], ra=wazp_members_data['ra'], dec=wazp_members_data['dec'], pmem=wazp_members_data['PMEM'])
