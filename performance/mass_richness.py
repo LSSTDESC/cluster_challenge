@@ -33,10 +33,11 @@ from clevar.match import get_matched_pairs
 from clevar.match_metrics import scaling
 from clevar.match_metrics import recovery
 from clevar.match_metrics import distances
+from clevar.match_metrics.scaling import ClCatalogFuncs as s_cf
 from clevar.match import output_matched_catalog
 
 matching_folder = '/sps/lsst/users/tguillem/DESC/desc_april_2022/cluster_challenge/clevar_catalogs/after_matching/'
-matching_folder = matching_folder + 'amico_cosmoDC2/'
+matching_folder = matching_folder + 'redmapper_cosmoDC2/'
 
 ##########select case
 catalog1 = 'c1.fits'
@@ -102,11 +103,35 @@ plt.close()
 #plt.savefig(outpath+'scaling_mass_density_metrics.png', bbox_inches='tight')
 #plt.close()
 
+#log(richness) VS log(mass)
+plt.figure()
+#info = scaling.mass_density_metrics(
+#            c2, c1, 'cross', ax_rotation=45,
+#            add_fit=True, fit_bins1=6)
+
+info = s_cf.plot_density(
+         c2, c1, 'cross', col='mass',
+         xscale='log', yscale='log', add_err=False,
+         add_fit=True, fit_bins1=6, fit_log=True)
+
+#print(info)
+#info['ax'].set_xlabel('$halo_mass$')
+#info['ax'].set_ylabel('LAMBSTAR')
+#info['ax'].set_ylim(0,100)
+#info['ax'].set_xlim(10**13.5,10**15)
+#info['ax'].set_title(matching) 
+plt.savefig(outpath+'scaling_log_mass_density_metrics.png', bbox_inches='tight')
+plt.close()
+#sys.exit()
+
+#my mass-richness plots
+
 #create 2D mass-richness histos
-zbins = [0,0.5,0.75,1.0,1.25,1.5]
+zbins = [0,0.5,0.75,1.0,1.25]#,1.5]
+n_zbins = len(zbins)-1
 ybins = 10**np.linspace(13, 15, 20)
 xbins = [0,10,20,30,50,70,100]
-for i in range(0,5):
+for i in range(0,n_zbins):
      cut1 = zbins[i]
      cut2 = zbins[i+1]
      filter1 = np.logical_and(c_merged.data['cat1_z'] > cut1, c_merged.data['cat1_z'] < cut2)
@@ -136,7 +161,7 @@ xedges_ref = []
 yedges_ref = []
 
 #loop over redshift bins
-for redshift in range(4):
+for redshift in range(n_zbins):
      #print('bin z ' + str(redshift))
 
      redshift_bin = str(round(redshift*0.1,1))+'-'+str(round(redshift*0.1+0.1,1))
@@ -392,10 +417,10 @@ x0_2 = np.empty(n_points)
 y = np.empty(n_points)
 y_err = np.empty(n_points)
 print('number of points = ' + str(n_points))
-for i in range(len(rbins)-1):
-     for j in range(len(zbins)):
+for i in range(len(rbins)):
+     for j in range(len(zbins-1)):
           print(str(i) + ' ' + str(j))
-          k = i * (len(rbins)-1) + j
+          k = i * len(zbins) + j
           print(str(k))
           x0[k] =  np.array([rbins[i],zbins[j]])
           #x[k] = rbins[i]
@@ -410,7 +435,8 @@ print(x0)
 #print(x0_2)
 print(y)
 print(y_err)
-#minimization
+
+#likelihhod minimization minimization
 soln = minimize(nll, initial, args=(x0, y, y_err))
 m_ml, f_ml, g_ml= soln.x
 print('likelihood results')
@@ -425,7 +451,7 @@ p0 = np.random.randn(nwalkers, initial_guess.size)*0.1+initial_guess
 sampler = emcee.EnsembleSampler(
                  nwalkers, initial_guess.size,
                  log_likelihood, args=[x0, y, y_err])
-sampler.run_mcmc(p0, 100)
+sampler.run_mcmc(p0, 10000)
 #chains = sampler.get_chain()
 chains = [sampler.get_chain()[:,:,i].flatten() for i in range(initial_guess.size)]
 #check chains
@@ -437,14 +463,18 @@ plt.figure()
 plt.plot(chains[1])
 plt.savefig(outpath+"chain1.png")
 plt.close()
+plt.figure()
+plt.plot(chains[2])
+plt.savefig(outpath+"chain2.png")
+plt.close()
 #threshold at nchains * nwalkers?
 mean0 = np.mean(chains[0][10000:])
 mean1 = np.mean(chains[1][10000:])
 mean2 = np.mean(chains[2][10000:])
 
-print(str(mean0) + '+/-' + str(mean_err0))
-print(str(mean1) + '+/-' + str(mean_err1))
-print(str(mean2) + '+/-' + str(mean_err2))
+#print(str(mean0) + '+/-' + str(mean_err0))
+#print(str(mean1) + '+/-' + str(mean_err1))
+#print(str(mean2) + '+/-' + str(mean_err2))
 flat_chains = sampler.get_chain(discard=100, flat=True)
 labels = ["m0", "F", "G"]
 fig = corner.corner(
@@ -460,8 +490,6 @@ fig = corner.corner(
              quantiles=(0.16,0.84),
              show_titles=True
              );
-#truths=[14.0, 1.0, 0.2]
-fig
 fig.savefig(outpath+"posteriors_2D_fit.png")
 
 sys.exit()
