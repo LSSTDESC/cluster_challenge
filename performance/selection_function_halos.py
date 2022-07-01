@@ -19,6 +19,12 @@ import shutil
 import pickle
 import h5py
 import pandas as pd
+from scipy import optimize
+from scipy.optimize import curve_fit
+from scipy.integrate import quad
+from scipy.integrate import simps
+from scipy.stats import norm
+from scipy.stats import lognorm
 
 ###clevar
 import clevar
@@ -37,6 +43,14 @@ plt.rcParams.update({'font.size': 18})
 #plt.rcParams['figure.figsize'] = [10, 8] for big figures
 #########################################
 
+###fit functions
+def gauss(x, a, x0, sigma):
+     return a*np.exp(-(x-x0)**2/(2*sigma**2))
+
+def log_normal(x, mu, sigma):
+     return 1/(x*np.sqrt(2*np.pi*sigma**2))*np.exp(-(np.log(x)-mu)**2/(2*sigma**2))
+###        
+
 outpath = "/pbs/home/t/tguillem/web/clusters/cluster_challenge/selection_function/halos/"
 if os.path.exists(outpath):
      shutil.rmtree(outpath)
@@ -53,7 +67,7 @@ with pd.HDFStore(os.path.join(inpath,f'skysim_halos_z=0-1.20_mfof_gt_1.00e+13_sm
 
 #rename
 halo_data.rename(columns={'baseDC2/sod_halo_mass': 'M200c', 'richness': 'NGALS', 'richness_i': 'NGALS_i', 'richness_z': 'NGALS_z'}, inplace=True)
-print(halo_data)
+#print(halo_data)
 #fix M200c
 halo_data['M200c'] = halo_data['M200c']/0.71
 #mass richness
@@ -85,12 +99,12 @@ for richness in thislist:
 
 #richness plots in (m,z) bins
 zbins = [0,0.5,0.75,1.0,1.2]
-ybins = 10**np.linspace(13, 14.5, 9)
+ybins = 10**np.linspace(13, 14.4, 8)
 n_z = len(zbins)-1
 n_y = len(ybins)-1
-print(ybins)
-for j in range(0,n_y):
-     print(ybins[j])
+#print(ybins)
+#for j in range(0,n_y):
+     #print(ybins[j])
      
 for i in range(0,n_z):
      cut1 = zbins[i]
@@ -100,25 +114,63 @@ for i in range(0,n_z):
      for j in range(0,n_y):
           cut3 = ybins[j]
           cut4 = ybins[j+1]
-          print(cut3)
+          #print(cut3)
           filter2 = np.logical_and(halos_1['M200c'] > cut3, halos_1['M200c'] < cut4)
           halos = halos_1[filter2]
-          print(halos)
+          #print(halos)
           #richness
-          nbins = 30
-          bin_range = [0,150]
+          nbins = 40
+          bin_range = [0,200]
           plt.figure()
-          plt.hist(halos['NGALS'], range=bin_range, bins=nbins, label='NGALS', histtype='step', color = 'black', density=True, stacked=True)
+          plt.hist(halos['NGALS'], range=bin_range, bins=nbins, label='Halos', histtype='step', color = 'black', density=True)#, stacked=True)
+          #plt.hist(halos['NGALS'], range=bin_range, bins=nbins, label='NGALS', histtype='step', color = 'black')
           #plt.hist(halos['NGALS_i'], range=bin_range, bins=nbins, label='NGALS_i', histtype='step', color = 'red')
           #plt.hist(halos['NGALS_z'], range=bin_range, bins=nbins, label='NGALS_z', histtype='step', color = 'blue')
-          plt.xlabel("NGALS");
-          plt.ylabel("halos")
+          plt.xlabel("r");
+          plt.ylabel("P(r|m,z)")
           #plt.xscale('log')
           #plt.yscale('log')
           plt.grid(which='major', axis='both', linestyle='-', linewidth='0.1', color='grey')
           plt.grid(which='minor', axis='both', linestyle=':', linewidth='0.1', color='grey')
-          #plt.title('z '+str(cut1)+'-'+str(cut2)+'mass '+str(cut1)+'-'+str(cut2))
-          plt.legend(title = '', loc='upper right')
+          f_cut1=round(cut1,1)
+          f_cut2=round(cut2,1)
+          f_cut3=round(np.log10(cut3),1)
+          f_cut4=round(np.log10(cut4),1)
+          plt.title('cosmoDC2: m200c '+str(f_cut3)+'-'+str(f_cut4) + ' / z '+str(f_cut1)+'-'+str(f_cut2))
+          #plt.legend(title = '', loc='upper right')
+          #test fit
+          print('***********FIT**************')
+          xbins = np.linspace(bin_range[0], bin_range[1], nbins+1)
+          counts, xedges = np.histogram(halos['NGALS'],density=True,bins=xbins)
+          #print(counts)
+          #print(xedges)
+          bin_x = np.empty([nbins])
+          for i_bin in range(nbins):
+               bin_x[i_bin] = 0.5 * (xedges[i_bin] + xedges[i_bin+1])
+          #print(len(bin_x))
+          #print(len(counts))
+          #dr = np.empty([nbins])
+          #bin_x = np.empty([nbins])
+          ###for i_bin in range(nbins):
+          ###     dr[i_bin] = h[ix,iy]
+          ###bin_y[iy] = 0.5 * (yedges[iy] + yedges[iy+1])
+          #popt, pcov = curve_fit(gauss, xdata=bin_x, ydata=counts, p0=[0.05, 20, 5])
+          popt, pcov = curve_fit(log_normal, xdata=bin_x, ydata=counts, p0=[20, 5])
+          print(popt)
+          f_popt=np.around(popt,decimals=2)
+          x = np.linspace(0.1, 200, 2000) 
+          #gauss1 = gauss(x, popt[0], popt[1], popt[2])
+          #plt.plot(x, gauss1, color='blue', linewidth=2.0)
+          log_normal_1 = log_normal(x, popt[0], popt[1])
+          plt.plot(x, log_normal_1, color='blue', linewidth=2.0,label="Fit "+str(f_popt))
+          plt.legend()
+          #mu, std = lognorm.fit(halos['NGALS']) 
+          #print(mu)
+          #print(std)
+          #xmin, xmax = plt.xlim()
+          #x = np.linspace(xmin, xmax, 100)
+          #p = norm.pdf(x, mu, std)
+          #plt.plot(x, p, 'k', linewidth=2)
           plt.savefig(outpath+'richness_redshift_bin_'+str(i)+'_mass_bin_'+str(j)+'.png')
           plt.close()
                                                                                           
