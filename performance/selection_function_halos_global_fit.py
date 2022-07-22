@@ -1,9 +1,8 @@
 #!/usr/bin/env python
 # coding: utf-8
 # Author: T. Guillemin
-#######################################################
-# Adapted from Constantin's Payerne notebook: Unbinned_Mass_richness_relation.ipynb
-#######################################################
+# Date: July 2022
+# Adapted from C. Payerne notebook: Unbinned_Mass_richness_relation.ipynb
 
 ###import
 import GCRCatalogs
@@ -51,12 +50,12 @@ inpath = "/sps/lsst/users/tguillem/catalogs/SkySim5000/hdf5/"
 with pd.HDFStore(os.path.join(inpath,f'skysim_halos_z=0-1.20_mfof_gt_1.00e+13_small.hdf5')) as store:
      halo_data = store['skysim']
      halo_metadata = store.get_storer('skysim').attrs.metadata
-#print(halo_data['baseDC2/sod_halo_mass'])
+#ra        dec        halo_id     halo_mass  redshift         M200c  baseDC2/sod_halo_radius  baseDC2/source_halo_id  baseDC2/source_halo_mvir  baseDC2/target_halo_fof_halo_id  baseDC2/target_halo_id  NGALS_i  NGALS_z  NGALS
 
 #rename
 halo_data.rename(columns={'baseDC2/sod_halo_mass': 'M200c', 'richness': 'NGALS', 'richness_i': 'NGALS_i', 'richness_z': 'NGALS_z'}, inplace=True)
-halo_data = halo_data[halo_data['M200c']>10*14.5]
-#print(halo_data)
+#halo_data = halo_data[halo_data['M200c']>10*14.5]
+halo_data = halo_data[:1000]
 #fix M200c
 halo_data['M200c'] = halo_data['M200c']/0.71
 
@@ -84,7 +83,6 @@ def P(data, theta):
      mu = mu_lnlambda(redshift, logM, mu0, G_z_mu, G_logM_mu)
      sigma = sigma_lnlambda(redshift, logM, sigma0, F_z_sigma, F_logM_sigma)
      return gaussian(lnlambda, mu, sigma)
-
 #input preparation for the fit
 logM = np.log10(halo_data['M200c'])
 lnlambda= np.log(halo_data['NGALS'])
@@ -97,24 +95,24 @@ def lnL(theta):
      return np.sum(np.log(p))
 
 #MCMC
-n_chains = 10000
-initial = [0.5,25.0,-25.0,-0.10,-2.5,2.5]
+n_chains = 1000
+initial = [-1,0.3,2,-23,0.6,25]
 pos = initial + 0.001 * np.random.randn(70, len(initial))
 nwalkers, ndim = pos.shape
 sampler = emcee.EnsembleSampler(nwalkers, ndim, lnL)
-sampler.run_mcmc(pos, n_chains, progress=False); 
+sampler.run_mcmc(pos, n_chains, progress=True)
 
-fig, axes = plt.subplots(6, figsize=(10, 7), sharex=True)
-labels = [r'$\mu_0})$', r'$G_z^\mu$', r'$G_logM^\mu$', r'$\sigma_0$', r'$F_z^\sigma$', r'$F_logM^\sigma$']
-samples = sampler.get_chain()
-for i in range(6):
-         ax = axes[i]
-         ax.plot(samples[:, :, i], "k", alpha=0.3)
-         ax.set_xlim(0, len(samples))
-         ax.set_ylabel(labels[i])
-         ax.yaxis.set_label_coords(-0.1, 0.5)
-         
-flat_samples = sampler.get_chain(discard=10, thin=1,flat=True)
+labels = ['mu0', 'G_z_mu', 'G_M_mu', 'sig0', 'F_z_sig', 'F_M_sig']
+
+#check chains
+chains = [sampler.get_chain()[:,:,i].flatten() for i in range(len(initial))]
+for i in range(len(initial)):
+     plt.figure()
+     plt.plot(chains[i])
+     plt.savefig(outpath+"chain"+str(i)+".png")
+
+flat_samples = sampler.get_chain(discard=20000, thin=1,flat=True)
+print(flat_samples.shape)
 
 def mu_sigma_parameters(samples = None, labels = None):
      mu = {labels[i] : np.mean(samples[:,i]) for i in range(len(labels))}
@@ -130,23 +128,39 @@ fig, axs = plt.subplots(len(labels), len(labels), figsize = (10,10))
 for i in range(len(labels)):
      for j in range(len(labels)):
           axs[i,j].tick_params(axis='both', which = 'major', labelsize= 9)
+          #fig = corner.corner(
+          #     flat_samples,
+          #     bins=bins, levels=(sigma1,sigma2), #sigma3),
+          #     fig = fig,
+          #     smooth1d=False,smooth=False,plot_datapoints=True,
+          #     fill_contours=True,labels = labels,
+          #     color='blue',
+          #     label_kwargs={"fontsize": 20},
+          #     use_math_text=True,
+          #     plot_density=False,
+          #     max_n_ticks = 5,
+          #);
+          #my test
           fig = corner.corner(
-               flat_samples,
-               bins=bins, levels=(sigma1, sigma2, sigma3),
-               fig = fig,
-               smooth1d=False,smooth=False,plot_datapoints=True,
-               fill_contours=True,labels = labels,
-               color='deepskyblue',
-               label_kwargs={"fontsize": 20},
-               use_math_text=True,
-               plot_density=False,
-               max_n_ticks = 5,
-          ); 
-plt.savefig(outpath+'posteriors', bbox_inches='tight')
-sys.exit()
+               flat_samples
+               labels=labels,
+               color = 'blue',
+               smooth = True,
+               plot_datapoints = False,
+               plot_density = False,
+               plot_contours = True,
+               fill_contours = True,
+               levels = (0.68 , 0.95),
+               quantiles=(0.16,0.84),
+               show_titles=False
+               );                                                                                                                                                                                                                   );
+plt.savefig(outpath+'posteriors.png', bbox_inches='tight')
 
 mu_p, sigma_p = mu_sigma_parameters(samples = flat_samples, labels = labels)
+print(mu_p)
+print(sigma_p)
 
+sys.exit()
 richness = np.linspace(20, 200, 100)
 c = ['y', 'orange', 'r', 'b',]
 fig, ax = plt.subplots(1, 2, figsize = (14,5))
