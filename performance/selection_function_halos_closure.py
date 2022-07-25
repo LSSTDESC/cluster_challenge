@@ -1,8 +1,5 @@
 #!/usr/bin/env python
 # coding: utf-8
-# Author: T. Guillemin
-# Date: July 2022
-# Adapted from C. Payerne notebook: Unbinned_Mass_richness_relation.ipynb
 
 ###import
 import GCRCatalogs
@@ -15,6 +12,7 @@ from astropy import units as u
 from astropy.cosmology import FlatLambdaCDM
 from astropy.io import fits
 from astropy.io import ascii
+#import esutil
 import sys
 import os
 import shutil
@@ -33,12 +31,32 @@ from numpy import exp, linspace, random
 import emcee
 import corner
 
+###clevar
+import clevar
+from clevar.catalog import ClCatalog
+from clevar.match import ProximityMatch
+from clevar.match import get_matched_pairs
+from clevar.match_metrics import scaling
+from clevar.match_metrics import recovery
+from clevar.match_metrics import distances
+from clevar.match_metrics.scaling import ClCatalogFuncs as s_cf
+from clevar.match import output_matched_catalog
+
 ###plot style
 plt.rcParams['figure.figsize'] = [9.5, 6]
 plt.rcParams.update({'font.size': 18})
+#plt.rcParams['figure.figsize'] = [10, 8] for big figures
+#########################################
 
-###inputs        
-outpath = "/pbs/home/t/tguillem/web/clusters/cluster_challenge/selection_function/global_fit/"
+###fit functions
+def gauss(x, a, x0, sigma):
+     return a*np.exp(-(x-x0)**2/(2*sigma**2))
+
+def log_normal(x, mu, sigma):
+     return 1/(x*np.sqrt(2*np.pi*sigma**2))*np.exp(-(np.log(x)-mu)**2/(2*sigma**2))
+###        
+
+outpath = "/pbs/home/t/tguillem/web/clusters/cluster_challenge/selection_function/closure/"
 if os.path.exists(outpath):
      shutil.rmtree(outpath)
 os.makedirs(outpath)
@@ -47,177 +65,54 @@ os.makedirs(outpath)
 inpath = "/sps/lsst/users/tguillem/catalogs/SkySim5000/hdf5/"
 
 #read hdf5 files
-#with pd.HDFStore(os.path.join(inpath,f'skysim_halos_z=0-1.20_mfof_gt_1.00e+13_small.hdf5')) as store:
-with pd.HDFStore(os.path.join(inpath,f'skysim_halos_z=0-1.20_mfof_gt_1.00e+13_image.hdf5')) as store:
+with pd.HDFStore(os.path.join(inpath,f'skysim_halos_z=0-1.20_mfof_gt_1.00e+13_small.hdf5')) as store:
      halo_data = store['skysim']
      halo_metadata = store.get_storer('skysim').attrs.metadata
-#ra        dec        halo_id     halo_mass  redshift         M200c  baseDC2/sod_halo_radius  baseDC2/source_halo_id  baseDC2/source_halo_mvir  baseDC2/target_halo_fof_halo_id  baseDC2/target_halo_id  NGALS_i  NGALS_z  NGALS
+     #ra        dec        halo_id     halo_mass  redshift         M200c  baseDC2/sod_halo_radius  baseDC2/source_halo_id  baseDC2/source_halo_mvir  baseDC2/target_halo_fof_halo_id  baseDC2/target_halo_id  NGALS_i  NGALS_z  NGALS
 
 #rename
 halo_data.rename(columns={'baseDC2/sod_halo_mass': 'M200c', 'richness': 'NGALS', 'richness_i': 'NGALS_i', 'richness_z': 'NGALS_z'}, inplace=True)
+#halo_data = halo_data[halo_data['M200c']>10*14.5]
+#halo_data = halo_data[:1000]
 #fix M200c
 halo_data['M200c'] = halo_data['M200c']/0.71
-#halo_data = halo_data[halo_data['M200c']>10**14]
-#halo_data = halo_data[:10000]
-print('Table loaded: ' + str(len(halo_data)) + ' halos selected')
+print('Table loaded') 
 
 #get mean values
 z_0 = np.mean(halo_data['redshift'])
 logM_0 = np.mean(np.log10(halo_data['M200c']))
-
 ###fit functions
 def gaussian(x, mu, sigma):
-     return 1/np.sqrt(2*np.pi*sigma**2)*np.exp(-(x-mu)**2/(2*sigma**2))
+          return 1/np.sqrt(2*np.pi*sigma**2)*np.exp(-(x-mu)**2/(2*sigma**2))
 
 def log_normal(x, mu, sigma):
-     return 1/(x*np.sqrt(2*np.pi*sigma**2))*np.exp(-(np.log(x)-mu)**2/(2*sigma**2))
+               return 1/(x*np.sqrt(2*np.pi*sigma**2))*np.exp(-(np.log(x)-mu)**2/(2*sigma**2))
 
 def mu_lnlambda(redshift, logM, mu0, G_z_mu, G_logM_mu):
-     #return mu0 + G_z_mu*(1+redshift)/(1+z_0) + G_logM_mu*(logM-logM_0)
+     #return mu0 + G_z_mu*(1+redshift)/(1+z_0) + G_logM_mu*(logM/logM_0)**0.5
      return mu0 + G_z_mu*np.log10((1+redshift)/(1+z_0)) + G_logM_mu*(logM-logM_0)
-    
+
 def sigma_lnlambda(redshift, logM, sigma0, F_z_sigma, F_logM_sigma):
      #return sigma0 + F_z_sigma*(1+redshift)/(1+z_0) + F_logM_sigma*(logM)/logM_0
      return sigma0 + F_z_sigma*np.log((1+redshift)/(1+z_0)) + F_logM_sigma*(logM-logM_0)
 
-def P(data, theta):
-     r"""probability of ln(lambda) knowing the value of theta"""
-     mu0, G_z_mu, G_logM_mu, sigma0, F_z_sigma, F_logM_sigma = theta
-     lnlambda, redshift, logM = data
-     mu = mu_lnlambda(redshift, logM, mu0, G_z_mu, G_logM_mu)
-     sigma = sigma_lnlambda(redshift, logM, sigma0, F_z_sigma, F_logM_sigma)
-     return gaussian(lnlambda, mu, sigma)
-
-#input preparation for the fit
-logM = np.log10(halo_data['M200c'])
-lnlambda= np.log(halo_data['NGALS'])
-redshift = halo_data['redshift']
-data_mcmc = [lnlambda, redshift, logM]
-
-#likelihood definition
-def lnL(theta):
-     p = P(data_mcmc, theta)
-     return np.sum(np.log(p))
-
-#MCMC
-n_chains = 1000
-initial = [1,0,0,3,0,0]
-pos = initial + 0.001 * np.random.randn(70, len(initial))
-nwalkers, ndim = pos.shape
-sampler = emcee.EnsembleSampler(nwalkers, ndim, lnL)
-sampler.run_mcmc(pos, n_chains, progress=True)
-
-labels = ['mu0', 'G_z_mu', 'G_M_mu', 'sig0', 'F_z_sig', 'F_M_sig']
-
-#check chains
-chains = [sampler.get_chain()[:,:,i].flatten() for i in range(len(initial))]
-for i in range(len(initial)):
-     plt.figure()
-     plt.plot(chains[i])
-     plt.savefig(outpath+"chain"+str(i)+".png")
-
-flat_samples = sampler.get_chain(discard=500, thin=1,flat=True)
-print(flat_samples.shape)
-
-def mu_sigma_parameters(samples = None, labels = None):
-     mu = {labels[i] : np.mean(samples[:,i]) for i in range(len(labels))}
-     sigma = {labels[i] : np.std(samples[:,i]) for i in range(len(labels))}
-     return mu, sigma
-
-sigma1 = 1. - np.exp(-(1./1.)**2/2.)
-sigma2 = 1. - np.exp(-(2./1.)**2/2.)
-sigma3 = 1. - np.exp(-(3./1.)**2/2.)
-
-bins = 20
-fig, axs = plt.subplots(len(labels), len(labels), figsize = (10,10))
-for i in range(len(labels)):
-     for j in range(len(labels)):
-          axs[i,j].tick_params(axis='both', which = 'major', labelsize= 9)
-          #fig = corner.corner(
-          #     flat_samples,
-          #     bins=bins, levels=(sigma1,sigma2), #sigma3),
-          #     fig = fig,
-          #     smooth1d=False,
-          #     smooth=False,
-          #     plot_datapoints=True,
-          #     fill_contours=True,
-          #     labels = labels,
-          #     color='blue',
-          #     label_kwargs={"fontsize": 20},
-          #     use_math_text=True,
-          #     plot_density=False,
-          #     max_n_ticks = 5,
-          #);
-          #my test
-          fig = corner.corner(
-               flat_samples,
-               labels=labels,
-               color = 'blue',
-               smooth = True,
-               plot_datapoints = False,
-               plot_density = False,
-               plot_contours = True,
-               fill_contours = True,
-               levels = (0.68,0.95),
-               quantiles=(0.16,0.84),
-               show_titles=False
-               );
-plt.savefig(outpath+'posteriors.png', bbox_inches='tight')
-
-mu_p, sigma_p = mu_sigma_parameters(samples = flat_samples, labels = labels)
-print(mu_p)
-print(sigma_p)
-
-sys.exit()
-
-
-
-
-
-
-
-
-
-
-richness = np.linspace(20, 200, 100)
-c = ['y', 'orange', 'r', 'b',]
-fig, ax = plt.subplots(1, 2, figsize = (14,5))
-ax[0].scatter(logrichness, logm200c, alpha = .2)
-for i, z in enumerate([.1, .2, .5, 1]):
-     mu = mu_logM_lambda(z, np.log10(richness), mu_p[r'$\log_{10}(M_{\rm 200c,0})$'], mu_p[r'$G_z^\mu$'], mu_p[r'$G_\lambda^\mu$'])
-     sigma = sigma_logM_lambda(z, np.log10(richness), mu_p[r'$\sigma_{\log_{10}M}$'], mu_p[r'$F_z^\sigma$'], mu_p[r'$F_\lambda^\sigma$'])
-     ax[0].plot(np.log10(richness), mu, c = c[i] , label = f'z = {z:.2f}', linewidth = 3)
-     ax[0].legend()
-     ax[1].plot(np.log10(richness), sigma, c = c[i] , label = f'z = {z:.2f}', linewidth = 3)
-     ax[1].legend()
-     ax[0].set_ylabel(r'$\log_{10}M$', fontsize = 20)
-     ax[1].set_ylabel(r'$\sigma (\log_{10}M)$', fontsize = 20)
-for i in range(2):
-     ax[i].set_xlabel(r'$\log_{10}\lambda$', fontsize = 20)
-                                                     
-
-
-
-
-
-sys.exit()
-
-
-
-
-
-
-
-
+###set parameters from already performed fit
+#1000 halos
+#[mu0,G_z_mu,G_M_mu,sig0,F_z_sig,F_M_sig]=[2.75,1.33,2.05,0.42,0.10,0.14]
+#all halos > 10**13
+#[mu0,G_z_mu,G_M_mu,sig0,F_z_sig,F_M_sig]=[4.74,0.80,2.13,0.30,-0.035,-0.051]
+#[mu0,G_z_mu,G_M_mu,sig0,F_z_sig,F_M_sig]=[2.813,1.380,1.910,0.417,-0.164,-0.123]
+#[mu0,G_z_mu,G_M_mu,sig0,F_z_sig,F_M_sig]=[2.77,1.32,2.19,0.39,-0.17,-0.07]
+[mu0,G_z_mu,G_M_mu,sig0,F_z_sig,F_M_sig]=[2.17,0.65,1.94,0.42,-0.14,-0.13]
+print('First check')
+print(mu_lnlambda(0.6,13.5,mu0,G_z_mu,G_M_mu))
+print(sigma_lnlambda(0.6,13.5,sig0,F_z_sig,F_M_sig))
 
 #richness plots in (m,z) bins
 zbins = [0,0.5,0.75,1.0,1.2]
 ybins = 10**np.linspace(13, 14.4, 8)
 n_z = len(zbins)-1
 n_y = len(ybins)-1
-#print(ybins)
-#for j in range(0,n_y):
-     #print(ybins[j])
 a_mu = np.zeros((n_z,n_y))
 a_sigma = np.zeros((n_z,n_y))
 a_z = np.zeros((n_z,n_y))
@@ -230,23 +125,18 @@ for i in range(0,n_z):
      for j in range(0,n_y):
           cut3 = ybins[j]
           cut4 = ybins[j+1]
-          #print(cut3)
           filter2 = np.logical_and(halos_1['M200c'] > cut3, halos_1['M200c'] < cut4)
           halos = halos_1[filter2]
-          #print(halos)
           #get means of z distribution and of M200c definition
           a_z[i][j] = np.mean(halos['redshift'])
           a_mass[i][j] = np.mean(np.log10(halos['M200c']))
           #richness
           nbins = 40
-          bin_range = [0,200]
+          bin_range = [0,6]
           plt.figure()
-          plt.hist(halos['NGALS_i'], range=bin_range, bins=nbins, label='Halos', histtype='step', color = 'black', density=True)#, stacked=True)
-          #plt.hist(halos['NGALS'], range=bin_range, bins=nbins, label='NGALS', histtype='step', color = 'black')
-          #plt.hist(halos['NGALS_i'], range=bin_range, bins=nbins, label='NGALS_i', histtype='step', color = 'red')
-          #plt.hist(halos['NGALS_z'], range=bin_range, bins=nbins, label='NGALS_z', histtype='step', color = 'blue')
-          plt.xlabel("r");
-          plt.ylabel("P(r|m,z)")
+          plt.hist(np.log(halos['NGALS']), range=bin_range, bins=nbins, label='Halos', histtype='step', color = 'black', density=True)#, stacked=True)
+          plt.xlabel("ln(r)");
+          plt.ylabel("P(ln(r)|m,z)")
           #plt.xscale('log')
           #plt.yscale('log')
           plt.grid(which='major', axis='both', linestyle='-', linewidth='0.1', color='grey')
@@ -259,8 +149,9 @@ for i in range(0,n_z):
           #plt.legend(title = '', loc='upper right')
           #test fit
           print('***********FIT**************')
+          print(str(f_cut3)+'-'+str(f_cut4) + ' / z '+str(f_cut1)+'-'+str(f_cut2))
           xbins = np.linspace(bin_range[0], bin_range[1], nbins+1)
-          counts, xedges = np.histogram(halos['NGALS'],density=True,bins=xbins)
+          counts, xedges = np.histogram(np.log(halos['NGALS']),density=True,bins=xbins)
           #print(counts)
           #print(xedges)
           bin_x = np.empty([nbins])
@@ -273,16 +164,15 @@ for i in range(0,n_z):
           ###for i_bin in range(nbins):
           ###     dr[i_bin] = h[ix,iy]
           ###bin_y[iy] = 0.5 * (yedges[iy] + yedges[iy+1])
-          #popt, pcov = curve_fit(gauss, xdata=bin_x, ydata=counts, p0=[0.05, 20, 5])
-          popt, pcov = curve_fit(log_normal, xdata=bin_x, ydata=counts, p0=[8, 3])
-          print(popt)
-          f_popt=np.around(popt,decimals=2)
-          x = np.linspace(0.1, 200, 2000) 
-          #gauss1 = gauss(x, popt[0], popt[1], popt[2])
-          #plt.plot(x, gauss1, color='blue', linewidth=2.0)
-          log_normal_1 = log_normal(x, popt[0], popt[1])
-          plt.plot(x, log_normal_1, color='blue', linewidth=2.0,label="Fit "+str(f_popt))
-          plt.legend()
+          popt, pcov = curve_fit(gauss, xdata=bin_x, ydata=counts, p0=[0.05, 3, 0.5])
+          #popt, pcov = curve_fit(log_normal, xdata=bin_x, ydata=counts, p0=[8, 3])
+          #print(popt)
+          #f_popt=np.around(popt,decimals=2)
+          x = np.linspace(0.1, 6, 2000) 
+          gauss1 = gauss(x, popt[0], popt[1], popt[2])
+          plt.plot(x, gauss1, color='blue', linewidth=2.0,label='Fit')
+          #log_normal_1 = log_normal(x, popt[0], popt[1])
+          #plt.plot(x, log_normal_1, color='blue', linewidth=2.0,label="Fit "+str(f_popt))
           #mu, std = lognorm.fit(halos['NGALS']) 
           #print(mu)
           #print(std)
@@ -291,17 +181,30 @@ for i in range(0,n_z):
           #x = np.linspace(xmin, xmax, 100)
           #p = norm.pdf(x, mu, std)
           #plt.plot(x, p, 'k', linewidth=2)
+          ##k = i * n_y  + j
+          ##           mu = f_a_mu(x0[k][0],x0[k][1],a_ml,b_ml,c_ml)
+          ##                    sigma = f_a_sigma(x0[k][0],x0[k][1],a_s_ml,b_s_ml,c_s_ml)
+          ##                               gauss_2 = gauss(x, mu, sigma)
+          ##                                         plt.plot(x, gauss_2, color='red', linewidth=2.0,label="Param")
+          #plot parametrization on the same plot  
+          mu = mu_lnlambda(a_z[i][j],a_mass[i][j],mu0,G_z_mu,G_M_mu)
+          sigma = sigma_lnlambda(a_z[i][j],a_mass[i][j],sig0,F_z_sig,F_M_sig)
+          gauss_2 = gaussian(x, mu, sigma)
+          plt.plot(x, gauss_2, color='red', linewidth=2.0,label="Param")
+          plt.legend()
           plt.savefig(outpath+'richness_redshift_bin_'+str(i)+'_mass_bin_'+str(j)+'.png')
           plt.close()
+          print(str(popt[1]) + ' VS ' + str(mu))
+          print(str(popt[2]) + ' VS ' + str(sigma))
           #save fit parameters
           a_mu[i][j]=popt[0]
           a_sigma[i][j]=abs(popt[1])
-
+          
 #parametrize mu and sigma
 #print(a_mu)
 #print(a_sigma)
-print(a_z)
-print(a_mass)
+#print(a_z)
+#print(a_mass)
 sys.exit()
 
 #summary plots for a_mu versus log(m)
@@ -463,14 +366,23 @@ for i in range(0,n_z):
      for j in range(0,n_y):
           cut3 = ybins[j]
           cut4 = ybins[j+1] 
-          x = np.linspace(0.1, 200, 2000) 
-          log_normal_1 = log_normal(x, a_mu[i][j], a_sigma[i][j])
-          plt.plot(x, log_normal_1, color='blue', linewidth=2.0,label="Fit")
+          x = np.linspace(0.1, 6, 2000) 
+          #log_normal case
+          #log_normal_1 = log_normal(x, a_mu[i][j], a_sigma[i][j])
+          #plt.plot(x, log_normal_1, color='blue', linewidth=2.0,label="Fit")
+          #k = i * n_y  + j
+          #mu = f_a_mu(x0[k][0],x0[k][1],a_ml,b_ml,c_ml)
+          #sigma = f_a_sigma(x0[k][0],x0[k][1],a_s_ml,b_s_ml,c_s_ml)
+          #log_normal_2 = log_normal(x, mu, sigma)
+          #plt.plot(x, log_normal_2, color='red', linewidth=2.0,label="Param")
+          #gaussian case
+          gauss_1 = gauss(x, a_mu[i][j], a_sigma[i][j])
+          plt.plot(x, gauss_1, color='blue', linewidth=2.0,label="Fit")
           k = i * n_y  + j
           mu = f_a_mu(x0[k][0],x0[k][1],a_ml,b_ml,c_ml)
           sigma = f_a_sigma(x0[k][0],x0[k][1],a_s_ml,b_s_ml,c_s_ml)
-          log_normal_2 = log_normal(x, mu, sigma)
-          plt.plot(x, log_normal_2, color='red', linewidth=2.0,label="Param")
+          gauss_2 = gauss(x, mu, sigma)
+          plt.plot(x, gauss_2, color='red', linewidth=2.0,label="Param")
           plt.legend()
           f_cut1=round(cut1,1)
           f_cut2=round(cut2,1)
