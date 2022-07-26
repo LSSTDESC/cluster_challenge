@@ -5,13 +5,11 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import sys
+import os
 
 ###fit functions
 def gaussian(x, mu, sigma):
     return 1/np.sqrt(2*np.pi*sigma**2)*np.exp(-(x-mu)**2/(2*sigma**2))
-
-def log_normal(x, mu, sigma):
-    return 1/(x*np.sqrt(2*np.pi*sigma**2))*np.exp(-(np.log(x)-mu)**2/(2*sigma**2))
 
 def mu_lnlambda(redshift, logM, mu0, G_z_mu, G_logM_mu):
     #return mu0 + G_z_mu*(1+redshift)/(1+z_0) + G_logM_mu*(logM/logM_0)**0.5
@@ -23,7 +21,7 @@ def sigma_lnlambda(redshift, logM, sigma0, F_z_sigma, F_logM_sigma):
 
 ###store parameters
 ###Cosmo DC2
-#Case 1b: true richness, true redshift
+#case 1b: true richness, true redshift
 #from CLCosmo_Sim package:
 #def mu_loglambda_logM_f(self, redshift, logm): ... return loglambda0 + A_z_mu * np.log10((1+redshift)/(1 + z0)) + A_logm_mu * (logm-np.log10(m0))
 #def sigma_loglambda_logm_f(self, redshift, logm): ... return sigma_lambda0 + A_z_sigma * np.log10((1+redshift)/(1 + z0)) + A_logm_sigma * (logm-np.log10(m0))
@@ -32,13 +30,17 @@ def sigma_lnlambda(redshift, logM, sigma0, F_z_sigma, F_logM_sigma):
 [loglambda0,A_z_mu,A_logm_mu,sigma_lambda0,A_z_sigma,A_logm_sigma]=[2.830,1.439,1.935,0.424,-0.136,-0.127]
 [err_loglambda0,err_A_z_mu,err_A_logm_mu,err_sigma_lambda0,err_A_z_sigma,err_A_logm_sigma]=[0.0009,0.013,0.003,0.0006,0.004,0.002]
 
-###Validation plots
-do_plots = True
+###validation plots
+do_plots = False
 if(do_plots==False):
     sys.exit()    
+outpath = "/sps/lsst/users/tguillem/web/clusters/cluster_challenge/selection_function/validation/case_1b/"
+if os.path.exists(outpath):
+         shutil.rmtree(outpath)
+os.makedirs(outpath) 
 #richness plots in (m,z) bins
 zbins = [0,0.5,0.75,1.0,1.2]
-ybins = 10**np.linspace(13, 14.6, 9)
+ybins = np.linspace(13, 14.6, 9)
 n_z = len(zbins)-1
 n_y = len(ybins)-1
 a_z = np.zeros((n_z,n_y))
@@ -56,9 +58,9 @@ for i in range(0,n_z):
         plt.ylabel("P(ln(r)|m,z)")
         f_cut1=round(cut1,1)
         f_cut2=round(cut2,1)
-        f_cut3=round(np.log10(cut3),1)
-        f_cut4=round(np.log10(cut4),1)
-        plt.title('cosmoDC2: m200c '+str(f_cut3)+'-'+str(f_cut4) + ' / z '+str(f_cut1)+'-'+str(f_cut2))
+        f_cut3=round(cut3,1)
+        f_cut4=round(cut4,1)
+        plt.title('cosmoDC2: log(m200c) '+str(f_cut3)+'-'+str(f_cut4) + ' / z '+str(f_cut1)+'-'+str(f_cut2))
         #plot parametrization
         x = np.linspace(0.1, 6, 2000)
         mu = mu_lnlambda(a_z[i][j],a_mass[i][j],loglambda0,A_z_mu,A_logm_mu)
@@ -66,5 +68,5 @@ for i in range(0,n_z):
         gauss_2 = gaussian(x, mu, sigma)
         plt.plot(x, gauss_2, color='red', linewidth=2.0,label="Param")
         plt.legend()
-        plt.savefig('richness_redshift_bin_'+str(i)+'_mass_bin_'+str(j)+'.png')
+        plt.savefig(outpath+'richness_redshift_bin_'+str(i)+'_mass_bin_'+str(j)+'.png')
         plt.close()
