@@ -65,7 +65,7 @@ os.makedirs(outpath)
 inpath = "/sps/lsst/users/tguillem/catalogs/SkySim5000/hdf5/"
 
 #read hdf5 files
-with pd.HDFStore(os.path.join(inpath,f'skysim_halos_z=0-1.20_mfof_gt_1.00e+13_small.hdf5')) as store:
+with pd.HDFStore(os.path.join(inpath,f'skysim_halos_z=0-1.20_mfof_gt_1.00e+13_image.hdf5')) as store:
      halo_data = store['skysim']
      halo_metadata = store.get_storer('skysim').attrs.metadata
      #ra        dec        halo_id     halo_mass  redshift         M200c  baseDC2/sod_halo_radius  baseDC2/source_halo_id  baseDC2/source_halo_mvir  baseDC2/target_halo_fof_halo_id  baseDC2/target_halo_id  NGALS_i  NGALS_z  NGALS
@@ -81,6 +81,9 @@ print('Table loaded')
 #get mean values
 z_0 = np.mean(halo_data['redshift'])
 logM_0 = np.mean(np.log10(halo_data['M200c']))
+print(z_0)
+print(logM_0)
+sys.exit()
 ###fit functions
 def gaussian(x, mu, sigma):
           return 1/np.sqrt(2*np.pi*sigma**2)*np.exp(-(x-mu)**2/(2*sigma**2))
@@ -103,7 +106,9 @@ def sigma_lnlambda(redshift, logM, sigma0, F_z_sigma, F_logM_sigma):
 #[mu0,G_z_mu,G_M_mu,sig0,F_z_sig,F_M_sig]=[4.74,0.80,2.13,0.30,-0.035,-0.051]
 #[mu0,G_z_mu,G_M_mu,sig0,F_z_sig,F_M_sig]=[2.813,1.380,1.910,0.417,-0.164,-0.123]
 #[mu0,G_z_mu,G_M_mu,sig0,F_z_sig,F_M_sig]=[2.77,1.32,2.19,0.39,-0.17,-0.07]
-[mu0,G_z_mu,G_M_mu,sig0,F_z_sig,F_M_sig]=[2.17,0.65,1.94,0.42,-0.14,-0.13]
+#[mu0,G_z_mu,G_M_mu,sig0,F_z_sig,F_M_sig]=[2.17,0.65,1.94,0.42,-0.14,-0.13]
+[mu0,G_z_mu,G_M_mu,sig0,F_z_sig,F_M_sig]=[2.830,1.439,1.935,0.424,-0.136,-0.127]
+[err_mu0,err_G_z_mu,err_G_M_mu,err_sig0,err_F_z_sig,err_F_M_sig]=[0.0009,0.013,0.003,0.0006,0.004,0.002]
 print('First check')
 print(mu_lnlambda(0.6,13.5,mu0,G_z_mu,G_M_mu))
 print(sigma_lnlambda(0.6,13.5,sig0,F_z_sig,F_M_sig))
