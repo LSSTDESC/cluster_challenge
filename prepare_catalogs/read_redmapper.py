@@ -39,7 +39,7 @@ RM_cat_name = 'cosmoDC2_v1.1.4_redmapper_v0.8.1'
 #catalog from images
 #RM_cat_name = 'dc2_redmapper_run2.2i_dr6_wfd_v0.8.1'
 
-outpath = "/sps/lsst/users/tguillem/DESC/desc_april_2022/cluster_challenge/clevar_catalogs/redmapper/" + RM_cat_name + "/"
+outpath = "/sps/lsst/users/tguillem/DESC/desc_april_2022/cluster_challenge/clevar_catalogs/redmapper/full_pmem/" + RM_cat_name + "/"
 
 if os.path.exists(outpath):
      shutil.rmtree(outpath)
@@ -47,14 +47,14 @@ os.makedirs(outpath)
 print('outpath = ' + outpath)
 
 #richness and mass cuts
-min_richness = 20
+min_richness = 0
 cluster_data, member_data, gc = RM_cat_open(RM_cat_name, min_richness, cluster_only=True)
 print("Number of Redmapper clusters = ", len(cluster_data))
 print("Number of Redmapper cluster members = ", len(member_data))
 print("Redmapper sky area = ", gc.sky_area, "deg2")
 
 #restrict to small cosmoDC2 footprint
-filter_cosmoDC2_small = True
+filter_cosmoDC2_small = False
 if filter_cosmoDC2_small == True:
      healpix_pixels = [9559,  9686,  9687,  9814,  9815,  9816,  9942,  9943, 10070, 10071, 10072, 10198, 10199, 10200, 10326, 10327, 10450]
      nside = 32
@@ -78,12 +78,20 @@ if filter_cosmoDC2_small == True:
 
 #create clevar catalog
 #c1 = ClCatalog('Cat1', ra=cluster_data['ra'], dec=cluster_data['dec'], z=cluster_data['redshift'], mass = cluster_data['richness'], id=cluster_data['cluster_id'])
-c1 = Table([cluster_data['cluster_id'],cluster_data['ra'],cluster_data['dec'],cluster_data['redshift'],cluster_data['richness']],names=('id','ra','dec','z','mass'))
+c1 = Table([cluster_data['cluster_id'],cluster_data['ra'],cluster_data['dec'],cluster_data['redshift'],cluster_data['richness'],cluster_data['redshift_true_cg']],names=('id','ra','dec','z','mass','z_true'))
+
+#add log(mass) column
+c1.add_column(1.0, name='log_mass', index=6)
+for i in range(0,len(c1)):
+     c1['log_mass'][i]=np.log10(c1['mass'][i])
 
 #add members
 #c1.add_members(id=member_data['id_member'], id_cluster=member_data['cluster_id_member'], ra=member_data['ra_member'], dec=member_data['dec_member'])
-c1_members = Table([member_data['id_member'],member_data['cluster_id_member'],member_data['ra_member'],member_data['dec_member']],names=('id','id_cluster','ra','dec'))
-c1_members.add_column(1.0, name='pmem', index=4)
+c1_members = Table([member_data['id_member'],member_data['cluster_id_member'],member_data['ra_member'],member_data['dec_member'],member_data['mag_r_lsst_member'],member_data['mag_i_lsst_member'],member_data['mag_z_lsst_member']],names=('id','id_cluster','ra','dec','mag_r', 'mag_i', 'mag_z'))
+#add correct pmem
+pmem = member_data["p_member"] * member_data["pfree_member"] * member_data["theta_i_member"] * member_data["theta_r_member"] 
+c1_members.add_column(pmem, name='pmem', index=4)
+
 #restrict members to halos above richness requirement
 filter_arr = []
 for element in c1_members:

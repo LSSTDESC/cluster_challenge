@@ -36,7 +36,7 @@ from clevar.match_metrics import distances
 DC2_cat_name = 'cosmoDC2_v1.1.4'
 #DC2_cat_name = 'cosmoDC2_v1.1.4_small'
 
-outpath = "/sps/lsst/users/tguillem/DESC/desc_april_2022/cluster_challenge/clevar_catalogs/cosmoDC2/with_m200c/" + DC2_cat_name + "/"
+outpath = "/sps/lsst/users/tguillem/DESC/desc_april_2022/cluster_challenge/clevar_catalogs/cosmoDC2/m200c_gt_13.0/" + DC2_cat_name + "/"
 
 if os.path.exists(outpath):
      shutil.rmtree(outpath)
@@ -45,9 +45,11 @@ print('outpath = ' + outpath)
 
 ##########to add m200c
 #method 1
-#halos_m200c = Table.read('/sps/lsst/users/maguena/cats/dc2/cosmoDC2_v1.1.4/extragal/halos_small/halos_m200c_13.0.fits')
+halo_data = Table.read('/sps/lsst/groups/clusters/dc2/cosmoDC2_v1.1.4/extragal/halos/halos_m200c_13.0.fits')
+members_m200c = Table.read('/sps/lsst/groups/clusters/dc2/cosmoDC2_v1.1.4/extragal/halos/halos_m200c_13.0_members.fits')
 #halos_m200c = Table.read('/sps/lsst/users/maguena/cats/dc2/cosmoDC2_v1.1.4/extragal/halos_full/halos_m12.885.fits')
-halo_data = Table.read('/sps/lsst/users/maguena/cats/dc2/cosmoDC2_v1.1.4/extragal/halos_full/halos_m12.885_mtskysim.fits')
+#halo_data = Table.read('/sps/lsst/users/maguena/cats/dc2/cosmoDC2_v1.1.4/extragal/halos_full/halos_m12.885_mtskysim.fits')
+#print(halo_data.colnames)
 #print(halos_m200c)
 #sys.exit()
 
@@ -79,27 +81,28 @@ halo_data = Table.read('/sps/lsst/users/maguena/cats/dc2/cosmoDC2_v1.1.4/extraga
 ##########
 
 #mass cut
-min_halo_mass = 10**13 #Msun
+min_halo_mass = 10**12.885 #Msun
 #gc_truth: catalog object
-truth_data, gc_truth = DC2_cat_open(DC2_cat_name, min_halo_mass, cluster_only=False)
+#truth_data, gc_truth = DC2_cat_open(DC2_cat_name, min_halo_mass, cluster_only=False)
+#galaxy_data = truth_data[truth_data['is_central']==False]
 
-galaxy_data = truth_data[truth_data['is_central']==False]
-
-c1 = Table([halo_data['halo_id'],halo_data['ra'],halo_data['dec'],halo_data['redshift'],halo_data['halo_mass'],halo_data['m200c']],names=('id','ra','dec','z','mass','m200c'))
-#add log(m) column to cosmoDC2
+c1 = Table([halo_data['halo_id'],halo_data['ra'],halo_data['dec'],halo_data['redshift_true'],halo_data['mass_fof'],halo_data['m200c']],names=('id','ra','dec','z','mass','m200c'))
+#add log(m) column
 c1.add_column(1.0, name='log_mass', index=5)
 for i in range(0,len(c1)):
      c1['log_mass'][i]=np.log10(c1['mass'][i])
-#add m200c column
-c1.add_column(1.0, name='m200c', index=6)
 #add log(m200c) column
 c1.add_column(1.0, name='log_m200c', index=7)
 for i in range(0,len(c1)):
      c1['log_m200c'][i]=np.log10(c1['m200c'][i])
 
 #c1.add_members(id=galaxy_data['galaxy_id'], id_cluster=galaxy_data['halo_id'], ra=galaxy_data['ra'], dec=galaxy_data['dec'])
-c1_members = Table([galaxy_data['galaxy_id'],galaxy_data['halo_id'],galaxy_data['ra'],galaxy_data['dec'],galaxy_data['redshift']],names=('id','id_cluster','ra','dec','z')) 
-c1_members.add_column(1.0, name='pmem', index=5)
+#from GCR
+#c1_members = Table([galaxy_data['galaxy_id'],galaxy_data['halo_id'],galaxy_data['ra'],galaxy_data['dec'],galaxy_data['redshift']],names=('id','id_cluster','ra','dec','z')) 
+#c1_members.add_column(1.0, name='pmem', index=5)
+#from already-prepared table
+c1_members = Table([members_m200c['galaxyID'],members_m200c['halo_id'],members_m200c['ra'],members_m200c['dec'],members_m200c['redshift_true'],members_m200c['pmem_nfw2d']],names=('id','id_cluster','ra','dec','z','pmem'))
+#c1_members.add_column(1.0, name='pmem', index=5)
 
 #print(c1)
 #print(c1.members)

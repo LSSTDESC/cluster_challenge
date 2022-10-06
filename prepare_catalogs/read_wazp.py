@@ -33,8 +33,8 @@ from clevar.match_metrics import distances
 
 #outpath
 algo = 'WaZP'
-#6563 / 6684 / 6685 / 6688 / 6561
-catalog_wazp = '6685'
+#6563 / 6684 / 6685 / 6688 / 6561 / 
+catalog_wazp = '6980'
 
 outpath = "/sps/lsst/users/tguillem/DESC/desc_april_2022/cluster_challenge/clevar_catalogs/wazp/" + catalog_wazp + "/"
 
@@ -52,8 +52,8 @@ print('outpath = ' + outpath)
 #richness and mass cuts
 min_richness = 0
 inpath = '/sps/lsst/users/tguillem/DESC/desc_may_2021/desc-data-portal/notebooks/dc2/'
-wazp_cat_name = inpath + 'catalogs/' + catalog_wazp + '/wazp_cluster.fits'
-wazp_members_cat_name = inpath + 'catalogs/' + catalog_wazp + '/wazp_membership.fits'
+wazp_cat_name = inpath + 'catalogs/wazp_full/' + catalog_wazp + '/wazp_cluster.fits'
+wazp_members_cat_name = inpath + 'catalogs/wazp_full/' + catalog_wazp + '/wazp_membership.fits'
 #truth matching
 #matching = np.load('catalogs/wazp_truth_matching.npy')
 #print(matching)
@@ -67,11 +67,39 @@ print("Number of WaZP cluster members = ", len(wazp_members_data))
 
 #create clevar catalog
 #c1 = ClCatalog('Cat1', ra=wazp_data['ra'], dec=wazp_data['dec'], z=wazp_data['redshift'], mass = wazp_data['NGALS'], id=wazp_data['ID'])
-c1 = Table([wazp_data['ID'],wazp_data['ra'],wazp_data['dec'],wazp_data['redshift'],wazp_data['NGALS']],names=('id','ra','dec','z','mass'))
+c1 = Table([wazp_data['ID'],wazp_data['ra'],wazp_data['dec'],wazp_data['redshift'],wazp_data['NGALS'],wazp_data['SNR']],names=('id','ra','dec','z','mass','snr'))
+
+#add log(mass) column
+c1.add_column(1.0, name='log_mass', index=6)
+for i in range(0,len(c1)):
+          c1['log_mass'][i]=np.log10(c1['mass'][i])
 
 #add members
 #c1.add_members(id=wazp_members_data['ID_g'], id_cluster=wazp_members_data['ID_CLUSTER'], ra=wazp_members_data['ra'], dec=wazp_members_data['dec'], pmem=wazp_members_data['PMEM'])
-c1_members = Table([wazp_members_data['ID_g'],wazp_members_data['ID_CLUSTER'],wazp_members_data['ra'],wazp_members_data['dec'],wazp_members_data['redshift'],wazp_members_data['PMEM']],names=('id','id_cluster','ra','dec','z','pmem'))
+c1_members = Table([wazp_members_data['ID_g'],wazp_members_data['ID_CLUSTER'],wazp_members_data['ra'],wazp_members_data['dec'],wazp_members_data['redshift'],wazp_members_data['PMEM'],wazp_members_data['mag_r'],wazp_members_data['mag_i'],wazp_members_data['mag_z']],names=('id','id_cluster','ra','dec','z','pmem','mag_r','mag_i','mag_z'))
+
+#add m* columns
+data_brightness_i = ascii.read("mstar_files/istar.asc")
+data_brightness_z = ascii.read("mstar_files/zstar.asc")
+filter_arr = []
+filter_arr2 = []
+for element in c1_members:
+     index_i = mstar_i(element['z'])
+     index_z = mstar_z(element['z'])
+     if ( (element['mag_i'] < data_brightness_i[index_i][1]+2) and (element['mag_i']<25.47) ):
+          #if ( element['mag_i']<25.47 ):
+          filter_arr.append(True)
+     else:
+          filter_arr.append(False)
+          
+     if ( (element['mag_z'] < data_brightness_z[index_z][1]+2) and (element['mag_z']<24.46) ):
+          #if ( element['mag_z']<24.46 ):
+          filter_arr2.append(True)
+     else:
+          filter_arr2.append(False)
+c1_members.add_column(filter_arr, name = 'mstar_i')
+c1_members.add_column(filter_arr2, name = 'mstar_z')
+
 #print(c1)
 #print(c1.members)
 #c1.write(outpath + 'ClCatalog.fits', overwrite=True)

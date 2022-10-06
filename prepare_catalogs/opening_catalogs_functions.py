@@ -40,7 +40,7 @@ def DC2_cat_open(DC2_cat_name, min_halo_mass=1e14, cluster_only=True):
 
     #read in the "truth" catalog as a comparison (can take a while...)
     gc_truth = GCRCatalogs.load_catalog(DC2_cat_name)  
-    quantities_wanted = ['redshift','halo_mass','halo_id','galaxy_id','ra','dec','is_central'] #'baseDC2/sod_halo_mass']
+    quantities_wanted = ['redshift','halo_mass','halo_id','galaxy_id','ra','dec','is_central']#,'baseDC2/sod_halo_mass']
     if cluster_only :
         query = GCRCatalogs.GCRQuery('(is_central == True) & (halo_mass > ' + str(min_halo_mass) +')')
     else :
