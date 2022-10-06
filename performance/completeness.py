@@ -29,19 +29,20 @@ from clevar.match_metrics import distances
 from clevar.match_metrics.recovery import ClCatalogFuncs as r_cf
 from clevar.match import output_matched_catalog
 
-matching_folder = '/sps/lsst/groups/clusters/redmapper_validation_project/cosmoDC2_v1.1.4/extragal/after_matching/v0/'
+#matching_folder = '/sps/lsst/groups/clusters/redmapper_validation_project/cosmoDC2_v1.1.4/extragal/after_matching/v0/'
+matching_folder = '/sps/lsst/groups/clusters/wazp_validation_project/cosmoDC2_v1.1.4/extragal/after_matching/v0/'
 
 outpath_base = '/pbs/home/t/tguillem/web/clusters/cluster_challenge/selection_function/completeness_fit/'
 
 #select the catalogs to match
-wazp_cosmoDC2 = False
-redmapper_cosmoDC2 = True
+wazp_cosmoDC2 = True
+redmapper_cosmoDC2 = False
 amico_cosmoDC2 = False
 matching_selected = 'cross'
 
 if wazp_cosmoDC2 == True:
-     matching_folder = matching_folder + 'wazp_cosmoDC2/'
-     matching = 'WaZP cosmoDC2: NGALS>0, $m_{halo}>10^{13}$'
+     #matching_folder = matching_folder + 'wazp_cosmoDC2/'
+     matching = 'WaZP cosmoDC2: NGALS>0, $m_{200c}>10^{13}$'
      outpath = outpath_base + 'wazp_cosmoDC2/'
 elif redmapper_cosmoDC2 == True:
      #matching_folder = matching_folder + 'redmapper_cosmoDC2/'
@@ -69,6 +70,9 @@ c1 = ClCatalog.read_full(matching_folder + catalog1)
 c2 = ClCatalog.read_full(matching_folder + catalog2)
 #print(c1.data)
 #print(c2.data)
+
+#restrict to z<1.15
+#c1=c1[c1.data['z']<1.15]
 
 #restrict to matched pairs
 #mt1, mt2 = get_matched_pairs(c1, c2, 'cross', None, None) 
@@ -167,7 +171,7 @@ plt.close()
 #create a merged catalog for the cross-matched pairs
 output_matched_catalog(matching_folder+catalog1, matching_folder+catalog2,matching_folder+'output_catalog_12.fits', c1, c2, matching_type='cross', overwrite=True)
 c_merged_12 = ClCatalog.read(matching_folder+'output_catalog_12.fits', 'merged',  z_cl='cat1_z', richness = 'cat1_mass', z_halo='cat2_z', mass = 'cat2_mass', log_mass = 'cat2_log_mass', m200c = 'cat2_m200c', log_m200c = 'cat2_log_m200c',)
-#c_merged_12 = c_merged_12[c_merged_12.data['m200c']>10**14]
+c_merged_12 = c_merged_12[c_merged_12.data['z_cl']<1.15]
 #c_merged_12 = c_merged_12[c_merged_12.data['richness']>20]
 #output_matched_catalog(path_c3, path_c4,matching_folder+'output_catalog_34.fits', c3, c4, matching_type='cross', overwrite=True)
 #c_merged_34 = ClCatalog.read(matching_folder+'output_catalog_34.fits', 'merged',  z_cl='cat1_z', richness = 'cat1_mass', z_halo='cat2_z', mass = 'cat2_mass', log_mass = 'cat2_log_mass', m200c = 'cat2_m200c', log_m200c = 'cat2_m200c',)
@@ -239,7 +243,7 @@ for i in range(0,4):
 print('++++++++++++++++Completeness in mass bins')
 bin_range = [13,14.8]
 nbins_x = 9
-zbins = [0.2,0.5,0.8,1.0,1.2]
+zbins = [0.2,0.5,0.8,1.0,1.15]
 #zbins = [0.2,0.4,0.6,0.8,1.0,1.2]
 nbins_z=len(zbins)-1
 compl_m_raw = np.empty([nbins_z,nbins_x])
@@ -284,7 +288,7 @@ for i in range(0,nbins_z):
      arr_log10_mc[i]=popt[0]
      arr_nc[i]=popt[1]
      f_completeness_param_2_fit = f_completeness_param_2(x, popt[0], popt[1])
-     plt.plot(x, f_completeness_param_2_fit, color=colors[i], linewidth=2.0,label="Param")
+     #plt.plot(x, f_completeness_param_2_fit, color=colors[i], linewidth=2.0,label="Param")
      
 plt.ylim(0, 1.2)
 plt.xlim(13,15)
@@ -369,7 +373,7 @@ plt.plot(x, f_lin_z_fit_mc, color='red', linewidth=2.0,label="Fit")
 plt.xlabel('z')
 plt.ylabel('mc')
 #plt.legend()
-plt.savefig(outpath+"mc_vs_z.png", bbox_inches='tight')
+plt.savefig(outpath+"mc_vs_z_completeness.png", bbox_inches='tight')
 
 #summary plot for nc(z)
 plt.figure()
@@ -385,7 +389,7 @@ plt.plot(x, f_lin_z_fit_nc, color='red', linewidth=2.0,label="Fit")
 plt.xlabel('z')
 plt.ylabel('nc')
 plt.legend()
-plt.savefig(outpath+"nc_vs_z.png", bbox_inches='tight')
+plt.savefig(outpath+"nc_vs_z_completeness.png", bbox_inches='tight')
 
 #do completeness plots for this parametrization
 plt.figure()
@@ -425,48 +429,11 @@ print('log10_mc(z) = a_mc + b_mc*(1+z)')
 print('a_mc = ' + str(a_mc) + ' +/- ' + str(err_a_mc))
 print('b_mc = ' + str(b_mc) + ' +/- ' + str(err_b_mc))
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-sys.exit()
-
-
-
-
-def f_completeness(log10m,z):
-     return np.exp(nc_ml*np.log(10)*(log10m-(log10_mc + c0_ml + c1_ml*(1+z))))/(1+np.exp(nc_ml*np.log(10)*(log10m-(log10_mc + c0_ml + c1_ml*(1+z)))))
-print('13.63 0.81')
-print(f_completeness(14.23,0.81))
-
 #versus richness
 print('++++++++++++++++Purity in richness bins')
 bin_range = [1.5,4.5]
 nbins_x = 6
-zbins = [0.2,0.5,0.8,1.0,1.2]
+zbins = [0.2,0.5,0.8,1.0,1.15]
 purity_m_raw = np.empty([4,nbins_x])
 
 for i in range(0,4):
@@ -489,6 +456,8 @@ for i in range(0,4):
 #plot
 bin_x = np.empty([nbins_x])
 x_bins = np.linspace(1.5,4.5,nbins_x+1)
+arr_log10_mc = np.empty(nbins_z)
+arr_nc = np.empty(nbins_z)
 labels=['0.2-0.5','0.5-0.8','0.8-1.0','1.0-1.2']
 colors=['black','red','blue','purple']
 for ix in range(nbins_x):
@@ -497,6 +466,11 @@ plt.figure()
 for i in range(0,4): 
      plt.scatter(bin_x, purity_m_raw[i], label=labels[i], color=colors[i], marker= ".", s=30)
      plt.plot(bin_x, purity_m_raw[i], color=colors[i])
+     popt, pcov = curve_fit(f_completeness_param_2, xdata=bin_x, ydata=purity_m_raw[i], p0=[1,2])
+     arr_log10_mc[i]=popt[0]
+     arr_nc[i]=popt[1]
+     f_completeness_param_2_fit = f_completeness_param_2(x, popt[0], popt[1])
+     plt.plot(x, f_completeness_param_2_fit, color=colors[i], linewidth=2.0,label="Param")
 plt.ylim(0, 1.2)
 plt.xlim(1.5,4.5)
 plt.xlabel('ln(richness)')
@@ -506,6 +480,99 @@ plt.legend()
 plt.savefig(outpath+"purity_richness.png", bbox_inches='tight')
 plt.close()
 
+#try 2-step fit
+for i in range(0,nbins_z):
+     print(arr_log10_mc[i])
+     print(arr_nc[i])
+
+bin_x1=np.empty([nbins_z])
+for ix1 in range(nbins_z):
+     bin_x1[ix1] = 0.5 * (zbins[ix1] + zbins[ix1+1]) 
+
+def f_lin_z(z,a,b):
+     return a + b*(1+z)
+x = np.linspace(0.2, 1.2, 2000)
+
+#summary plot for mc(z)
+plt.figure()
+plt.scatter(bin_x1, arr_log10_mc[:], label="", color= "black",marker= ".", s=30)
+plt.plot(bin_x1, arr_log10_mc[:], color= "black", linewidth=1)
+popt, pcov = curve_fit(f_lin_z, xdata=bin_x1, ydata=arr_log10_mc, p0=[13,0.5])
+print(popt) 
+a_mc=popt[0]
+b_mc=popt[1]
+err_a_mc=pcov[0,0]
+err_b_mc=pcov[0,1]
+f_lin_z_fit_mc = f_lin_z(x, a_mc, b_mc)
+plt.plot(x, f_lin_z_fit_mc, color='red', linewidth=2.0,label="Fit")
+plt.xlabel('z')
+plt.ylabel('mc')
+#plt.legend()
+plt.savefig(outpath+"mc_vs_z_purity.png", bbox_inches='tight')
+
+#summary plot for nc(z)
+plt.figure()
+plt.scatter(bin_x1, arr_nc[:], label="", color= "black",marker= ".", s=30)
+plt.plot(bin_x1, arr_nc[:], color= "black", linewidth=1)
+popt, pcov = curve_fit(f_lin_z, xdata=bin_x1, ydata=arr_nc, p0=[13,0.5])
+a_nc=popt[0]
+b_nc=popt[1]
+err_a_nc=pcov[0,0]
+err_b_nc=pcov[0,1]
+f_lin_z_fit_nc = f_lin_z(x, a_nc, b_nc)
+plt.plot(x, f_lin_z_fit_nc, color='red', linewidth=2.0,label="Fit")
+plt.xlabel('z')
+plt.ylabel('nc')
+plt.legend()
+plt.savefig(outpath+"nc_vs_z_purity.png", bbox_inches='tight')
+
+#do purity plots for this parametrization
+print(bin_x)
+plt.figure()
+x = np.linspace(1.7, 4, 2000)
+for i in range(0,nbins_z):
+     plt.scatter(bin_x, purity_m_raw[i], label=labels[i], color=colors[i], marker= ".", s=30)
+     plt.plot(bin_x, purity_m_raw[i], color=colors[i])
+     log10_mc = f_lin_z(bin_x1[i],a_mc,b_mc)
+     nc = f_lin_z(bin_x1[i],a_nc,b_nc)
+     f_completeness_param_2_fit = f_completeness_param_2(x, log10_mc, nc)
+     plt.plot(x, f_completeness_param_2_fit, color=colors[i], linewidth=2.0,label="Param")
+plt.ylim(0, 1.2)
+plt.xlim(1.5,4.5)
+plt.xlabel('ln(richness)')
+plt.ylabel('Purity')
+plt.title(matching)
+plt.legend()
+plt.savefig(outpath+"purity_mass_2_step_fit.png", bbox_inches='tight')
+plt.close()
+                                                   
+###print results
+a_nc=round(a_nc,4)
+err_a_nc=round(err_a_nc,4)
+b_nc=round(b_nc,4)
+err_b_nc=round(err_b_nc,4)
+a_mc=round(a_mc,4)
+err_a_mc=round(err_a_mc,4)
+b_mc=round(b_mc,4)
+err_b_mc=round(err_b_mc,4)
+print('Purity parametrization: P(log_r,z_cl) = (log_r/log_rc)^nc(z_cl) / ((log_r/log_rc)^nc(z_cl) + 1)')
+print('nc(z) = a_nc + b_nc*(1+z)')
+print('a_nc = ' + str(a_nc) + ' +/- ' + str(err_a_nc))
+print('b_nc = ' + str(b_nc) + ' +/- ' + str(err_b_nc))
+print('log_rc(z) = a_mc + b_rc*(1+z)')
+print('a_mc = ' + str(a_mc) + ' +/- ' + str(err_a_mc))
+print('b_mc = ' + str(b_mc) + ' +/- ' + str(err_b_mc))
+
+
+
+
+
+
+
+
+
+
+sys.exit()
 #check parametrization
 #plot
 bin_range = [13,14.8]
