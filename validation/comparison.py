@@ -19,11 +19,13 @@ print('outpath = ' + outpath)
 
 c1 = Table.read(inpath+'wazp/6980/Catalog.fits')
 c2 = Table.read(inpath+'redmapper/full/cosmoDC2_v1.1.4_redmapper_v0.8.1/Catalog.fits')
-#c3 = Table.read(inpath+'amico/test/Catalog.fits')
+c3 = Table.read(inpath+'amico/test/Catalog.fits')
 print(c1.info)
 print(c2.info)
+print(c3.info)
 #cuts
 c1=c1[c1['z']<1.15]
+c1 = c1[c1['snr']>4]
 #c2=c2[c2['mass']>20]
 
 configuration = 'cosmoDC2'
@@ -37,7 +39,7 @@ nbins = 60
 plt.figure()
 plt.hist(c1['mass'], range=bin_range, bins=nbins, label=label_1, histtype='step', color = 'black')
 plt.hist(c2['mass'], range=bin_range, bins=nbins, label=label_2, histtype='step', color = 'red')
-#plt.hist(c3['mass'], range=bin_range, bins=nbins, label=label_3, histtype='step', color = 'blue')
+plt.hist(c3['mass'], range=bin_range, bins=nbins, label=label_3, histtype='step', color = 'blue')
 plt.xlabel("alg. richness");
 plt.ylabel("clusters")
 plt.grid(which='major', axis='both', linestyle='-', linewidth='0.1', color='grey')
@@ -53,7 +55,7 @@ nbins = 32
 plt.figure()
 plt.hist(c1['z'], range=bin_range, bins=nbins, label=label_1, histtype='step', color = 'black')
 plt.hist(c2['z'], range=bin_range, bins=nbins, label=label_2, histtype='step', color = 'red')
-#plt.hist(c3['z'], range=bin_range, bins=nbins, label=label_3, histtype='step', color = 'blue')
+plt.hist(c3['z'], range=bin_range, bins=nbins, label=label_3, histtype='step', color = 'blue')
 plt.xlabel("redshift");
 plt.ylabel("clusters / 0.05 dz")
 plt.grid(which='major', axis='both', linestyle='-', linewidth='0.1', color='grey')
@@ -65,18 +67,22 @@ plt.close()
 
 #cluster density versus richness
 sky_area_sq_deg = 440
-mag_bins = np.linspace(5, 100, 95)
+mag_bins = np.linspace(5, 80, 75)
 cdf1 = np.searchsorted(c1["mass"], mag_bins, sorter=c1["mass"].argsort())
 cdf1 = len(c1)-cdf1
 cdf2 = np.searchsorted(c2["mass"], mag_bins, sorter=c2["mass"].argsort())
 cdf2 = len(c2)-cdf2
+cdf1 = np.searchsorted(c1["mass"], mag_bins, sorter=c1["mass"].argsort())
+cdf1 = len(c1)-cdf1
+cdf3 = np.searchsorted(c3["mass"], mag_bins, sorter=c3["mass"].argsort())
+cdf3 = len(c3)-cdf3
 g1, = plt.semilogy(mag_bins, cdf1 / sky_area_sq_deg, color = 'black')
 g2, = plt.semilogy(mag_bins, cdf2 / sky_area_sq_deg, color = 'red')
+#HACK because of cosmoDC2 small for AMICO
+g3, = plt.semilogy(mag_bins, cdf3 / sky_area_sq_deg * 8, color = 'blue')
 plt.xlabel("alg. richness");
 plt.ylabel("Density (cl/deg2)");
-#plt.legend([g1,g2,g3,g4],["dr6", "dr6 (truth_type=1)", "dr6 (truth_type=2)", "dr6 (ext=1)"], title = 'DC2 (9 tracts) / is_good_match', loc='upper left')
-#plt.legend([g1,g2,g3],["dr6", "dr6 (truth_type=1)", "dr6 (truth_type!=1)"], title = 'DC2 (9 tracts) / is_good_match', loc='upper left')
-plt.legend([g1,g2],[label_1, label_2], title = 'cosmoDC2', loc='upper right')
+plt.legend([g1,g2,g3],[label_1, label_2, label_3], title = 'cosmoDC2', loc='upper right')
 plt.grid(which='major', axis='both', linestyle='-', linewidth='0.5', color='grey')
 plt.grid(which='minor', axis='both', linestyle=':', linewidth='0.5', color='grey')
 plt.savefig(outpath+"cluster_density.png", bbox_inches='tight')
