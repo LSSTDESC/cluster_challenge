@@ -21,17 +21,23 @@ import os
 import shutil
 import pickle
 import healpy as hp
-
-###cluster_validation
-from cluster_validation.opening_catalogs_functions import *
-from cluster_validation.wazp_functions import *
+import h5py
+import pandas as pd
+sys.path.append('../prepare_catalogs/')
+from opening_catalogs_functions import *
 
 print('Configuration arguments: ', str(sys.argv))
 str_healpix_pixel = str(sys.argv[1])
 
 ###outpath
 #outpath = "/sps/lsst/users/tguillem/DESC/desc_may_2021/desc-data-portal/notebooks/dc2/tables/cosmoDC2_small_photozs_flexzboost/"+str_healpix_pixel+"/" 
-outpath = "/sps/lsst/users/tguillem/DESC/desc_may_2021/desc-data-portal/notebooks/dc2/tables/DC2/"+str_healpix_pixel+"/"
+#outpath = "/sps/lsst/users/tguillem/DESC/desc_may_2021/desc-data-portal/notebooks/dc2/tables/DC2/"+str_healpix_pixel+"/"
+#outpath = "/sps/lsst/users/tguillem/web/clusters/catalogs/cosmoDC2_photoz_flexzboost/v0/"+str_healpix_pixel+"/"
+#outpath = "/sps/lsst/groups/clusters/amico_validation_project/catalogs/cosmoDC2_photoz_flexzboost/v1/"+str_healpix_pixel+"/"
+#outpath = "/sps/lsst/users/tguillem/web/clusters/catalogs/cosmoDC2_small_photoz_flexzboost/v1/"+str_healpix_pixel+"/"
+outpath = "/sps/lsst/users/tguillem/web/clusters/catalogs/DC2_small_photoz_flexzboost/v0/"+str_healpix_pixel+"/"
+
+#outpath = "/sps/lsst/users/tguillem/web/clusters/debug/"
 if os.path.exists(outpath):
      shutil.rmtree(outpath)
 os.makedirs(outpath)
@@ -44,8 +50,9 @@ os.makedirs(outpath)
 #DC2_cat_name = 'cosmoDC2_v1.1.4'
 #DC2_cat_name = 'cosmoDC2_v1.1.4_small'
 #DC2_cat_name = 'cosmoDC2_v1.1.4_small_with_photozs_v1'
-DC2_cat_name = 'cosmoDC2_v1.1.4_small_with_photozs_flexzboost_v1'
-#DC2_cat_name = 'dc2_object_run2.2i_dr6_v2_with_addons'
+#DC2_cat_name = 'cosmoDC2_v1.1.4_small_with_photozs_flexzboost_v1'
+#DC2_cat_name = 'cosmoDC2_v1.1.4_image_with_photozs_flexzboost_v1'
+DC2_cat_name = 'dc2_object_run2.2i_dr6_v2_with_addons'
 #DC2_cat_name = 'skysim5000_v1.1.1_small'
 #DC2_cat_name = 'skysim5000_v1.1.1'
 #richness and mass cuts
@@ -55,7 +62,7 @@ min_halo_mass = 10**13#Msun
 photoz = True
 
 #gc and gc_truth: catalog objects / others are just tables
-#halo_data, gc_truth = DC2_cat_open(DC2_cat_name, min_halo_mass, cluster_only=True)
+#halo_data, gc_truth = DC2_cat_open(DC2_cat_name, min_halo_mass, cluster_only=False)
 
 #halo table
 #mask = truth_data['is_central']==True
@@ -72,23 +79,97 @@ photoz = True
 #                                                filters=['is_central==False']))
 #data = photoz_cat.get_quantities(['redshift', 'photoz_mode', 'photoz_mean','photoz_mask', 'mag_i', 'mag_z'], native_filters=partition_filter('healpix_pixel',['9559',  '9686',  '9687', '9814']))
 
-print('Loading catalog')
-#data = gc_truth.get_quantities(['galaxy_id','ra','dec', 'halo_mass', 'halo_id', 'redshift', 'mag_g', 'mag_i', 'mag_r', 'mag_z', 'mag_y','photoz_mode', 'photoz_mean', 'photoz_mask', 'photoz_pdf', 'photoz_median', 'photoz_odds', 'photoz_mode_ml_red_chi2', 'photoz_mode_ml'])#,native_filters=['healpix_pixel == 9559'])
-#per healpix_pixel
-print(str_healpix_pixel)
-healpix_list = [str_healpix_pixel] 
-data = gc_truth.get_quantities(['galaxy_id','ra','dec', 'halo_mass', 'halo_id', 'redshift', 'mag_g', 'mag_i', 'mag_r', 'mag_z', 'mag_y','photoz_mode', 'photoz_mean', 'photoz_mask', 'photoz_pdf', 'photoz_median', 'photoz_odds', 'photoz_mode_ml_red_chi2', 'photoz_mode_ml'], native_filters=['healpix_pixel == int(str_healpix_pixel)'])
-###cosmoDC2 with photo-z
-if photoz==True:
-     data = gc_truth.get_quantities(['galaxy_id','ra','dec', 'halo_mass', 'halo_id', 'redshift', 'mag_g', 'mag_i', 'mag_r', 'mag_z', 'mag_y','photoz_mode', 'photoz_mean', 'photoz_mask', 'photoz_pdf', 'photoz_median', 'photoz_odds', 'photoz_mode_ml_red_chi2', 'photoz_mode_ml'], native_filters=partition_filter('healpix_pixel',healpix_list))
-else:
-     data = gc_truth.get_quantities(['galaxy_id','ra','dec', 'halo_mass', 'halo_id', 'redshift', 'mag_g', 'mag_i', 'mag_r', 'mag_z', 'mag_y'], native_filters=partition_filter('healpix_pixel',healpix_list))
+#print('Loading catalog')
+###cosmoDC2 case
+#gc_truth = GCRCatalogs.load_catalog(DC2_cat_name)
+##data = gc_truth.get_quantities(['galaxy_id','ra','dec', 'halo_mass', 'halo_id', 'redshift', 'mag_g', 'mag_i', 'mag_r', 'mag_z', 'mag_y','photoz_mode', 'photoz_mean', 'photoz_mask', 'photoz_pdf', 'photoz_median', 'photoz_odds', 'photoz_mode_ml_red_chi2', 'photoz_mode_ml'])#,native_filters=['healpix_pixel == 9559'])
+##per healpix_pixel
+#print(str_healpix_pixel)
+#healpix_list = [str_healpix_pixel] 
+##data = gc_truth.get_quantities(['galaxy_id','ra','dec', 'halo_mass', 'halo_id', 'redshift', 'mag_g', 'mag_i', 'mag_r', 'mag_z', 'mag_y','photoz_mode', 'photoz_mean', 'photoz_mask', 'photoz_pdf', 'photoz_median', 'photoz_odds', 'photoz_mode_ml_red_chi2', 'photoz_mode_ml'], native_filters=['healpix_pixel == int(str_healpix_pixel)'])
+####cosmoDC2 with photo-z
+#if photoz==True:
+#     data = gc_truth.get_quantities(['galaxy_id','ra','dec', 'halo_mass', 'halo_id', 'redshift', 'mag_g', 'mag_i', 'mag_r', 'mag_z', 'mag_y', 'mag_g_photoz', 'mag_i_photoz', 'mag_r_photoz', 'mag_z_photoz', 'mag_y_photoz','photoz_mode', 'photoz_mean', 'photoz_mask', 'photoz_pdf', 'photoz_median', 'photoz_odds', 'photoz_mode_ml_red_chi2', 'photoz_mode_ml'], native_filters=partition_filter('healpix_pixel',healpix_list))
+#else:
+#     data = gc_truth.get_quantities(['galaxy_id','ra','dec', 'halo_mass', 'halo_id', 'redshift', 'mag_g', 'mag_i', 'mag_r', 'mag_z', 'mag_y'], native_filters=partition_filter('healpix_pixel',healpix_list))
 
 ###DC2 case
 #cat = GCRCatalogs.load_catalog(DC2_cat_name)
 #print(sorted(q for q in cat.list_all_quantities() if 'id' in q))
 #data = cat.get_quantities(['objectId', 'ra', 'dec', 'mag_g', 'mag_i', 'mag_r', 'mag_z', 'mag_y','photoz_mode', 'photoz_mean', 'photoz_pdf', 'photoz_median', 'photoz_odds', 'photoz_mode_ml_red_chi2', 'photoz_mode_ml'], native_filters=['tract==4850'])
 #data = cat.get_quantities(['objectId', 'ra', 'dec', 'mag_g', 'mag_i', 'mag_r', 'mag_z', 'mag_y','photoz_mode', 'photoz_mean', 'photoz_pdf', 'photoz_median', 'photoz_odds', 'photoz_mode_ml_red_chi2', 'photoz_mode_ml'], native_filters=tract_filter(healpix_list))
+
+#with pd.HDFStore(os.path.join(inpath,f'skysim_halos_z=0-1.20_mfof_gt_1.00e+13_small.hdf5')) as store:
+#     halos_m200c = store['skysim']
+#     halo_metadata = store.get_storer('skysim').attrs.metadata
+#     #print(halo_data['baseDC2/sod_halo_mass'])
+
+def get_all(name):
+     print(name)
+
+tract = sys.argv[1]
+
+#FlexZBoost
+#galaxy catalog
+f1 = h5py.File(f'/sps/lsst/groups/desc/PZ/PhotoZDC2/run2.2i_dr6_v2/CATALOGS_W_TRUTH/Run2.2i_dr6_dereddened_tract_{str(tract)}_withtruez.hdf5', 'r')
+f1.visit(get_all)
+galaxy_id = f1['photometry/id']
+ra = f1['photometry/ra']
+dec = f1['photometry/dec']
+redshift = f1['photometry/redshift']
+mag_g = f1['photometry/mag_g_lsst']
+mag_r = f1['photometry/mag_r_lsst']
+mag_i = f1['photometry/mag_i_lsst']
+mag_z = f1['photometry/mag_z_lsst']
+mag_y = f1['photometry/mag_y_lsst']
+match = f1["photometry/is_truth_match_good"]
+
+#pdf catalog
+f2 = h5py.File(f'/sps/lsst/groups/desc/PZ/PhotoZDC2/run2.2i_dr6_v2/FLEXZBOOST/PDF_FILES/FZBoost_tract_{str(tract)}_pdfs.hdf5', 'r')
+f2.visit(get_all)
+photoz_pdf = f2['data/yvals']
+print(photoz_pdf.shape)
+print(photoz_pdf[0])
+xvals = f2['meta/xvals']
+print(xvals.shape)
+print(xvals[0])
+zmode = f2['ancil/zmode']
+print(zmode.shape)
+print(zmode[0])
+
+#recipe from D. Boutigny
+dirDpdd =  '/sps/lsst/groups/desc/shared/DC2-prod/Run2.2i/dpdd/Run2.2i-dr6/object_dpdd_only/'
+fileDpdd = dirDpdd +  f"object_dpdd_tract{str(tract)}.parquet"
+columns = ["objectId", "clean", "good", "extendedness"]
+f3 = pd.read_parquet(fileDpdd, columns=columns, engine='pyarrow')
+clean = f3["clean"]
+good = f3["good"]
+extend = f3["extendedness"]
+objectId = f3["objectId"]
+
+# Check that we have the exact same objects and in the same order in Flexzboost and in DR6 catalog
+if (np.array(galaxy_id) - np.array(objectId)).sum() != 0 :
+     print("Flexzboost and DR6 catalogs are different...")
+
+galaxy_data_all = Table([galaxy_id, ra, dec, redshift, mag_g, mag_r, mag_i, mag_z, mag_y, zmode, photoz_pdf, match],
+                        names=['id', 'ra', 'dec', 'redshift', 'mag_g', 'mag_r', 'mag_i', 'mag_z', 'mag_y', 'zmode', 'photoz_pdf', 'match'])
+
+#define cut form the parquet tables
+cut = clean & good & (np.array(extend).ravel()>0.5)
+#cut &= (np.array(mag_g).ravel()<27) & (np.array(mag_r).ravel()<27) & (np.array(mag_i).ravel()<27)
+#cut &= (np.array(mag_z).ravel()<27) & (np.array(mag_y).ravel()<27)
+#cut &= np.array(redshift).ravel()<1.5
+
+galaxy_data_cut = galaxy_data_all[np.array(cut).ravel()]
+print(galaxy_data_cut[0:50])
+
+table_xvals = Table([xvals,],names=('photoz_pdf_grid',))
+print(table_xvals)
+
+galaxy_data_cut.write(outpath+'galaxies.fits')
+table_xvals.write(outpath+'pdf_bins.fits')
+sys.exit()             
+
 print('Loading catalog: DONE')
 if photoz==True:
      #photoz grid
@@ -98,6 +179,7 @@ if photoz==True:
      photoz_mean=data['photoz_mean']
      photoz_mode=data['photoz_mode']
      photoz_mask=data['photoz_mask']
+     print(photoz_mask.shape)
      #photoz_pdf=data['photoz_pdf']
      photoz_pdf=list(data['photoz_pdf'])
      photoz_median=data['photoz_median']
@@ -109,6 +191,11 @@ if photoz==True:
      mag_r=data['mag_r']
      mag_g=data['mag_g']
      mag_y=data['mag_y']
+     mag_i_photoz=data['mag_i_photoz']
+     mag_z_photoz=data['mag_z_photoz']
+     mag_r_photoz=data['mag_r_photoz']
+     mag_g_photoz=data['mag_g_photoz']
+     mag_y_photoz=data['mag_y_photoz']
      ra=data['ra']
      dec=data['dec']
      galaxy_id=data['galaxy_id']
@@ -130,7 +217,12 @@ if photoz==True:
      mag_r=mag_r[photoz_mask]
      mag_z=mag_z[photoz_mask]
      mag_y=mag_y[photoz_mask]
-     galaxy_data_all = Table([galaxy_id, ra, dec, halo_mass, halo_id, redshift, mag_g, mag_i, mag_r, mag_z, mag_y, photoz_mode, photoz_mean, photoz_pdf, photoz_median, photoz_odds, photoz_mode_ml_red_chi2, photoz_mode_ml],names=('galaxy_id','ra','dec', 'halo_mass', 'halo_id', 'redshift', 'mag_g', 'mag_i', 'mag_r', 'mag_z', 'mag_y','photoz_mode', 'photoz_mean', 'photoz_pdf', 'photoz_median', 'photoz_odds', 'photoz_mode_ml_red_chi2', 'photoz_mode_ml'))
+     mag_g_photoz=mag_g_photoz[photoz_mask]
+     mag_i_photoz=mag_i_photoz[photoz_mask]
+     mag_r_photoz=mag_r_photoz[photoz_mask]
+     mag_z_photoz=mag_z_photoz[photoz_mask]
+     mag_y_photoz=mag_y_photoz[photoz_mask]
+     galaxy_data_all = Table([galaxy_id, ra, dec, halo_mass, halo_id, redshift, mag_g, mag_i, mag_r, mag_z, mag_y, mag_g_photoz, mag_i_photoz, mag_r_photoz, mag_z_photoz, mag_y_photoz, photoz_mode, photoz_mean, photoz_pdf, photoz_median, photoz_odds, photoz_mode_ml_red_chi2, photoz_mode_ml],names=('galaxy_id','ra','dec', 'halo_mass', 'halo_id', 'redshift', 'mag_g', 'mag_i', 'mag_r', 'mag_z', 'mag_y',  'mag_g_photoz', 'mag_i_photoz', 'mag_r_photoz','mag_z_photoz', 'mag_y_photoz','photoz_mode', 'photoz_mean', 'photoz_pdf', 'photoz_median', 'photoz_odds', 'photoz_mode_ml_red_chi2', 'photoz_mode_ml'))
 else:
      photoz_pdf_bin_centers = Table(cat.photoz_pdf_bin_centers)
      photoz_mean=data['photoz_mean']
@@ -157,9 +249,10 @@ else:
      mag_y=data['mag_y']
      galaxy_data_all = Table([galaxy_id, ra, dec, mag_g, mag_i, mag_r, mag_z, mag_y, photoz_mode, photoz_mean, photoz_pdf, photoz_median, photoz_odds, photoz_mode_ml_red_chi2, photoz_mode_ml],names=('galaxy_id','ra','dec', 'mag_g', 'mag_i', 'mag_r', 'mag_z', 'mag_y','photoz_mode', 'photoz_mean', 'photoz_pdf', 'photoz_median', 'photoz_odds', 'photoz_mode_ml_red_chi2', 'photoz_mode_ml'))
 
+print(galaxy_data_all)
 #conservative cuts to reduce size
 #galaxy_data_all=galaxy_data_all[galaxy_data_all['redshift']<1.6]
-galaxy_data_all=galaxy_data_all[galaxy_data_all['mag_r']<27]
+#galaxy_data_all=galaxy_data_all[galaxy_data_all['mag_r']<27]
 
 ###for DC2
 #restrict to cosmoDC2 small footprint (common part)
@@ -178,7 +271,7 @@ if DC2:
      galaxy_data_all = galaxy_data_all[filter_arr]
                
 ###redshift smearing
-if not DC2:
+if DC2:
      print('********Start redshift smearing********')
      redshift_smeared = []
      i=0
