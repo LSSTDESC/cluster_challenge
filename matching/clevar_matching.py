@@ -5,6 +5,7 @@ from astropy import units as u
 from astropy.io import fits
 import sys
 import os
+import json
 import shutil
 
 ###clevar
@@ -21,38 +22,29 @@ outpath = '/sps/lsst/groups/clusters/cluster_comparison_project/after_matching/'
 
 
 ## SELECT THE CATALOGS TO MATCH.
-available_catalogs = ['cosmoDC2', 'wazp_cosmoDC2', 'wazp_DC2', 'redmapper_cosmoDC2', 'redmapper_DC2']
+available_runons = ['cosmoDC2', 'DC2']
+available_algos  = ['wazp', 'redmapper', 'amico']
+available_matching_methods = ['member', 'proximity']
 try :
-	## STRUCTURE: [[cat_name, version], [cat_name, version]]
-	## cat_name OPTIONS: cosmoDC2, wazp_cosmoDC2, wazp_DC2, redmapp_cosmoDC2, redmapper_DC2
-	## version OPTIONS: v0, v1, ... (DEPENDING ON CATALOG AVAILABILITY)
-	catalogs = np.array([[sys.argv[1], sys.argv[2]], [sys.argv[3], sys.argv[4]]])
+	algo	= sys.argv[1]
+	runon	= sys.argv[2]
+	algo_runon_v	= sys.argv[3]
+	matching_method = sys.argv[4]
 except ValueError :
-	print(f'Must choose a catalog name: {available_catalogs}. \n \
-		See {inpath} for available versions.')
+	print(f'Invalid argument selection. Please check.')
 
+if not (np.isin(runon, available_runons) & np.isin(algo, available_algos) & np.isin(matching_method, available_matching_methods)) :
+	sys.exit('Invalid argument selection. Please check.')
 
-
-
-## MATCH BY PROXIMITY OR MEMBER
-match_by = sys.argv[5]
-if match_by == 'proximity_matching' :
-	proximity_matching = True
-	member_matching = False
-elif match_by == 'member_matching' :
-	proximity_matching = False
-	member_matching = True
-else :
-	sys.exit(f'{match_by} is not a valid matching method.')
 
 
 ## COLLECT THE CATALOGS TO MATCH.
 cats = []
 
 
-## COSMODC2
-if np.any(catalogs[:,0] == 'cosmoDC2') :
-	version = catalogs[:,1][catalogs[:,0] == 'cosmoDC2'][0]
+## COSMODC2 (IT IS ASSUMED THAT ALL MATCHES WILL BE MADE TO FULL COSMODC2 i.e. v1)
+if True :
+	cosmoDC2_v = 'v1'	## FOR COSMODC2.SMALL, CHANGE TO v0
 	cltags = {
 		'id':'id_cl',
 		'ra':'ra_cl',
@@ -68,174 +60,62 @@ if np.any(catalogs[:,0] == 'cosmoDC2') :
 		'z':'z_mb',
 		'pmem':'pmem'}
 
-	if os.path.exists(inpath + f'cosmoDC2/halos/{version}/') :
-		cat = ClCatalog.read(inpath + f'cosmoDC2/halos/{version}/Catalog.fits', f'cosmoDC2_{version}', tags=cltags)
-		cat.read_members(inpath + f'cosmoDC2/halos/{version}/Catalog_members.fits', tags=mbtags)
+	if os.path.exists(inpath + f'cosmoDC2/halos/{cosmoDC2_v}/') :
+		cat = ClCatalog.read(inpath + f'cosmoDC2/halos/{cosmoDC2_v}/Catalog.fits', f'cosmoDC2_{cosmoDC2_v}', tags=cltags)
+		cat.read_members(inpath + f'cosmoDC2/halos/{cosmoDC2_v}/Catalog_members.fits', tags=mbtags)
 		cats.append(cat)
 	else :
-		sys.exit(f'The version {version} of {catalog} does not exist. Please see {inpath} for available versions.')
+		sys.exit(f'The version {cosmoDC2_v} of cosmoDC2 does not exist. Please see {inpath} for available versions.')
 	
+## PREPARE CLFINDER CATALOG
+cltags = {
+	'id':'id_cl',
+	'ra':'ra_cl',
+	'dec':'dec_cl',
+	'z':'z_cl',
+	'mass':'mass'}
+mbtags = {
+	'id':'id_mb',
+	'id_cluster':'clid_mb',
+	'ra':'ra_mb',
+	'dec':'dec_mb',
+	'z':'z_mb',
+	'pmem':'pmem'}
 
-
-## WAZP RUN ON COSMODC2
-if np.any(catalogs[:,0] == 'wazp_cosmoDC2') :
-	algo   = 'wazp'
-	runon  = 'cosmoDC2'
-	version = catalogs[:,1][catalogs[:,0] == 'wazp_cosmoDC2'][0]
-	cltags = {
-		'id':'id_cl',
-		'ra':'ra_cl',
-		'dec':'dec_cl',
-		'z':'z_cl',
-		'mass':'mass'}
-	mbtags = {
-		'id':'id_mb',
-		'id_cluster':'clid_mb',
-		'ra':'ra_mb',
-		'dec':'dec_mb',
-		'z':'z_mb',
-		'pmem':'pmem'}
-
-	if os.path.exists(inpath + f'{runon}/{algo}/{version}/') :
-		cat = ClCatalog.read(inpath + f'{runon}/{algo}/{version}/Catalog.fits', f'{algo}_{runon}_{version}', tags=cltags)
-		cat.read_members(inpath + f'{runon}/{algo}/{version}/Catalog_members.fits', tags=mbtags)
-		cats.append(cat)
-	else :
-		sys.exit(f'The version {version} of {catalog} does not exist. Please see {inpath} for available versions.')
+if os.path.exists(inpath + f'{runon}/{algo}/{algo_runon_v}/') :
+	cat = ClCatalog.read(inpath + f'{runon}/{algo}/{algo_runon_v}/Catalog.fits', f'{algo}.{runon}.{algo_runon_v}', tags=cltags)
+	cat.read_members(inpath + f'{runon}/{algo}/{algo_runon_v}/Catalog_members.fits', tags=mbtags)
+	cats.append(cat)
+else :
+	sys.exit(f'The version {algo_runon_v} of {algo}.{runon} does not exist. Please see {inpath} for available versions.')
 
 
 
-## WAZP RUN ON DC2
-if np.any(catalogs[:,0] == 'wazp_DC2') :
-	algo   = 'wazp'
-	runon  = 'DC2'
-	version = catalogs[:,1][catalogs[:,0] == 'wazp_DC2'][0]
-	cltags = {
-		'id':'id_cl',
-		'ra':'ra_cl',
-		'dec':'dec_cl',
-		'z':'z_cl',
-		'mass':'mass'}
-	mbtags = {
-		'id':'id_mb',
-		'id_cluster':'clid_mb',
-		'ra':'ra_mb',
-		'dec':'dec_mb',
-		'z':'z_mb',
-		'pmem':'pmem'}
-
-	if os.path.exists(inpath + f'{runon}/{algo}/{version}/') :
-		cat = ClCatalog.read(inpath + f'{runon}/{algo}/{version}/Catalog.fits', f'{algo}_{runon}_{version}', tags=cltags)
-		cat.read_members(inpath + f'{runon}/{algo}/{version}/Catalog_members.fits', tags=mbtags)
-		cats.append(cat)
-	else :
-		sys.exit(f'The version {version} of {catalog} does not exist. Please see {inpath} for available versions.')
-
-
-
-## REDMAPPER RUN ON COSMODC2
-if np.any(catalogs[:,0] == 'redmapper_cosmoDC2') :
-	algo   = 'redmapper'
-	runon  = 'cosmoDC2'
-	version = catalogs[:,1][catalogs[:,0] == 'redmapper_cosmoDC2'][0]
-	cltags = {
-		'id':'id_cl',
-		'ra':'ra_cl',
-		'dec':'dec_cl',
-		'z':'z_cl',
-		'mass':'mass'}
-	mbtags = {
-		'id':'id_mb',
-		'id_cluster':'clid_mb',
-		'ra':'ra_mb',
-		'dec':'dec_mb',
-		'z':'z_mb',
-		'pmem':'pmem'}
-
-	if os.path.exists(inpath + f'{runon}/{algo}/{version}/') :
-		cat = ClCatalog.read(inpath + f'{runon}/{algo}/{version}/Catalog.fits', f'{algo}_{runon}_{version}', tags=cltags)
-		cat.read_members(inpath + f'{runon}/{algo}/{version}/Catalog_members.fits', tags=mbtags)
-		cats.append(cat)
-	else :
-		sys.exit(f'The version {version} of {catalog} does not exist. Please see {inpath} for available versions.')
-
-
-
-## REDMAPPER RUN ON DC2
-if np.any(catalogs[:,0] == 'redmapper_DC2') :
-	algo   = 'redmapper'
-	runon  = 'DC2'
-	version = catalogs[:,1][catalogs[:,0] == 'redmapper_DC2'][0]
-	cltags = {
-		'id':'id_cl',
-		'ra':'ra_cl',
-		'dec':'dec_cl',
-		'z':'z_cl',
-		'mass':'mass'}
-	mbtags = {
-		'id':'id_mb',
-		'id_cluster':'clid_mb',
-		'ra':'ra_mb',
-		'dec':'dec_mb',
-		'z':'z_mb',
-		'pmem':'pmem'}
-
-	if os.path.exists(inpath + f'{runon}/{algo}/{version}/') :
-		cat = ClCatalog.read(inpath + f'{runon}/{algo}/{version}/Catalog.fits', f'{algo}_{runon}_{version}', tags=cltags)
-		cat.read_members(inpath + f'{runon}/{algo}/{version}/Catalog_members.fits', tags=mbtags)
-		cats.append(cat)
-	else :
-		sys.exit(f'The version {version} of {catalog} does not exist. Please see {inpath} for available versions.')
 
 
 
 ## OUTPATH DIRECTORY STRUCTURE: (ASSUMING THERE ARE NOT COSMODC2 - DC2 COMPARISONS)
 ##	after_matching/
 ##		|- cosmoDC2/
-##			|- cosmoDC2_clfinder/
-##				|- cosmoDC2_wazp.cosmoDC2/
-##					|- v0_v0/
-##					|- v1_v0/
-##				|- cosmoDC2_redmapper.cosmoDC2/
-##			|- clfinder_clfinder/
-##				|- redmapper.cosmoDC2_wazp.cosmoDC2/
-##					|- v0_v0/
-##				|- amico.cosmoDC2_wazp.cosmoDC2/
-##				|- amico.cosmoDC2_redmapper.cosmoDC2/
+##			|
+##			|- cosmoDC2_wazp.cosmoDC2/
+##				|- v0_v0/
+##				|- v1_v0/
+##			|- cosmoDC2_redmapper.cosmoDC2/
+##			|- cosmoDC2_amico.cosmoDC2/
 ##		|- DC2/
-##			|- clfinder_clfinder/
-##				|- redmapper.DC2_wazp.DC2/
-##					|- v0_v0/
-##				|- amico.DC2_wazp.DC2/
-##				|- amico.DC2_redmapper.DC2/
+##			|- cosmoDC2_wazp.DC2/
+##				|- v0_v0/
+##			|- cosmoDC2_redmapper.DC2/
+##			|- cosmoDC2_amico.DC2/
 
 ## PREPARE THE OUTPATH DIRECTORY.
-if np.any(['cosmoDC2' in c for c in catalogs[:,0]]) :
-	outpath += 'cosmoDC2/'
-	if np.any(catalogs[:,0] == 'cosmoDC2') :
-		outpath += 'cosmoDC2_clfinder/'
-		algo = catalogs[:,0][catalogs[:,0] != 'cosmoDC2'][0].split('_', 1)[0]
-		vA = catalogs[:,1][catalogs[:,0] == 'cosmoDC2'][0]
-		vB = catalogs[:,1][catalogs[:,0] != 'cosmoDC2'][0]
-		outpath += f'cosmoDC2_{algo}.cosmoDC2/{vA}_{vB}/'
-	else :
-		outpath += 'clfinder_clfinder/'
-		clfinders = sorted([c.split('_',1)[0] for c in catalogs[:,0]])
-		vA = catalogs[:,1][[clfinders[0] in c for c in catalogs[:,0]]][0]
-		vB = catalogs[:,1][[clfinders[1] in c for c in catalogs[:,0]]][0]
-		outpath += f'{clfinders[0]}.cosmoDC2_{clfinders[1]}.cosmoDC2/{vA}_{vB}/'
-else :
-	outpath += 'DC2/clfinder_clfinder/'
-	clfinders = sorted([c.split('_',1)[0] for c in catalogs[:,0]])
-	vA = catalogs[:,1][[clfinders[0] in c for c in catalogs[:,0]]][0]
-	vB = catalogs[:,1][[clfinders[1] in c for c in catalogs[:,0]]][0]
-	outpath += f'{clfinders[0]}.DC2_{clfinders[1]}.DC2/{vA}_{vB}/'
-	
+outpath += f'{runon}/cosmoDC2_{algo}.{runon}/{cosmoDC2_v}_{algo_runon_v}/'
 
 
 
 ## PERFORM PROXIMITY MATCHING
-if proximity_matching :
+if matching_method == 'proximity' :
 	mt = ProximityMatch()
 
 	delta_z = 0.05
@@ -270,7 +150,7 @@ if proximity_matching :
 	display(cats[1])
 
 ## PERFORM MEMBER MATCHING
-if member_matching :
+if matching_method == 'member' :
 	mt = MembershipMatch()
 	
 	minimum_share_fraction = 0.0
