@@ -39,7 +39,7 @@ RM_cat_name = 'cosmoDC2_v1.1.4_redmapper_v0.8.1'
 #catalog from images
 #RM_cat_name = 'dc2_redmapper_run2.2i_dr6_wfd_v0.8.1'
 
-outpath = "/sps/lsst/users/tguillem/DESC/desc_april_2022/cluster_challenge/clevar_catalogs/redmapper/full_pmem/" + RM_cat_name + "/"
+outpath = "/sps/lsst/groups/clusters/cluster_comparison_project/debug/"
 
 if os.path.exists(outpath):
      shutil.rmtree(outpath)
@@ -109,5 +109,36 @@ print(c1)
 print(c1_members)
 c1.write(outpath + 'Catalog.fits', overwrite=True)
 c1_members.write(outpath + 'Catalog_members.fits', overwrite=True)
+sys.exit()
+
+#try a nice density map
+w, h = 2819, 100
+#d_scale = [[0 for x in range(w)] for y in range(h)]
+#d_scale = [20 for x in range(w)]
+##for i in range(0,100):
+##     d_scale[i]=100
+#     #for j in range(0,100):
+#          #print('----' + str(i))
+#          #print(j)
+#          #d_scale[i][j]=100
+##print(len(xbins))
+##print(d_scale)
+heatmap, xedges, yedges = np.histogram2d(cluster_data['ra'], cluster_data['dec'], bins=(xbins,ybins), weights=d_scale)
+##heatmap, xedges, yedges = np.histogram2d(cluster_data['ra_cen_0'], cluster_data['dec_cen_0'], bins=100)
+##ax1.imshow(heatmap, interpolation='none', cmap='jet')
+#im = ax1.pcolormesh(xbins, ybins, heatmap.T, cmap='jet')
+#fig.colorbar(im, ax=ax1)
+#fig.savefig(outpath+"map_clusters.png", bbox_inches='tight')
+fig, ax2 = plt.subplots()
+from astropy.convolution.kernels import Gaussian2DKernel
+from astropy.convolution import convolve
+##im = ax2.imshow(convolve(heatmap, Gaussian2DKernel(x_stddev=3,y_stddev=3)), interpolation='none', cmap='jet')
+im = ax2.pcolormesh(xbins, ybins, convolve(heatmap, Gaussian2DKernel(x_stddev=2,y_stddev=2)).T, cmap='jet')
+fig.colorbar(im, ax=ax2)
+ax2.set_xlim([74, 49])
+ax2.set_ylim([-46, -26])
+ax2.set_ylabel("Dec")
+ax2.set_xlabel("RA")
+fig.savefig(outpath+"map_clusters_smoothed.png", bbox_inches='tight')
 
 sys.exit()

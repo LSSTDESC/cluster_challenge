@@ -29,19 +29,24 @@ from clevar.match import output_catalog_with_matching
 from IPython.display import display
 
 inpath = "/sps/lsst/users/tguillem/DESC/desc_april_2022/cluster_challenge/clevar_catalogs/"
-outpath = "/sps/lsst/users/tguillem/DESC/desc_april_2022/cluster_challenge/clevar_catalogs/after_matching/member_f0_pmem_check1/"
+#outpath = "/sps/lsst/users/tguillem/DESC/desc_april_2022/cluster_challenge/clevar_catalogs/"
+#outpath = "/sps/lsst/groups/clusters/redmapper_validation_project/cosmoDC2_v1.1.4/extragal/after_matching/v1/"
+outpath = "/sps/lsst/groups/clusters/debug/"
 
 #select the catalogs to match
-wazp_cosmoDC2 = True
+wazp_cosmoDC2 = False
 redmapper_cosmoDC2 = False
-amico_cosmoDC2 = False
+amico_cosmoDC2 = True
 
 if wazp_cosmoDC2 == True:
      #c1 = ClCatalog.read_full(inpath+'wazp/6685/ClCatalog.fits')
      #c1_members = ClCatalog.read_full(inpath+'wazp/6685/ClCatalog_members.fits')
      #c2 = ClCatalog.read_full(inpath+'cosmoDC2/cosmoDC2_v1.1.4_small/ClCatalog.fits')
      #c2_members = ClCatalog.read_full(inpath+'cosmoDC2/cosmoDC2_v1.1.4_small/ClCatalog_members.fits')
-     c1  = ClCatalog.read(inpath+'wazp/6980/Catalog.fits', 'c1', id='id', ra='ra', dec='dec', z='z', mass='mass')
+     c1  = ClCatalog.read(inpath+'wazp/6980/Catalog.fits', 'c1', id='id', ra='ra', dec='dec', z='z', mass='mass', SNR='SNR')
+     print(c1.data)
+     c1 = c1[c1['SNR']>4]
+     print(c1.data)
      #c1_members = ClCatalog.read(inpath+'wazp/6685/Catalog_members.fits', 'c1_members', id='id', id_cluster='id_cluster', ra='ra', dec='dec', z='z', pmem='pmem')
      c1.read_members(inpath+'wazp/6980/Catalog_members.fits',id='id', id_cluster='id_cluster', ra='ra', dec='dec', z='z', pmem='pmem')
      #c2  = ClCatalog.read(inpath+'cosmoDC2/with_m200c/cosmoDC2_v1.1.4/Catalog.fits', 'c2', id='id', ra='ra', dec='dec', z='z', mass='mass', log_mass='log_mass', m200c='m200c', log_m200c='log_m200c')
@@ -51,23 +56,30 @@ if wazp_cosmoDC2 == True:
      c2  = ClCatalog.read(inpath+'/cosmoDC2/m200c_gt_13.0/cosmoDC2_v1.1.4/Catalog.fits', 'c2', id='id', ra='ra', dec='dec', z='z', mass='mass', log_mass='log_mass', m200c='m200c', log_m200c='log_m200c')
      c2.read_members(inpath+'/cosmoDC2/m200c_gt_13.0/cosmoDC2_v1.1.4/Catalog_members.fits', id='id', id_cluster='id_cluster', ra='ra', dec='dec', z='z', pmem='pmem')
 elif redmapper_cosmoDC2 == True:
-     c1  = ClCatalog.read(inpath+'redmapper/full_pmem/cosmoDC2_v1.1.4_redmapper_v0.8.1/Catalog.fits', 'c1', id='id', ra='ra', dec='dec', z='z', mass='mass')
+     #redmapper/full_pmem/ contains the pmem fix
+     c1  = ClCatalog.read(inpath+'redmapper/full_pmem/cosmoDC2_v1.1.4_redmapper_v0.8.1/Catalog.fits', 'c1', full=True)# id='ID', ra='ra', dec='dec', z='z', mass='mass')
+     #c1 = c1[c1['mass']>60]
      #c1_members = ClCatalog.read(inpath+'redmapper/cosmoDC2_v1.1.4_redmapper_v0.8.1/Catalog_members.fits', 'c1_members', id='id', id_cluster='id_cluster', ra='ra', dec='dec',pmem='pmem')
-     c1.read_members(inpath+'redmapper/full_pmem/cosmoDC2_v1.1.4_redmapper_v0.8.1/Catalog_members.fits', id='id', id_cluster='id_cluster', ra='ra', dec='dec',pmem='pmem')
+     c1.read_members(inpath+'redmapper/full_pmem/cosmoDC2_v1.1.4_redmapper_v0.8.1/Catalog_members.fits', full=True)# id_cluster='id_cluster', ra='ra', dec='dec',pmem='pmem')
      #c2  = ClCatalog.read(inpath+'cosmoDC2/cosmoDC2_v1.1.4_small/Catalog.fits', 'c2', id='id', ra='ra', dec='dec', z='z', mass='mass', log_mass='log_mass', m200c='m200c', log_m200c='log_m200c')
      #c2_members = ClCatalog.read(inpath+'cosmoDC2/cosmoDC2_v1.1.4_small/Catalog_members.fits', 'c2_members', id='id', id_cluster='id_cluster', ra='ra', dec='dec', z='z', pmem='pmem')
      #c2.read_members(inpath+'cosmoDC2/cosmoDC2_v1.1.4_small/Catalog_members.fits', id='id', id_cluster='id_cluster', ra='ra', dec='dec', z='z', pmem='pmem')
      #m200c
-     c2  = ClCatalog.read(inpath+'/cosmoDC2/m200c_gt_13.0/cosmoDC2_v1.1.4/Catalog.fits', 'c2', id='id', ra='ra', dec='dec', z='z', mass='mass', log_mass='log_mass', m200c='m200c', log_m200c='log_m200c')
-     c2.read_members(inpath+'/cosmoDC2/m200c_gt_13.0/cosmoDC2_v1.1.4/Catalog_members.fits', id='id', id_cluster='id_cluster', ra='ra', dec='dec', z='z', pmem='pmem')
+     c2  = ClCatalog.read(inpath+'/cosmoDC2/m200c_gt_13.0/cosmoDC2_v1.1.4/Catalog.fits', 'c2', full=True)# id='id', ra='ra', dec='dec', z='z', mass='mass', log_mass='log_mass', m200c='m200c', log_m200c='log_m200c')
+     #c2 = c2[c2['log_m200c']>14.5]
+     c2.read_members(inpath+'/cosmoDC2/m200c_gt_13.0/cosmoDC2_v1.1.4/Catalog_members.fits', full=True)# id='id', id_cluster='id_cluster', ra='ra', dec='dec', z='z', pmem='pmem')
 elif amico_cosmoDC2 == True:
-     c1  = ClCatalog.read(inpath+'amico/test/Catalog.fits', 'c1', id='id', ra='ra', dec='dec', z='z', mass='mass')
+     #c1  = ClCatalog.read(inpath+'amico/test/Catalog.fits', 'c1', id='id', ra='ra', dec='dec', z='z', mass='mass')
      #c1_members = ClCatalog.read(inpath+'redmapper/cosmoDC2_v1.1.4_redmapper_v0.8.1/Catalog_members.fits', 'c1_members', id='id', id_cluster='id_cluster', ra='ra', dec='dec',pmem='pmem')
-     #c1.read_members(inpath+'redmapper/cosmoDC2_v1.1.4_redmapper_v0.8.1/Catalog_members.fits', id='id', id_cluster='id_cluster', ra='ra', dec='dec',pmem='pmem')
+     #c1.read_members(inpath+'amico/test/Catalog_members.fits', id='id', id_cluster='id_cluster', pmem='pmem')
+     #test 080302
+     c1 = ClCatalog.read(inpath+'amico/test/Catalog.fits', 'c1', full=True)
+     c1.read_members = ClCatalog.read(inpath+'amico/test/Catalog_members.fits', 'c1', full=True)
      #c2  = ClCatalog.read(inpath+'cosmoDC2/cosmoDC2_v1.1.4_small/Catalog.fits', 'c2', id='id', ra='ra', dec='dec', z='z', mass='mass', log_mass='log_mass', m200c='m200c', log_m200c='log_m200c')
-     c2  = ClCatalog.read(inpath+'cosmoDC2/with_m200c/cosmoDC2_v1.1.4/Catalog.fits', 'c2', id='id', ra='ra', dec='dec', z='z', mass='mass', log_mass='log_mass', m200c='m200c', log_m200c='log_m200c')
+     #c2  = ClCatalog.read(inpath+'cosmoDC2/with_m200c/cosmoDC2_v1.1.4/Catalog.fits', 'c2', id='id', ra='ra', dec='dec', z='z', mass='mass', log_mass='log_mass', m200c='m200c', log_m200c='log_m200c')
      #c2  = ClCatalog.read(inpath+'cosmoDC2/cosmoDC2_v1.1.4_small/Catalog.fits', 'c2', tags={'id':'id', 'ra':'ra', 'dec':'dec', 'z':'z', 'mass':'mass', 'log_mass':'log_mass'})
-     #c2  = ClCatalog.read(inpath+'cosmoDC2/cosmoDC2_v1.1.4_small/Catalog.fits', 'c2', full=True, id='id')
+     c2  = ClCatalog.read(inpath+'cosmoDC2/cosmoDC2_v1.1.4_small/Catalog.fits', 'c2', full=True)
+     c2.read_members(inpath+'cosmoDC2/cosmoDC2_v1.1.4_small/Catalog_members.fits',full=True)
      #c2_members = ClCatalog.read(inpath+'cosmoDC2/cosmoDC2_v1.1.4_small/Catalog_members.fits', 'c2_members', id='id', id_cluster='id_cluster', ra='ra', dec='dec', z='z', pmem='pmem')
      #c2.read_members(inpath+'cosmoDC2/cosmoDC2_v1.1.4_small/Catalog_members.fits', id='id', id_cluster='id_cluster', ra='ra', dec='dec', z='z', pmem='pmem')
 else:
@@ -153,7 +165,7 @@ if True:
 
      #to investigate matching issues
      mt.fill_shared_members(c1, c2)
-     mt.save_shared_members(c1, c2, fileprefix='mem_share')
+     mt.save_shared_members(c1, c2, fileprefix=outpath+'mem_share')
 
      #c1_raw.cross_match()
      #c2_raw.cross_match()
@@ -165,5 +177,20 @@ if True:
      mt.load_matches(c1, c2, out_dir=outpath)
      display(c1)
      display(c2)
+
+     #c1_members = Table(c1.members)
+     #print(c1_members)
+     #store the members for the matched clusters
+     #DOES NOT WORK
+     #c1.members.write(outpath + 'c1_members.fits', overwrite=True)
+     #c2.members.write(outpath + 'c2_members.fits', overwrite=True)
+     #HACK
+     #display(c1.members)
+     #d     id_cluster         ra                 dec         pmem                SkyCoord                ind_cl       match
+     #c1_members = Table([c1.members.data['id'],c1.members.data['id_cluster'],c1.members.data['ra'],c1.members.data['dec'],c1.members.data['pmem'],c1.members.data['ind_cl'],c1.members.data['match']],names={'id','id_cluster','ra','dec','pmem','ind_cl','match'})
+     c1_members = Table([c1.members.data['id'],c1.members.data['id_cluster'],c1.members.data['ra'],c1.members.data['dec'],c1.members.data['pmem'],c1.members.data['ind_cl']],names={'id','id_cluster','ra','dec','pmem','ind_cl'})
+     c1_members.write(outpath + 'c1_members.fits', overwrite=True)
+     c2_members = Table([c2.members.data['id'],c2.members.data['id_cluster'],c2.members.data['ra'],c2.members.data['dec'],c2.members.data['pmem'],c2.members.data['ind_cl']],names={'id','id_cluster','ra','dec','pmem','ind_cl'})
+     c2_members.write(outpath + 'c2_members.fits', overwrite=True)
 
 sys.exit()

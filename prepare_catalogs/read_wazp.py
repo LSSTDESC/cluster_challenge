@@ -36,7 +36,7 @@ algo = 'WaZP'
 #6563 / 6684 / 6685 / 6688 / 6561 / 
 catalog_wazp = '6980'
 
-outpath = "/sps/lsst/users/tguillem/DESC/desc_april_2022/cluster_challenge/clevar_catalogs/wazp/" + catalog_wazp + "/"
+outpath = "/sps/lsst/groups/clusters/cluster_comparison_project/debug/wazp/"
 
 if os.path.exists(outpath):
      shutil.rmtree(outpath)
@@ -51,19 +51,37 @@ print('outpath = ' + outpath)
 #print(cat_wazp.info)
 #richness and mass cuts
 min_richness = 0
-inpath = '/sps/lsst/users/tguillem/DESC/desc_may_2021/desc-data-portal/notebooks/dc2/'
-wazp_cat_name = inpath + 'catalogs/wazp_full/' + catalog_wazp + '/wazp_cluster.fits'
-wazp_members_cat_name = inpath + 'catalogs/wazp_full/' + catalog_wazp + '/wazp_membership.fits'
+#inpath = '/sps/lsst/users/tguillem/DESC/desc_may_2021/desc-data-portal/notebooks/dc2/'
+#wazp_cat_name = inpath + 'catalogs/wazp_full/' + catalog_wazp + '/wazp_cluster.fits'
+#wazp_members_cat_name = inpath + 'catalogs/wazp_full/' + catalog_wazp + '/wazp_membership.fits'
+#NEW: 07/04/23
+#inpath = '/sps/lsst/groups/clusters/wazp_validation_project/6948/'
+#cosmoDC2 flexzboost
+inpath = '/sps/lsst/users/tguillem/DESC/desc_may_2021/desc-data-portal/notebooks/dc2/catalogs/wazp_full/6980/'
+wazp_cat_name = inpath + 'wazp_cluster.fits'
+wazp_members_cat_name = inpath + 'wazp_membership.fits'
 #truth matching
 #matching = np.load('catalogs/wazp_truth_matching.npy')
 #print(matching)
 #test DES
 #wazp_cat_name = 'catalogs/y1a1_dnf_wazp_v5.0.11.5239+47_clusters.fits'
 #wazp_members_cat_name = 'catalogs/y1a1_dnf_wazp_v5.0.11.5239+47_members.fits'
+
+###method 1: open local .fits files
 wazp_data, wazp_members_data = wazp_cat_open(wazp_cat_name, wazp_members_cat_name, min_richness)
+
+###method 2: open GCR catalogs
+#print('\n'.join(sorted(c for c in GCRCatalogs.get_available_catalogs(include_default_only=False) if c.startswith('cosmoDC2'))))
+#wazp_cat_name = 'cosmoDC2_v1.1.4_wazp_v1.0_flexzboost_v1'
+#wazp_data, wazp_members_data, gc = wazp_cat_open_gcr(wazp_cat_name, min_richness) 
+
+#wazp_data=wazp_data[wazp_data['NGALS']>5]
 ####General catalog properties
 print("Number of WaZP clusters = ", len(wazp_data))
 print("Number of WaZP cluster members = ", len(wazp_members_data))
+#wazp_data=wazp_data[0:3]
+#wazp_data.pprint_all()
+#sys.exit()
 
 #create clevar catalog
 #c1 = ClCatalog('Cat1', ra=wazp_data['ra'], dec=wazp_data['dec'], z=wazp_data['redshift'], mass = wazp_data['NGALS'], id=wazp_data['ID'])

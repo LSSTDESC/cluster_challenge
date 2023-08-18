@@ -39,6 +39,26 @@ def wazp_cat_open(wazp_cat_name, wazp_members_cat_name, min_richness):
     
     #return cat_wazp, cat_wazp_members 
 
+def wazp_cat_open_gcr(wazp_cat_name, min_richness=20):
+
+         # Get the wazp catalog
+         gc = GCRCatalogs.load_catalog(wazp_cat_name)
+         # Select out the cluster and member quantities into different lists
+         quantities = gc.list_all_quantities()
+         cluster_quantities = [q for q in quantities if 'member' not in q]
+         member_quantities = [q for q in quantities if 'member' in q]
+
+         # Read in the cluster and member data
+         #query = GCRCatalogs.GCRQuery('(richness > ' + str(min_richness)+')')
+         query = sample_filter(0.0001)
+         
+         cluster_data = Table(gc.get_quantities(cluster_quantities))
+         #cluster_data = Table(gc.get_quantities(cluster_quantities, [query]))
+         member_data = Table(gc.get_quantities(member_quantities))
+         #member_data = Table(gc.get_quantities(quantities, [query]))
+        
+         return cluster_data, member_data, gc
+
 def mstar_i(redshift):
     bin = round(redshift-0.020,2)/0.010
     bin_r = round(bin) +1

@@ -32,11 +32,14 @@ from clevar.match_metrics import scaling
 from clevar.match_metrics import recovery
 from clevar.match_metrics import distances
 
+print(np.__version__)
+sys.exit()
 #outpath
-DC2_cat_name = 'cosmoDC2_v1.1.4'
-#DC2_cat_name = 'cosmoDC2_v1.1.4_small'
+#DC2_cat_name = 'cosmoDC2_v1.1.4'
+DC2_cat_name = 'cosmoDC2_v1.1.4_small'
 
-outpath = "/sps/lsst/users/tguillem/DESC/desc_april_2022/cluster_challenge/clevar_catalogs/cosmoDC2/" + DC2_cat_name + "/"
+#outpath = "/sps/lsst/users/tguillem/DESC/desc_april_2022/cluster_challenge/clevar_catalogs/cosmoDC2/" + DC2_cat_name + "/"
+outpath = "/sps/lsst/users/tguillem/debug/"
 
 if os.path.exists(outpath):
      shutil.rmtree(outpath)

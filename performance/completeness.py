@@ -22,6 +22,7 @@ from scipy.optimize import minimize
 import clevar
 from clevar.catalog import ClCatalog
 from clevar.match import ProximityMatch
+from clevar.match import MembershipMatch 
 from clevar.match import get_matched_pairs
 from clevar.match_metrics import scaling
 from clevar.match_metrics import recovery
@@ -29,23 +30,25 @@ from clevar.match_metrics import distances
 from clevar.match_metrics.recovery import ClCatalogFuncs as r_cf
 from clevar.match import output_matched_catalog
 
-#matching_folder = '/sps/lsst/groups/clusters/redmapper_validation_project/cosmoDC2_v1.1.4/extragal/after_matching/v0/'
-matching_folder = '/sps/lsst/groups/clusters/wazp_validation_project/cosmoDC2_v1.1.4/extragal/after_matching/v0/'
+matching_folder = '/sps/lsst/groups/clusters/redmapper_validation_project/cosmoDC2_v1.1.4/extragal/after_matching/v1/'
+#matching_folder = '/sps/lsst/groups/clusters/wazp_validation_project/cosmoDC2_v1.1.4/extragal/after_matching/v0/'
+#matching_folder = '/sps/lsst/users/tguillem/DESC/desc_april_2022/cluster_challenge/clevar_catalogs/after_matching/member_snr_gt4/'
 
-outpath_base = '/pbs/home/t/tguillem/web/clusters/cluster_challenge/selection_function/completeness_fit/'
+#outpath_base = '/pbs/home/t/tguillem/web/clusters/cluster_challenge/selection_function/completeness_fit/member_snr_gt4/'
+outpath_base = '/pbs/home/t/tguillem/web/clusters/cluster_challenge/debug/'
 
 #select the catalogs to match
-wazp_cosmoDC2 = True
-redmapper_cosmoDC2 = False
+wazp_cosmoDC2 = False
+redmapper_cosmoDC2 = True
 amico_cosmoDC2 = False
 matching_selected = 'cross'
 
 if wazp_cosmoDC2 == True:
-     #matching_folder = matching_folder + 'wazp_cosmoDC2/'
+     matching_folder = matching_folder + 'wazp_cosmoDC2/'
      matching = 'WaZP cosmoDC2: NGALS>0, $m_{200c}>10^{13}$'
      outpath = outpath_base + 'wazp_cosmoDC2/'
 elif redmapper_cosmoDC2 == True:
-     #matching_folder = matching_folder + 'redmapper_cosmoDC2/'
+     matching_folder = matching_folder + 'redmapper_cosmoDC2/'
      matching = 'redMaPPer cosmoDC2: $\Lambda>0$, $m_{200c}>10^{13}$'
      outpath = outpath_base + 'redmapper_cosmoDC2/'
 elif amico_cosmoDC2 == True:
@@ -68,9 +71,12 @@ catalog2 = 'c2.fits'
 #load c1 and c2
 c1 = ClCatalog.read_full(matching_folder + catalog1)
 c2 = ClCatalog.read_full(matching_folder + catalog2)
+#mt = MembershipMatch()
+#mt.load_shared_members(c1, c2, fileprefix=matching_folder+'mem_share')
+#print(c1.mt_input)
 #print(c1.data)
 #print(c2.data)
-
+#sys.exit()
 #restrict to z<1.15
 #c1=c1[c1.data['z']<1.15]
 
