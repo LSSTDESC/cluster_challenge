@@ -21,13 +21,13 @@ runon = 'DC2'
 ## KEEP TRACK OF VERSIONS (FEEL FREE TO ADD additional_comments TO THE VERSIONS IF NEEDED)
 versions = [
         {'v':'v0',
-        'cat_name':'6948',
-	'mag_type':'true',
-	'mag_limit':'mag_z<24.46',
-	'redshift':'true',
-	'val_file':'0.01(1+z)',
-	'm*':'DC2',
-        'description':'WaZP run on DC2 from the LINEA 6948 run',},
+        'cat_name':'7081',
+	'min_richness':0,
+        'description':'WaZP run on DC2 from the LineA 7081 run',},
+        {'v':'v1',
+        'cat_name':'7081',
+	'min_richness':20,
+        'description':'WaZP run on DC2 from the LineA 7081 run',},
         ]
 
 
@@ -60,9 +60,10 @@ cl_table = Table([
         cl_data['ID'],		## CLUSTER ID: id_cl
         cl_data['RA'],          ## CLUSTER RA: ra_cl
         cl_data['DEC'],         ## CLUSTER DEC: dec_cl
-        cl_data['zp'],          ## CLUSTER REDSHIFT: z_cl
-        cl_data['NGALS']],      ## CLUSTER RICHNESS: mass (FOR SORTING PURPOSES)
-        names=('id_cl', 'ra_cl', 'dec_cl', 'z_cl', 'mass'))
+        cl_data['zp']],          ## CLUSTER REDSHIFT: z_cl
+        names=('id_cl', 'ra_cl', 'dec_cl', 'z_cl'))
+        #cl_data['NGALS']],      ## CLUSTER RICHNESS: mass (FOR SORTING PURPOSES)
+        #names=('id_cl', 'ra_cl', 'dec_cl', 'z_cl', 'mass'))
 
 mb_table = Table([
         mb_data['ID_g'],        ## MEMBER ID: id_mb
@@ -72,6 +73,18 @@ mb_table = Table([
         mb_data['ZP'],          ## MEMBER REDSHIFT: z_mb
         mb_data['PMEM']],       ## MEMBER PMEM: pmem
         names=('id_mb', 'clid_mb', 'ra_mb', 'dec_mb', 'z_mb', 'pmem'))
+
+## COMPUTE RICHNESS
+mb_sorted_by_cl = np.argsort(mb_data['ID_CLUSTER'])[::-1]
+mb_pmem_sorted = mb_data['PMEM'][mb_sorted_by_cl]
+indices = np.insert(np.cumsum(cl_data['NMEM']), 0, 0)
+richness = np.array([np.sum(mb_pmem_sorted[indices[i]:indices[i+1]]) for i in range(len(indices)-1)])
+cl_table['mass'] = richness
+
+
+## APPLY min_richness
+cl_table = cl_table[cl_table['mass'] > version['min_richness']]
+mb_table = mb_table[np.isin(mb_table['clid_mb'], cl_table['id_cl'])]
 
 ## WRITE TABLES TO FILES
 cl_table.write(outpath + 'Catalog.fits', overwrite=True)

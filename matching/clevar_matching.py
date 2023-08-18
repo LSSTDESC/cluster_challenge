@@ -17,100 +17,88 @@ from clevar.cosmology import AstroPyCosmology
 from IPython.display import display
 
 
+
+requested_cats = [sys.argv[1].split('_'), sys.argv[2].split('_')]
+matching_method = sys.argv[3]
+
 inpath  = '/sps/lsst/groups/clusters/cluster_comparison_project/before_matching/'
 outpath = '/sps/lsst/groups/clusters/cluster_comparison_project/after_matching/'
-
-
-## SELECT THE CATALOGS TO MATCH.
-available_runons = ['cosmoDC2', 'DC2']
-available_algos  = ['wazp', 'redmapper', 'amico']
-available_matching_methods = ['member', 'proximity']
-try :
-	algo	= sys.argv[1]
-	runon	= sys.argv[2]
-	algo_runon_v	= sys.argv[3]
-	matching_method = sys.argv[4]
-except ValueError :
-	print(f'Invalid argument selection. Please check.')
-
-if not (np.isin(runon, available_runons) & np.isin(algo, available_algos) & np.isin(matching_method, available_matching_methods)) :
-	sys.exit('Invalid argument selection. Please check.')
 
 
 
 ## COLLECT THE CATALOGS TO MATCH.
 cats = []
-
-
-## COSMODC2 (IT IS ASSUMED THAT ALL MATCHES WILL BE MADE TO FULL COSMODC2 i.e. v1)
-if True :
-	cosmoDC2_v = 'v1'	## FOR COSMODC2.SMALL, CHANGE TO v0
-	cltags = {
-		'id':'id_cl',
-		'ra':'ra_cl',
-		'dec':'dec_cl',
-		'z':'z_cl',
-		'mass':'mass',
-		'log_mass':'log10_mass'}
-	mbtags = {
-		'id':'id_mb',
-		'id_cluster':'clid_mb',
-		'ra':'ra_mb',
-		'dec':'dec_mb',
-		'z':'z_mb',
-		'pmem':'pmem'}
-
-	if os.path.exists(inpath + f'cosmoDC2/halos/{cosmoDC2_v}/') :
-		cat = ClCatalog.read(inpath + f'cosmoDC2/halos/{cosmoDC2_v}/Catalog.fits', f'cosmoDC2_{cosmoDC2_v}', tags=cltags)
-		cat.read_members(inpath + f'cosmoDC2/halos/{cosmoDC2_v}/Catalog_members.fits', tags=mbtags)
-		cats.append(cat)
-	else :
-		sys.exit(f'The version {cosmoDC2_v} of cosmoDC2 does not exist. Please see {inpath} for available versions.')
-	
-## PREPARE CLFINDER CATALOG
-cltags = {
-	'id':'id_cl',
-	'ra':'ra_cl',
-	'dec':'dec_cl',
-	'z':'z_cl',
-	'mass':'mass'}
-mbtags = {
-	'id':'id_mb',
-	'id_cluster':'clid_mb',
-	'ra':'ra_mb',
-	'dec':'dec_mb',
-	'z':'z_mb',
-	'pmem':'pmem'}
-
-if os.path.exists(inpath + f'{runon}/{algo}/{algo_runon_v}/') :
-	cat = ClCatalog.read(inpath + f'{runon}/{algo}/{algo_runon_v}/Catalog.fits', f'{algo}.{runon}.{algo_runon_v}', tags=cltags)
-	cat.read_members(inpath + f'{runon}/{algo}/{algo_runon_v}/Catalog_members.fits', tags=mbtags)
-	cats.append(cat)
+if np.any([c[0] == 'cosmoDC2' for c in requested_cats]) :
+	matched_to_cosmoDC2 = True
 else :
-	sys.exit(f'The version {algo_runon_v} of {algo}.{runon} does not exist. Please see {inpath} for available versions.')
+	matched_to_cosmoDC2 = False
 
 
+for c in requested_cats :
+	if c[0] == 'cosmoDC2' :
+		cltags = {
+			'id':'id_cl',
+			'ra':'ra_cl',
+			'dec':'dec_cl',
+			'z':'z_cl',
+			'mass':'mass',
+			'log_mass':'log10_mass'}
+		mbtags = {
+			'id':'id_mb',
+			'id_cluster':'clid_mb',
+			'ra':'ra_mb',
+			'dec':'dec_mb',
+			'z':'z_mb',
+			'pmem':'pmem'}
 
+		print(f"loading from {inpath}cosmoDC2/halos/{c[1]}/...")
+		if os.path.exists(inpath + f'cosmoDC2/halos/{c[1]}/') :
+			cat = ClCatalog.read(inpath + f'cosmoDC2/halos/{c[1]}/Catalog.fits', f'cosmoDC2.{c[1]}', tags=cltags)
+			cat.read_members(inpath + f'cosmoDC2/halos/{c[1]}/Catalog_members.fits', tags=mbtags)
+			cats.append(cat)
+		else :
+			sys.exit(f'The version {c[1]} of cosmoDC2 does not exist.')
+		print(f"{'.'.join(c)} catalog is loaded...")
+	else :
+		cltags = {
+			'id':'id_cl',
+			'ra':'ra_cl',
+			'dec':'dec_cl',
+			'z':'z_cl',
+			'mass':'mass'}
+		mbtags = {
+			'id':'id_mb',
+			'id_cluster':'clid_mb',
+			'ra':'ra_mb',
+			'dec':'dec_mb',
+			'z':'z_mb',
+			'pmem':'pmem'}
+		
+		print(f"loading from {inpath}{c[1]}/{c[0]}/{c[2]}/...")
+		if os.path.exists(inpath + f'{c[1]}/{c[0]}/{c[2]}/') :
+			cat = ClCatalog.read(inpath + f'{c[1]}/{c[0]}/{c[2]}/Catalog.fits', f'{c[0]}.{c[1]}.{c[2]}', tags=cltags)
+			cat.read_members(inpath + f'{c[1]}/{c[0]}/{c[2]}/Catalog_members.fits', tags=mbtags)
+			cats.append(cat)
+		else :
+			sys.exit(f"The catalog {'_'.join(c)} does not exist.")
+		print(f"{'.'.join(c)} catalog is loaded...")
 
-
-
-## OUTPATH DIRECTORY STRUCTURE: (ASSUMING THERE ARE NOT COSMODC2 - DC2 COMPARISONS)
+## SET OUTPUT PATH	
+## OUTPATH DIRECTORY STRUCTURE:
 ##	after_matching/
-##		|- cosmoDC2/
-##			|
-##			|- cosmoDC2_wazp.cosmoDC2/
-##				|- v0_v0/
-##				|- v1_v0/
-##			|- cosmoDC2_redmapper.cosmoDC2/
-##			|- cosmoDC2_amico.cosmoDC2/
-##		|- DC2/
-##			|- cosmoDC2_wazp.DC2/
-##				|- v0_v0/
-##			|- cosmoDC2_redmapper.DC2/
-##			|- cosmoDC2_amico.DC2/
+##		|- cosmoDC2_wazp.cosmoDC2/
+##			|- v1_v0/
+##				|- member_matching_fshare_0.0/
+##		|- cosmoDC2_wazp.cosmoDC2.fzb/
+##		|- cosmoDC2_wazp.DC2/
+##		|- wazp.cosmoDC2.fzb_wazp.DC2/
+##		|- redmapper.cosmoDC2_wazp.cosmoDC2/
+##		|- redmapper.cosmoDC2_wazp.cosmoDC2.fzb/
+##		|- redmapper.DC2_wazp.DC2/
 
-## PREPARE THE OUTPATH DIRECTORY.
-outpath += f'{runon}/cosmoDC2_{algo}.{runon}/{cosmoDC2_v}_{algo_runon_v}/'
+(first, last) = np.argsort([c[0] for c in requested_cats])
+outpath += f"{'.'.join(requested_cats[first][:-1])}_{'.'.join(requested_cats[last][:-1])}/"
+outpath += f"{requested_cats[first][-1]}_{requested_cats[last][-1]}/"
 
 
 
@@ -130,24 +118,27 @@ if matching_method == 'proximity' :
 
 	outpath += f'proximity_matching_deltaz_{delta_z}_matchradius_{match_radius}mpc/'
 
-	if os.path.exists(outpath) :
-		shutil.rmtree(outpath)
-	os.makedirs(outpath)
+	if not os.path.exists(outpath) :
+		os.makedirs(outpath)
 	print(f'OUTPATH = {outpath}')
 
+	cats_raw = [cats[0].raw(), cats[1].raw()]
 	cosmo = AstroPyCosmology()
-	mt.match_from_config(cats[0], cats[1], match_config, cosmo=cosmo)
-	cats[0].cross_match()
-	cats[1].cross_match()
 
-	cats[0].write(outpath + f'{cats[0].name}.fits', overwrite=True)
-	cats[1].write(outpath + f'{cats[1].name}.fits', overwrite=True)
-	mt.save_matches(cats[0], cats[1], out_dir=outpath, overwrite=True)
+	print('MATCHING...')
+	mt.match_from_config(cats_raw[0], cats_raw[1], match_config, cosmo=cosmo)
+	cats_raw[0].cross_match()
+	cats_raw[1].cross_match()
+
+	print('WRITING MATCHED FILES...')
+	cats_raw[0].write(outpath + f'{cats[0].name}.fits', overwrite=True)
+	cats_raw[1].write(outpath + f'{cats[1].name}.fits', overwrite=True)
+	mt.save_matches(cats_raw[0], cats_raw[1], out_dir=outpath, overwrite=True)
 
 	#to print summary
-	mt.load_matches(cats[0], cats[1], out_dir=outpath)
-	display(cats[0])
-	display(cats[1])
+	mt.load_matches(cats_raw[0], cats_raw[1], out_dir=outpath)
+	#display(cats_raw[0])
+	#display(cats_raw[1])
 
 ## PERFORM MEMBER MATCHING
 if matching_method == 'member' :
@@ -160,14 +151,15 @@ if matching_method == 'member' :
 	  	'minimum_share_fraction':minimum_share_fraction,
 	  	'match_members_kwargs': {'method':'id'},
 	  	}
-	mt.match_from_config(cats[0], cats[1], match_config)
 	
 	outpath += f'member_matching_fshare_{minimum_share_fraction}/'
 	
-	if os.path.exists(outpath) :
-		shutil.rmtree(outpath)
-	os.makedirs(outpath)
+	if not os.path.exists(outpath) :
+		os.makedirs(outpath)
 	print(f'OUTPATH = {outpath}')
+	
+	print('MATCHING...')
+	mt.match_from_config(cats[0], cats[1], match_config)
 	
 	## TO INVESTIGATE MATCHING ISSUES
 	mt.fill_shared_members(cats[0], cats[1])
@@ -176,6 +168,7 @@ if matching_method == 'member' :
 	cats[0].cross_match()
 	cats[1].cross_match()
 	
+	print('WRITING...')
 	cats[0].write(outpath + f'{cats[0].name}.fits', overwrite=True)
 	cats[1].write(outpath + f'{cats[1].name}.fits', overwrite=True)
 	mt.save_matches(cats[0], cats[1], out_dir=outpath, overwrite=True)

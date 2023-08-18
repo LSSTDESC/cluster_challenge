@@ -22,9 +22,13 @@ runon = 'cosmoDC2'
 versions = [
 	{'v':'v0',
 	'cat_name':'cosmoDC2_v1.1.4_redmapper_v0.8.1',
+	'min_richness':0,
+	'description':'redMaPPer run on cosmoDC2 galaxy cluster catalog',},
+	{'v':'v1',
+	'cat_name':'cosmoDC2_v1.1.4_redmapper_v0.8.1',
 	'min_richness':20,
-	'description':'redMaPPer run on cosmoDC2 galaxy cluster catalog',}
-	,]
+	'description':'redMaPPer run on cosmoDC2 galaxy cluster catalog',},
+	]
 
 
 ## SET THE VERSION TO WORK WITH (DEFAULT: v0)

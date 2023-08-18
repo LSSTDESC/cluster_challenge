@@ -2,6 +2,7 @@ import numpy as np
 import GCRCatalogs
 from GCRCatalogs.helpers.tract_catalogs import tract_filter, sample_filter
 from astropy.table import Table
+from astropy.io import fits
 
 #######################################################
 #Copied from cluster_validation package (from M. Ricci)
@@ -41,12 +42,40 @@ def DC2_cat_open(DC2_cat_name, min_halo_mass=1e14, cluster_only=True):
 	quantities_wanted = ['redshift','halo_mass','halo_id','galaxy_id','ra','dec','is_central']#,'baseDC2/sod_halo_mass']
 	if cluster_only :
 	    query = GCRCatalogs.GCRQuery('(is_central == True) & (halo_mass > ' + str(min_halo_mass) +')')
+	    truth_data = Table(gc_truth.get_quantities(quantities_wanted, [query]))
+	    exg = Table(fits.open('/sps/lsst/groups/clusters/dc2/cosmoDC2_v1.1.4/extragal/halos/halos_m200c_13.0.fits')[1].data)
+
+	    ## LOOK AT ONLY THOSE HALOS SHARED BETWEEN CATALOGS
+	    gcr_in_exg = np.isin(truth_data['halo_id'], exg['halo_id'])
+	    exg_in_gcr = np.isin(exg['halo_id'], truth_data['halo_id'])
+	    truth_data = truth_data[gcr_in_exg]
+	    exg = exg[exg_in_gcr]
+
+	    truth_data.sort('halo_id')
+	    exg.sort('halo_id')
+
+	    truth_data['m200c'] = exg['m200c']
 	else :
 	    query = GCRCatalogs.GCRQuery('(halo_mass > ' + str(min_halo_mass) +')')
+	    truth_data = Table(gc_truth.get_quantities(quantities_wanted, [query]))
+	    exg = Table(fits.open('/sps/lsst/groups/clusters/dc2/cosmoDC2_v1.1.4/extragal/halos/halos_m200c_13.0.fits')[1].data)
 	    
-	truth_data = Table(gc_truth.get_quantities(quantities_wanted, [query]))
+	    ## LOOK AT ONLY THOSE HALOS SHARED BETWEEN CATALOGS
+	    gcr_in_exg = np.isin(truth_data['halo_id'], exg['halo_id'])
+	    exg_in_gcr = np.isin(exg['halo_id'], truth_data['halo_id'])
+	    truth_data = truth_data[gcr_in_exg]
+	    exg = exg[exg_in_gcr]
+
+	    truth_data.sort('halo_id')
+	    exg.sort('halo_id')
+
+	    ## m200c IS GIVEN ONLY FOR EACH HALO
+	    ## BUT WE WANT IT FOR EACH MEMBER
+	    ## SO WE HAVE TO MATCH THE HALOS IN ONE CATALOG TO THE MEMBERS IN THE OTHER
+	    indices = [np.argwhere(exg['halo_id'] == ID)[0][0] for ID in truth_data['halo_id']]
+	    truth_data['m200c'] = np.array([exg['m200c'][i] for i in indices])
 	
-	return truth_data, gc_truth
+	return truth_data
 
 
 

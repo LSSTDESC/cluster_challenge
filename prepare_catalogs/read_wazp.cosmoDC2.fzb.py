@@ -16,19 +16,19 @@ from opening_catalogs_functions import *
 
 
 algo = 'wazp'
-runon = 'cosmoDC2'
+runon = 'cosmoDC2.fzb'
 
 
 ## KEEP TRACK OF VERSIONS (FEEL FREE TO ADD additional_comments TO THE VERSIONS IF NEEDED)
 versions = [
         {'v':'v0',
-	'cat_name':'cosmoDC2_v1.1.4_wazp_v1.0_truez',
+	'cat_name':'cosmoDC2_v1.1.4_wazp_v1.0_flexzboost_v1',
 	'min_richness':0,
-	'description':'WaZP run on cosmoDC2 with true redshifts as input',},
+	'description':'WaZP run on cosmoDC2 with redshifts provide by FlexZBoost photoz algorithm (using zmodes)',},
         {'v':'v1',
-	'cat_name':'cosmoDC2_v1.1.4_wazp_v1.0_truez',
+	'cat_name':'cosmoDC2_v1.1.4_wazp_v1.0_flexzboost_v1',
 	'min_richness':20,
-	'description':'WaZP run on cosmoDC2 with true redshifts as input',},
+	'description':'WaZP run on cosmoDC2 with redshifts provide by FlexZBoost photoz algorithm (using zmodes)',},
 	]
 
 
@@ -78,6 +78,7 @@ mb_pmem_sorted = mb_data['member_pmem'][mb_sorted_by_cl]
 indices = np.insert(np.cumsum(cl_data['cluster_nmem']), 0, 0)
 richness = np.array([np.sum(mb_pmem_sorted[indices[i]:indices[i+1]]) for i in range(len(indices)-1)])
 cl_table['mass'] = richness
+
 
 ## WRITE TABLES TO FILES
 cl_table.write(outpath + 'Catalog.fits', overwrite=True)

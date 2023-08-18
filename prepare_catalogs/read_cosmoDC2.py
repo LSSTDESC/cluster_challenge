@@ -50,7 +50,7 @@ os.makedirs(outpath)
 print(f'outpath = {outpath}')
 
 ## MASS CUT
-truth_data, gc_truth = DC2_cat_open(version['cat_name'], version['min_mass'], cluster_only=False)
+truth_data = DC2_cat_open(version['cat_name'], version['min_mass'], cluster_only=False)
 
 ## MAKE TABLES
 cl_data = truth_data[truth_data['is_central']==True]
@@ -61,7 +61,7 @@ cl_table = Table([
 	cl_data['ra'],			## CLUSTER RA: ra_cl
 	cl_data['dec'],			## CLUSTER DEC: dec_cl
 	cl_data['redshift'],		## CLUSTER REDSHIFT: z_cl
-	cl_data['halo_mass']],		## HALO MASS: mass
+	cl_data['m200c']],		## HALO MASS: mass
 	names=('id_cl', 'ra_cl', 'dec_cl', 'z_cl', 'mass'))
 cl_table['log10_mass'] = np.log10(cl_table['mass'])
 
