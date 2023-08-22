@@ -1,0 +1,8 @@
+numpy
+
+[dev]
+coverage
+pylint
+pytest
+pytest-cov
+flake8
