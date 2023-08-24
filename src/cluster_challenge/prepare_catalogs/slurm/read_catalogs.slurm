@@ -1,6 +1,7 @@
 #!/bin/bash
+
 #SBATCH --job-name=reduce_cluster_catalogs
-#SBATCH --output=/pbs/throng/lsst/users/$(whoami)/cluster_challenge/prepare_catalogs/slurm/slurm_output.out
+#SBATCH --output=slurm_output.out
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --mem=64G
@@ -15,25 +16,21 @@ source /pbs/throng/lsst/software/desc/common/miniconda/setup_current_python.sh
 conda activate /sps/lsst/users/rsolomon/conda_envs/desc_dev/
 
 
-python -u /pbs/throng/lsst/users/rsolomon/cluster_challenge/prepare_catalogs/read_cosmoDC2.py v0		## SMALL
-python -u /pbs/throng/lsst/users/rsolomon/cluster_challenge/prepare_catalogs/read_cosmoDC2.py v1		## FULL
+python -u ../read_cosmoDC2.py v0		## SMALL
+python -u ../read_cosmoDC2.py v1		## FULL
 
-python -u /pbs/throng/lsst/users/rsolomon/cluster_challenge/prepare_catalogs/read_wazp.cosmoDC2.py v0		## RICHNESS 0
-python -u /pbs/throng/lsst/users/rsolomon/cluster_challenge/prepare_catalogs/read_wazp.cosmoDC2.py v1		## RICHNESS 20	
+python -u ../read_wazp.cosmoDC2.py v0		## RICHNESS 0
+python -u ../read_wazp.cosmoDC2.py v1		## RICHNESS 20	
 
-python -u /pbs/throng/lsst/users/rsolomon/cluster_challenge/prepare_catalogs/read_wazp.cosmoDC2.fzb.py v0	## RICHNESS 0
-python -u /pbs/throng/lsst/users/rsolomon/cluster_challenge/prepare_catalogs/read_wazp.cosmoDC2.fzb.py v1	## RICHNESS 20	
+python -u ../read_wazp.cosmoDC2.fzb.py v0	## RICHNESS 0
+python -u ../read_wazp.cosmoDC2.fzb.py v1	## RICHNESS 20	
 
-python -u /pbs/throng/lsst/users/rsolomon/cluster_challenge/prepare_catalogs/read_wazp.DC2.py v0		## RICHNESS 0
-python -u /pbs/throng/lsst/users/rsolomon/cluster_challenge/prepare_catalogs/read_wazp.DC2.py v1		## RICHNESS 20
+python -u ../read_wazp.DC2.py v0		## RICHNESS 0
+python -u ../read_wazp.DC2.py v1		## RICHNESS 20
 
-python -u /pbs/throng/lsst/users/rsolomon/cluster_challenge/prepare_catalogs/read_redmapper.cosmoDC2.py v0	## RICHNESS 0
-python -u /pbs/throng/lsst/users/rsolomon/cluster_challenge/prepare_catalogs/read_redmapper.cosmoDC2.py v1	## RICHNESS 20
+python -u ../read_redmapper.cosmoDC2.py v0	## RICHNESS 0
+python -u ../read_redmapper.cosmoDC2.py v1	## RICHNESS 20
 
-python -u /pbs/throng/lsst/users/rsolomon/cluster_challenge/prepare_catalogs/read_redmapper.DC2.py v0		## RICHNESS 0
-python -u /pbs/throng/lsst/users/rsolomon/cluster_challenge/prepare_catalogs/read_redmapper.DC2.py v1		## RICHNESS 20
+python -u ../read_redmapper.DC2.py v0		## RICHNESS 0
+python -u ../read_redmapper.DC2.py v1		## RICHNESS 20
 
-#python -u /pbs/throng/lsst/users/rsolomon/cluster_challenge/prepare_catalogs/read_amico.cosmoDC2.py v0
-#python -u /pbs/throng/lsst/users/rsolomon/cluster_challenge/prepare_catalogs/read_amico.cosmoDC2.py v1
-#
-#python -u /pbs/throng/lsst/users/rsolomon/cluster_challenge/prepare_catalogs/read_amico.cosmoDC2.fzb.py v0

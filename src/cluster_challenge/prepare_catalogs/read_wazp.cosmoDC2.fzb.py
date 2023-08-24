@@ -58,10 +58,9 @@ cl_table = Table([
         cl_data['cluster_id'],		## CLUSTER ID: id_cl
         cl_data['cluster_ra'],		## CLUSTER RA: ra_cl
         cl_data['cluster_dec'],		## CLUSTER DEC: dec_cl
-        cl_data['cluster_z']],		## CLUSTER REDSHIFT: z_cl
-        names=('id_cl', 'ra_cl', 'dec_cl', 'z_cl'))
-        #cl_data['cluster_ngals']],	## CLUSTER RICHNESS: mass (FOR SORTING PURPOSES)
-        #names=('id_cl', 'ra_cl', 'dec_cl', 'z_cl', 'mass'))
+        cl_data['cluster_z'],		## CLUSTER REDSHIFT: z_cl
+        cl_data['cluster_ngals']],	## CLUSTER RICHNESS: mass (FOR SORTING PURPOSES)
+        names=('id_cl', 'ra_cl', 'dec_cl', 'z_cl', 'mass'))
 
 mb_table = Table([
         mb_data['member_id'],		## MEMBER ID: id_mb
@@ -72,12 +71,12 @@ mb_table = Table([
 	mb_data['member_pmem']],	## MEMBER PMEM: pmem
         names=('id_mb', 'clid_mb', 'ra_mb', 'dec_mb', 'z_mb', 'pmem'))
 
-## COMPUTE RICHNESS
-mb_sorted_by_cl = np.argsort(mb_data['member_id_cluster'])[::-1]
-mb_pmem_sorted = mb_data['member_pmem'][mb_sorted_by_cl]
-indices = np.insert(np.cumsum(cl_data['cluster_nmem']), 0, 0)
-richness = np.array([np.sum(mb_pmem_sorted[indices[i]:indices[i+1]]) for i in range(len(indices)-1)])
-cl_table['mass'] = richness
+### COMPUTE RICHNESS
+#mb_sorted_by_cl = np.argsort(mb_data['member_id_cluster'])[::-1]
+#mb_pmem_sorted = mb_data['member_pmem'][mb_sorted_by_cl]
+#indices = np.insert(np.cumsum(cl_data['cluster_nmem']), 0, 0)
+#richness = np.array([np.sum(mb_pmem_sorted[indices[i]:indices[i+1]]) for i in range(len(indices)-1)])
+#cl_table['mass'] = richness
 
 
 ## WRITE TABLES TO FILES

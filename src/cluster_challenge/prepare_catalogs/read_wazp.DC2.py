@@ -60,10 +60,9 @@ cl_table = Table([
         cl_data['ID'],		## CLUSTER ID: id_cl
         cl_data['RA'],          ## CLUSTER RA: ra_cl
         cl_data['DEC'],         ## CLUSTER DEC: dec_cl
-        cl_data['zp']],          ## CLUSTER REDSHIFT: z_cl
-        names=('id_cl', 'ra_cl', 'dec_cl', 'z_cl'))
-        #cl_data['NGALS']],      ## CLUSTER RICHNESS: mass (FOR SORTING PURPOSES)
-        #names=('id_cl', 'ra_cl', 'dec_cl', 'z_cl', 'mass'))
+        cl_data['zp'],          ## CLUSTER REDSHIFT: z_cl
+        cl_data['NGALS']],      ## CLUSTER RICHNESS: mass (FOR SORTING PURPOSES)
+        names=('id_cl', 'ra_cl', 'dec_cl', 'z_cl', 'mass'))
 
 mb_table = Table([
         mb_data['ID_g'],        ## MEMBER ID: id_mb
@@ -74,12 +73,12 @@ mb_table = Table([
         mb_data['PMEM']],       ## MEMBER PMEM: pmem
         names=('id_mb', 'clid_mb', 'ra_mb', 'dec_mb', 'z_mb', 'pmem'))
 
-## COMPUTE RICHNESS
-mb_sorted_by_cl = np.argsort(mb_data['ID_CLUSTER'])[::-1]
-mb_pmem_sorted = mb_data['PMEM'][mb_sorted_by_cl]
-indices = np.insert(np.cumsum(cl_data['NMEM']), 0, 0)
-richness = np.array([np.sum(mb_pmem_sorted[indices[i]:indices[i+1]]) for i in range(len(indices)-1)])
-cl_table['mass'] = richness
+### COMPUTE RICHNESS
+#mb_sorted_by_cl = np.argsort(mb_data['ID_CLUSTER'])[::-1]
+#mb_pmem_sorted = mb_data['PMEM'][mb_sorted_by_cl]
+#indices = np.insert(np.cumsum(cl_data['NMEM']), 0, 0)
+#richness = np.array([np.sum(mb_pmem_sorted[indices[i]:indices[i+1]]) for i in range(len(indices)-1)])
+#cl_table['mass'] = richness
 
 
 ## APPLY min_richness
