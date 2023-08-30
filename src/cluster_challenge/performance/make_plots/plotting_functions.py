@@ -2,6 +2,7 @@
 import numpy as np
 import glob
 import os
+import pickle
 import struct
 
 from scipy.stats import binned_statistic, trim_mean
@@ -20,6 +21,7 @@ def save_figure(fig, outpath, parent_dir, saveas) :
 			os.makedirs(path+parent_dir)
 	fig.savefig(outpath[0] + parent_dir + saveas + '.png', bbox_inches='tight')
 	fig.savefig(outpath[1] + parent_dir + saveas + '.pdf', bbox_inches='tight')
+	pickle.dump(fig, open(outpath[2] + parent_dir + saveas + '.pickle', 'wb'))
 	plt.close(fig)
 
 
@@ -219,15 +221,16 @@ def plot_richness_mass(r1, r2, xlabel=None, ylabel=None, title=None, label=None,
 	p = fig[1].hexbin(r1, r2, gridsize=(int(Nhex*hex_w),int(Nhex*hex_h)), norm=mpl.colors.LogNorm(), edgecolors='none');
 
 	if fit :
-		def richness_mass_relation(x, c0, c1, c2) :
-			return 0.5*c0*((x-c1)*erf(x-c1) + 1/np.sqrt(np.pi)*np.exp(-(x-c1)**2) + (x-c1)) + c2
+		def richness_mass_relation(x, c0, c1, c2, c3) :
+			return 0.5*c0*((x-c2)/c1*erf((x-c2)/c1) + 1/np.sqrt(np.pi)*np.exp(-((x-c2)/c1)**2) + (x-c2)/c1) + c3
 
-		params, pcov = curve_fit(richness_mass_relation, r1, r2, bounds=((0.5,12,0),(5,15,2)))
+		params, pcov = curve_fit(richness_mass_relation, r1, r2, bounds=((0.1,0.1,12,0),(5,5,15,2)))
 		perrs = np.sqrt(np.diag(pcov))
+		slope_err = np.sqrt((perrs[0]/params[1])**2 + (params[0]*perrs[1]/params[1]**2)**2)
 		x4plot = np.linspace(13,16,100)
 		fig[1].plot(x4plot, richness_mass_relation(x4plot, *params), lw=1, c='r');
-		fig[1].plot(x4plot, params[0]*(x4plot - params[1]) + params[2], lw=1, c='r', ls='--',
-			label='$\lambda \propto M_{{200c}}^{{{{{:.2f}}} \pm {{{:.2f}}}}}$'.format(params[0], perrs[0]))
+		fig[1].plot(x4plot, params[0]*(x4plot - params[2])/params[1] + params[3], lw=1, c='r', ls='--',
+			label='$\lambda \propto M_{{200c}}^{{{{{:.2f}}} \pm {{{:.2f}}}}}$'.format(params[0]/params[1], slope_err))
 
 	
 	if title != None :

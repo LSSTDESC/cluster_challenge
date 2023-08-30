@@ -56,7 +56,7 @@ for c in cats :
 
 
 ## IF CATALOGS EXIST, MAKE CORRESPONDING PLOT DIRECTORIES
-outpaths = [outpath+'png_plots/', outpath+'pdf_plots/']
+outpaths = [outpath+'png_plots/', outpath+'pdf_plots/', outpath+'.pickled_plots/']
 for path in outpaths :
 	if not os.path.exists(path) :
 		os.makedirs(path)
@@ -186,8 +186,8 @@ if True :
 
 ## PLOT CLUSTER RICHNESS VS HALO MASS BINNED BY REDSHIFT
 if True :
-	def richness_mass_relation(x, c0, c1, c2) :
-		return 0.5*c0*((x-c1)*erf(x-c1) + 1/np.sqrt(np.pi)*np.exp(-(x-c1)**2) + (x-c1)) + c2
+	def richness_mass_relation(x, c0, c1, c2, c3) :
+		return 0.5*c0*((x-c2)/c1*erf((x-c2)/c1) + 1/np.sqrt(np.pi)*np.exp(-((x-c2)/c1)**2) + (x-c2)/c1) + c3
 	
 	def richness_richness_relation(x, c0, c1) :
 		return c0 + c1*x
@@ -202,7 +202,7 @@ if True :
 				& (cl[index]['z_cl'][matches[index]]<=redshift_bins[i+1])],
 			np.log10(cl[-(index+1)]['mass'][matches[-(index+1)]][(cl[index]['z_cl'][matches[index]]>redshift_bins[i])
 				& (cl[index]['z_cl'][matches[index]]<=redshift_bins[i+1])]),
-			bounds=((0.5,12,0),(5,15,2))) for i in range(len(redshift_bins)-1)]
+			bounds=((0.1,0.1,12,0),(5,5,15,2))) for i in range(len(redshift_bins)-1)]
 		perrs = [np.sqrt(np.diag(ps[1])) for ps in params]
 		
 		fig, axs = plt.subplots(1,len(redshift_bins)-1, figsize=(3.5*(len(redshift_bins)-1),3.5), sharey=True, sharex=True);
