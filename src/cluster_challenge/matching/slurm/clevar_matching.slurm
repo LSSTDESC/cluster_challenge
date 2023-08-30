@@ -14,58 +14,73 @@
 source /pbs/throng/lsst/software/desc/common/miniconda/setup_current_python.sh
 conda activate /sps/lsst/users/rsolomon/conda_envs/desc_dev/
 
+if [ -n $SLURM_JOB_ID ]; then
+        SCRIPT_PATH=$(scontrol show job $SLURM_JOBID | awk -F= '/Command=/{print $2}')
+else
+        SCRIPT_PATH=$(realpath $0)
+fi
+
+SHARED_PATH=$(dirname  $SCRIPT_PATH)
+
+exec > $SHARED_PATH/slurm_output.out
+
+echo $(date -u +%Y%m%d-%H:%M:%S)
+
 
 
 ## MATCH COSMODC2 AND WAZP.COSMODC2
-python -u ../clevar_matching.py cosmoDC2_v1 wazp_cosmoDC2_v0 proximity
-python -u ../clevar_matching.py cosmoDC2_v1 wazp_cosmoDC2_v1 proximity
-python -u ../clevar_matching.py cosmoDC2_v1 wazp_cosmoDC2_v0 member
-python -u ../clevar_matching.py cosmoDC2_v1 wazp_cosmoDC2_v1 member
+python -u $SHARED_PATH/../clevar_matching.py cosmoDC2_v1 wazp_cosmoDC2_v0 proximity
+python -u $SHARED_PATH/../clevar_matching.py cosmoDC2_v1 wazp_cosmoDC2_v1 proximity
+python -u $SHARED_PATH/../clevar_matching.py cosmoDC2_v1 wazp_cosmoDC2_v0 member
+python -u $SHARED_PATH/../clevar_matching.py cosmoDC2_v1 wazp_cosmoDC2_v1 member
 
 ## MATCH COSMODC2 AND WAZP.COSMODC2.FZB
-python -u ../clevar_matching.py cosmoDC2_v1 wazp_cosmoDC2.fzb_v0 proximity
-python -u ../clevar_matching.py cosmoDC2_v1 wazp_cosmoDC2.fzb_v1 proximity
-python -u ../clevar_matching.py cosmoDC2_v1 wazp_cosmoDC2.fzb_v0 member
-python -u ../clevar_matching.py cosmoDC2_v1 wazp_cosmoDC2.fzb_v1 member
+python -u $SHARED_PATH/../clevar_matching.py cosmoDC2_v1 wazp_cosmoDC2.fzb_v0 proximity
+python -u $SHARED_PATH/../clevar_matching.py cosmoDC2_v1 wazp_cosmoDC2.fzb_v1 proximity
+python -u $SHARED_PATH/../clevar_matching.py cosmoDC2_v1 wazp_cosmoDC2.fzb_v0 member
+python -u $SHARED_PATH/../clevar_matching.py cosmoDC2_v1 wazp_cosmoDC2.fzb_v1 member
 
 ## MATCH COSMODC2 AND WAZP.DC2
-python -u ../clevar_matching.py cosmoDC2_v1 wazp_DC2_v0 proximity
-python -u ../clevar_matching.py cosmoDC2_v1 wazp_DC2_v1 proximity
+python -u $SHARED_PATH/../clevar_matching.py cosmoDC2_v1 wazp_DC2_v0 proximity
+python -u $SHARED_PATH/../clevar_matching.py cosmoDC2_v1 wazp_DC2_v1 proximity
 
 ## MATCH COSMODC2 AND REDMAPPER.COSMODC2
-python -u ../clevar_matching.py cosmoDC2_v1 redmapper_cosmoDC2_v0 proximity
-python -u ../clevar_matching.py cosmoDC2_v1 redmapper_cosmoDC2_v1 proximity
-python -u ../clevar_matching.py cosmoDC2_v1 redmapper_cosmoDC2_v0 member
-python -u ../clevar_matching.py cosmoDC2_v1 redmapper_cosmoDC2_v1 member
+python -u $SHARED_PATH/../clevar_matching.py cosmoDC2_v1 redmapper_cosmoDC2_v0 proximity
+python -u $SHARED_PATH/../clevar_matching.py cosmoDC2_v1 redmapper_cosmoDC2_v1 proximity
+python -u $SHARED_PATH/../clevar_matching.py cosmoDC2_v1 redmapper_cosmoDC2_v0 member
+python -u $SHARED_PATH/../clevar_matching.py cosmoDC2_v1 redmapper_cosmoDC2_v1 member
 
 ## MATCH COSMODC2 AND REDMAPPER.DC2
-python -u ../clevar_matching.py cosmoDC2_v1 redmapper_DC2_v0 proximity
-python -u ../clevar_matching.py cosmoDC2_v1 redmapper_DC2_v1 proximity
+python -u $SHARED_PATH/../clevar_matching.py cosmoDC2_v1 redmapper_DC2_v0 proximity
+python -u $SHARED_PATH/../clevar_matching.py cosmoDC2_v1 redmapper_DC2_v1 proximity
 
 ## MATCH WAZP.COSMODC2 AND WAZP.COSMODC2.FZB
-python -u ../clevar_matching.py wazp_cosmoDC2_v0 wazp_cosmoDC2.fzb_v0 proximity
-python -u ../clevar_matching.py wazp_cosmoDC2_v1 wazp_cosmoDC2.fzb_v1 proximity
-python -u ../clevar_matching.py wazp_cosmoDC2_v0 wazp_cosmoDC2.fzb_v0 member
-python -u ../clevar_matching.py wazp_cosmoDC2_v1 wazp_cosmoDC2.fzb_v1 member
+python -u $SHARED_PATH/../clevar_matching.py wazp_cosmoDC2_v0 wazp_cosmoDC2.fzb_v0 proximity
+python -u $SHARED_PATH/../clevar_matching.py wazp_cosmoDC2_v1 wazp_cosmoDC2.fzb_v1 proximity
+python -u $SHARED_PATH/../clevar_matching.py wazp_cosmoDC2_v0 wazp_cosmoDC2.fzb_v0 member
+python -u $SHARED_PATH/../clevar_matching.py wazp_cosmoDC2_v1 wazp_cosmoDC2.fzb_v1 member
 
 ## MATCH WAZP.COSMODC2 AND WAZP.DC2
-python -u ../clevar_matching.py wazp_cosmoDC2_v0 wazp_DC2_v0 proximity
-python -u ../clevar_matching.py wazp_cosmoDC2_v1 wazp_DC2_v1 proximity
+python -u $SHARED_PATH/../clevar_matching.py wazp_cosmoDC2_v0 wazp_DC2_v0 proximity
+python -u $SHARED_PATH/../clevar_matching.py wazp_cosmoDC2_v1 wazp_DC2_v1 proximity
 
 ## MATCH WAZP.COSMODC2.FZB AND WAZP.DC2
-python -u ../clevar_matching.py wazp_cosmoDC2.fzb_v0 wazp_DC2_v0 proximity
-python -u ../clevar_matching.py wazp_cosmoDC2.fzb_v1 wazp_DC2_v1 proximity
+python -u $SHARED_PATH/../clevar_matching.py wazp_cosmoDC2.fzb_v0 wazp_DC2_v0 proximity
+python -u $SHARED_PATH/../clevar_matching.py wazp_cosmoDC2.fzb_v1 wazp_DC2_v1 proximity
 
 ## MATCH REDMAPPER.COSMODC2 AND WAZP.COSMODC2
-python -u ../clevar_matching.py redmapper_cosmoDC2_v0 wazp_cosmoDC2_v0 proximity
-python -u ../clevar_matching.py redmapper_cosmoDC2_v1 wazp_cosmoDC2_v1 proximity
-python -u ../clevar_matching.py redmapper_cosmoDC2_v0 wazp_cosmoDC2_v0 member
-python -u ../clevar_matching.py redmapper_cosmoDC2_v1 wazp_cosmoDC2_v1 member
+python -u $SHARED_PATH/../clevar_matching.py redmapper_cosmoDC2_v0 wazp_cosmoDC2_v0 proximity
+python -u $SHARED_PATH/../clevar_matching.py redmapper_cosmoDC2_v1 wazp_cosmoDC2_v1 proximity
+python -u $SHARED_PATH/../clevar_matching.py redmapper_cosmoDC2_v0 wazp_cosmoDC2_v0 member
+python -u $SHARED_PATH/../clevar_matching.py redmapper_cosmoDC2_v1 wazp_cosmoDC2_v1 member
 
 ## MATCH REDMAPPER.DC2 AND WAZP.DC2
-python -u ../clevar_matching.py redmapper_DC2_v0 wazp_DC2_v0 proximity
-python -u ../clevar_matching.py redmapper_DC2_v1 wazp_DC2_v1 proximity
+python -u $SHARED_PATH/../clevar_matching.py redmapper_DC2_v0 wazp_DC2_v0 proximity
+python -u $SHARED_PATH/../clevar_matching.py redmapper_DC2_v1 wazp_DC2_v1 proximity
 
 ### MATCH COSMODC2 AND AMICO.COSMODC2.FZB
 #python -u ../clevar_matching.py cosmoDC2_v1 amico_cosmoDC2.fzb_v0 proximity
 #python -u ../clevar_matching.py cosmoDC2_v1 amico_cosmoDC2.fzb_v0 member
+
+
+echo $(date -u +%Y%m%d-%H:%M:%S)
