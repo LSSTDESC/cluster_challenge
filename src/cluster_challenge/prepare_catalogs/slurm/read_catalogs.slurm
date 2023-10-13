@@ -1,6 +1,7 @@
 #!/bin/bash
 #SBATCH --job-name=reduce_cluster_catalogs
 ##SBATCH --output=slurm_output.out
+#SBATCH --output=/dev/null --error=/dev/null
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --mem=64G
@@ -27,22 +28,21 @@ exec > $SHARED_PATH/slurm_output.out
 echo $(date -u +%Y%m%d-%H:%M:%S)
 
 
-python -u $SHARED_PATH/../read_cosmoDC2.py v0		## SMALL
-python -u $SHARED_PATH/../read_cosmoDC2.py v1		## FULL
+#python -u $SHARED_PATH/../read_cosmoDC2.py v0
 
-python -u $SHARED_PATH/../read_wazp.cosmoDC2.py v0		## RICHNESS 0
-python -u $SHARED_PATH/../read_wazp.cosmoDC2.py v1		## RICHNESS 20	
+python -u $SHARED_PATH/../read_wazp.cosmoDC2.truez.py v0	## RICHNESS 0
+python -u $SHARED_PATH/../read_wazp.cosmoDC2.truez.py v1	## RICHNESS 20	
 
-python -u $SHARED_PATH/../read_wazp.cosmoDC2.fzb.py v0	## RICHNESS 0
-python -u $SHARED_PATH/../read_wazp.cosmoDC2.fzb.py v1	## RICHNESS 20	
+#python -u $SHARED_PATH/../read_wazp.cosmoDC2.fzb.py v0		## RICHNESS 0
+#python -u $SHARED_PATH/../read_wazp.cosmoDC2.fzb.py v1		## RICHNESS 20	
 
-python -u $SHARED_PATH/../read_wazp.DC2.py v0		## RICHNESS 0
-python -u $SHARED_PATH/../read_wazp.DC2.py v1		## RICHNESS 20
+#python -u $SHARED_PATH/../read_wazp.DC2.fzb.py v0		## RICHNESS 0
+#python -u $SHARED_PATH/../read_wazp.DC2.fzb.py v1		## RICHNESS 20
 
-python -u $SHARED_PATH/../read_redmapper.cosmoDC2.py v0	## RICHNESS 0
-python -u $SHARED_PATH/../read_redmapper.cosmoDC2.py v1	## RICHNESS 20
+#python -u $SHARED_PATH/../read_redmapper.cosmoDC2.py v0		## RICHNESS 0
+#python -u $SHARED_PATH/../read_redmapper.cosmoDC2.py v1		## RICHNESS 20
 
-python -u $SHARED_PATH/../read_redmapper.DC2.py v0		## RICHNESS 0
-python -u $SHARED_PATH/../read_redmapper.DC2.py v1		## RICHNESS 20
+#python -u $SHARED_PATH/../read_redmapper.DC2.py v0		## RICHNESS 0
+#python -u $SHARED_PATH/../read_redmapper.DC2.py v1		## RICHNESS 20
 
 echo $(date -u +%Y%m%d-%H:%M:%S)

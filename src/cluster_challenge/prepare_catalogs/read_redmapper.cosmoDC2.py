@@ -41,7 +41,7 @@ print(f"Producing reduced {algo}.{runon} catalog:  {version['v']} \t {version['c
 
 
 ## OUTPATH
-outpath = f"/sps/lsst/groups/clusters/cluster_comparison_project/before_matching/{runon}/{algo}/{version['v']}/"
+outpath = f"/sps/lsst/groups/clusters/cluster_comparison_project/before_matching/{algo}/{runon}/{version['v']}/"
 
 if os.path.exists(outpath) :
      shutil.rmtree(outpath)
@@ -54,14 +54,6 @@ cl_data, mb_data = redmapper_cat_open(
 	cat_name=version['cat_name'],
 	min_richness=version['min_richness'],)
 
-## REDMAPPER GCR CATALOG DOES NOT HAVE MEMBER REDSHIFTS OR CLUSTER MASS
-## SO WE GET THIS FROM ANOTHER CATALOG
-zs = Table(fits.open('/sps/lsst/groups/desc/shared/xgal/cosmoDC2/addons/redmapper_v1.1.4/cosmoDC2_v1.1.4_mag_run_redmapper_v0.8.1_lgt05_catalog_members.fit')[1].data)
-zs.keep_columns(['id','zred'])
-
-if not np.all(mb_data['id_member'] == zs['id']) :
-	sys.exit(f'The member id does not match those in the xgal catalog from which the member redshifts are obtained. Please check.')
-
 
 ## MAKE TABLES
 cl_table = Table([
@@ -69,17 +61,24 @@ cl_table = Table([
         cl_data['ra'],          	## CLUSTER RA: ra_cl
         cl_data['dec'],         	## CLUSTER DEC: dec_cl
         cl_data['redshift'],           	## CLUSTER REDSHIFT: z_cl
-        cl_data['richness']],      	## CLUSTER RICHNESS: mass (FOR SORTING PURPOSES)
-        names=('id_cl', 'ra_cl', 'dec_cl', 'z_cl', 'mass'))
+        cl_data['richness'],      	## CLUSTER RICHNESS: mass (FOR SORTING PURPOSES)
+        cl_data['richness_err']],      	## CLUSTER RICHNESS ERROR: mass_err
+        names=('id_cl', 'ra_cl', 'dec_cl', 'z_cl', 'mass', 'mass_err'))
+cl_table['snr_cl'] = cl_data['richness'] / cl_data['richness_err']
 
 mb_table = Table([
         mb_data['id_member'],           ## MEMBER ID: id_mb
         mb_data['cluster_id_member'],   ## CORRESPONDING CLUSTER ID: clid_mb
         mb_data['ra_member'],           ## MEMBER RA: ra_mb
         mb_data['dec_member'],          ## MEMBER DEC: dec_mb
-	zs['zred'],			## MEMBER REDSHIFT: z_mb
-        mb_data['p_member']],	        ## MEMBER PMEM: pmem
-        names=('id_mb', 'clid_mb', 'ra_mb', 'dec_mb', 'z_mb', 'pmem'))
+	mb_data['redshift_true_member'],## MEMBER REDSHIFT: z_mb
+        mb_data['p_member'],	        ## MEMBER PMEM: pmem
+	mb_data['mag_g_lsst_member'],	## MEMBER MAGNITUDE g BAND: mag_g
+	mb_data['mag_r_lsst_member'],	## MEMBER MAGNITUDE r BAND: mag_r
+	mb_data['mag_i_lsst_member'],	## MEMBER MAGNITUDE i BAND: mag_i
+	mb_data['mag_z_lsst_member'],	## MEMBER MAGNITUDE z BAND: mag_z
+	mb_data['mag_y_lsst_member']],	## MEMBER MAGNITUDE y BAND: mag_y
+        names=('id_mb', 'clid_mb', 'ra_mb', 'dec_mb', 'z_mb', 'pmem', 'mag_g', 'mag_r', 'mag_i', 'mag_z', 'mag_y'))
 
 ## WRITE TABLES TO FILES
 cl_table.write(outpath + 'Catalog.fits', overwrite=True)
@@ -88,7 +87,7 @@ mb_table.write(outpath + 'Catalog_members.fits', overwrite=True)
 
 ## ADD CURRENT ITERATION OF VERSION DOCUMENTATION TO versions.txt
 from datetime import datetime
-with open(f'/sps/lsst/groups/clusters/cluster_comparison_project/before_matching/{runon}/{algo}/versions.txt', 'a+') as vf :
+with open(f'/sps/lsst/groups/clusters/cluster_comparison_project/before_matching/{algo}/{runon}/versions.txt', 'a+') as vf :
         vf.write(f"\n{datetime.now()}\twriting: {version['v']}\n\t")
         for i in range(len(versions)) :
                 keys = list(versions[i].keys())

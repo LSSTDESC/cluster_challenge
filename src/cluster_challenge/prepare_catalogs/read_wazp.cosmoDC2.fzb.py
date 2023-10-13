@@ -38,11 +38,11 @@ try :
 	version = versions[index]
 except :
 	version = versions[0]
-print(f"Producing reduced {algo}.{runon}catalog:  {version['v']} \t {version['cat_name']}")
+print(f"Producing reduced {algo}.{runon} catalog:  {version['v']} \t {version['cat_name']}")
 
 
 ## OUTPATH
-outpath = f"/sps/lsst/groups/clusters/cluster_comparison_project/before_matching/{runon}/{algo}/{version['v']}/"
+outpath = f"/sps/lsst/groups/clusters/cluster_comparison_project/before_matching/{algo}/{runon}/{version['v']}/"
 
 if os.path.exists(outpath):
      shutil.rmtree(outpath)
@@ -50,33 +50,41 @@ os.makedirs(outpath)
 print(f'outpath = {outpath}')
 
 ## GET DATA
-## POSSIBLE FILTERS: min_richness, min_z_cl, max_z_cl
-cl_data, mb_data = wazp_cosmoDC2_cat_open(version['cat_name'], version['min_richness'],)
+cl_data = Table(fits.open(
+        f"/sps/lsst/groups/clusters/cluster_comparison_project/initial_catalogs/wazp/cosmoDC2.fzb/wazp_cluster.fits")[1].data)
+mb_data = Table(fits.open(
+        f"/sps/lsst/groups/clusters/cluster_comparison_project/initial_catalogs/wazp/cosmoDC2.fzb/wazp_membership.fits")[1].data)
+
 
 ## MAKE TABLES
 cl_table = Table([
-        cl_data['cluster_id'],		## CLUSTER ID: id_cl
-        cl_data['cluster_ra'],		## CLUSTER RA: ra_cl
-        cl_data['cluster_dec'],		## CLUSTER DEC: dec_cl
-        cl_data['cluster_z'],		## CLUSTER REDSHIFT: z_cl
-        cl_data['cluster_ngals']],	## CLUSTER RICHNESS: mass (FOR SORTING PURPOSES)
-        names=('id_cl', 'ra_cl', 'dec_cl', 'z_cl', 'mass'))
+        cl_data['ID'],          ## CLUSTER ID: id_cl
+        cl_data['RA'],          ## CLUSTER RA: ra_cl
+        cl_data['DEC'],         ## CLUSTER DEC: dec_cl
+        cl_data['zp'],          ## CLUSTER REDSHIFT: z_cl
+        cl_data['NGALS'],       ## CLUSTER RICHNESS: mass (FOR SORTING PURPOSES)
+        cl_data['E_NGALS'],     ## CLUSTER RICHNESS ERROR: mass_err
+	cl_data['SNR']],	## CLUSTER SNR: snr_cl
+        names=('id_cl', 'ra_cl', 'dec_cl', 'z_cl', 'mass', 'mass_err', 'snr_cl'))
 
 mb_table = Table([
-        mb_data['member_id'],		## MEMBER ID: id_mb
-        mb_data['member_id_cluster'],	## CORRESPONDING CLUSTER ID: clid_mb
-        mb_data['member_ra'],		## MEMBER RA: ra_mb
-        mb_data['member_dec'],		## MEMBER DEC: dec_mb
-        mb_data['member_z'],		## MEMBER REDSHIFT: z_mb
-	mb_data['member_pmem']],	## MEMBER PMEM: pmem
-        names=('id_mb', 'clid_mb', 'ra_mb', 'dec_mb', 'z_mb', 'pmem'))
+        mb_data['ID_g'],        ## MEMBER ID: id_mb
+        mb_data['ID_CLUSTER'],  ## CORRESPONDING CLUSTER ID: clid_mb
+        mb_data['RA'],          ## MEMBER RA: ra_mb
+        mb_data['DEC'],         ## MEMBER DEC: dec_mb
+        mb_data['ZP'],          ## MEMBER REDSHIFT: z_mb
+        mb_data['PMEM'],        ## MEMBER PMEM: pmem
+	mb_data['mag_g'],	## MEMBER MAGNITUDE g BAND: mag_g
+	mb_data['mag_r'],	## MEMBER MAGNITUDE r BAND: mag_r
+	mb_data['mag_i'],	## MEMBER MAGNITUDE i BAND: mag_i
+	mb_data['mag_z'],	## MEMBER MAGNITUDE z BAND: mag_z
+	mb_data['mag_y']],	## MEMBER MAGNITUDE y BAND: mag_y
+        names=('id_mb', 'clid_mb', 'ra_mb', 'dec_mb', 'z_mb', 'pmem', 'mag_g', 'mag_r', 'mag_i', 'mag_z', 'mag_y'))
 
-### COMPUTE RICHNESS
-#mb_sorted_by_cl = np.argsort(mb_data['member_id_cluster'])[::-1]
-#mb_pmem_sorted = mb_data['member_pmem'][mb_sorted_by_cl]
-#indices = np.insert(np.cumsum(cl_data['cluster_nmem']), 0, 0)
-#richness = np.array([np.sum(mb_pmem_sorted[indices[i]:indices[i+1]]) for i in range(len(indices)-1)])
-#cl_table['mass'] = richness
+
+## APPLY min_richness
+cl_table = cl_table[cl_table['mass'] > version['min_richness']]
+mb_table = mb_table[np.isin(mb_table['clid_mb'], cl_table['id_cl'])]
 
 
 ## WRITE TABLES TO FILES
@@ -86,7 +94,7 @@ mb_table.write(outpath + 'Catalog_members.fits', overwrite=True)
 
 ## ADD CURRENT ITERATION OF VERSION DOCUMENTATION TO versions.txt
 from datetime import datetime
-with open(f'/sps/lsst/groups/clusters/cluster_comparison_project/before_matching/{runon}/{algo}/versions.txt', 'a+') as vf :
+with open(f'/sps/lsst/groups/clusters/cluster_comparison_project/before_matching/{algo}/{runon}/versions.txt', 'a+') as vf :
 	vf.write(f"\n{datetime.now()}\twriting: {version['v']}\n\t")
 	for i in range(len(versions)) :
 		keys = list(versions[i].keys())

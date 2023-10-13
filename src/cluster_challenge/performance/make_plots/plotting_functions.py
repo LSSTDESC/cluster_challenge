@@ -14,19 +14,58 @@ from scipy.optimize import minimize, curve_fit
 from scipy.special import erf
 
 
-def save_figure(fig, outpath, parent_dir, saveas) :
-	for path in outpath :
-		if not os.path.exists(path+parent_dir) :
-			print(f'Making directory:\t{path}{parent_dir}')
-			os.makedirs(path+parent_dir)
-	fig.savefig(outpath[0] + parent_dir + saveas + '.png', bbox_inches='tight')
-	fig.savefig(outpath[1] + parent_dir + saveas + '.pdf', bbox_inches='tight')
-	pickle.dump(fig, open(outpath[2] + parent_dir + saveas + '.pickle', 'wb'))
+
+def save_figure(fig, outpath, saveas, png=True, pdf=True, pkl=True) :
+	ftypes = ['png', 'pdf', '.pickle']
+	outpaths = np.array([f"{outpath}{ftype}/" for ftype in ftypes])[[png, pdf, pkl]]
+	for path in outpaths :
+		if not os.path.exists(path) :
+			print(f"Making directory:\t{path}")
+			os.makedirs(path)
+	if png :
+		fig.savefig(outpaths[0] + saveas + f".{ftypes[0]}", bbox_inches='tight')
+	if pdf :
+		fig.savefig(outpaths[1] + saveas + f".{ftypes[1]}", bbox_inches='tight')
+	if pkl :
+		pickle.dump(fig, open(outpaths[2] + saveas + f"{ftypes[2]}", 'wb'))
 	plt.close(fig)
 
 
-def update_index_file_for_html_display(outpath, category, description) :
-	files = list(filter(os.path.isfile, glob.glob(f'{outpath}png_plots/{category}/*')))
+
+def make_inpath(cats, mt_method, mt_pref, mt_params, base='/sps/lsst/groups/clusters/cluster_comparison_project/after_matching/') :
+
+	(first, last) = np.argsort([c[0] for c in cats])
+
+	inpath  = base
+	inpath += f"{'.'.join(cats[first][:-1])}_{'.'.join(cats[last][:-1])}/"          ## EXAMPLE INPUT: cosmoDC2_v1 wazp_cosmoDC2.fzb_v0 proximity
+	inpath += f"{cats[first][-1]}_{cats[last][-1]}/"                                ## RESULTING INPATH: /cosmoDC2_wazp.cosmoDC2.fzb/v1_v0/
+	
+	if mt_method == 'proximity' :
+	        inpath += f"proximity_matching/deltaz_{mt_params[0]}_matchradius_{mt_params[1]}mpc_pref_{mt_pref}/"
+	else :
+	        inpath += f"member_matching/fshare_{mt_params[0]}_pref_{mt_pref}/"
+	
+	return inpath
+
+
+def make_outpath(cats, mt_method, mt_pref, mt_params, base='/sps/lsst/users/rsolomon/web/desc/cluster_comparison_project/') :
+
+	(first, last) = np.argsort([c[0] for c in cats])
+
+	outpath  = base
+	outpath += f"{'.'.join(cats[first][:-1])}_{'.'.join(cats[last][:-1])}/"
+	outpath += f"{cats[first][-1]}_{cats[last][-1]}/"
+	
+	if mt_method == 'proximity' :
+	        outpath += f"proximity_matching/deltaz_{mt_params[0]}_matchradius_{mt_params[1]}mpc_pref_{mt_pref}/"
+	else :
+	        outpath += f"member_matching/fshare_{mt_params[0]}_pref_{mt_pref}/"
+
+	return outpath
+
+
+def update_index_file_for_html_display(outpath, description) :
+	files = list(filter(os.path.isfile, glob.glob(f'{outpath}png/*')))
 	files.sort(key=lambda x: os.path.getmtime(x))
 
 	width = []
@@ -38,9 +77,10 @@ def update_index_file_for_html_display(outpath, category, description) :
 			width.append(w)
 			height.append(h)
 
-	if not os.path.exists(f'{outpath}png_plots/{category}/display/') :
-		print(f'Making directory:\t{outpath}png_plots/{category}/display/')
-		os.makedirs(f'{outpath}png_plots/{category}/display/')
+	display_path = f"{outpath}png/display/"
+	if not os.path.exists(display_path) :
+		print(f'Making directory:\t{display_path}')
+		os.makedirs(display_path)
 
 	files = [f"https://me.lsst.eu/rsolomon{file.removeprefix('/sps/lsst/users/rsolomon/web')}" for file in files]
 
@@ -53,7 +93,7 @@ def update_index_file_for_html_display(outpath, category, description) :
 
 	text += f'</html>'
 
-	with open(f'{outpath}png_plots/{category}/display/index.html', 'w') as f :
+	with open(f'{display_path}index.html', 'w') as f :
 		f.write(text)
 	
 
@@ -100,7 +140,7 @@ def plot_on_sky(ra, dec, size=0.3, alpha=0.05, color='C0', title=None, label=Non
 		axs.set_xlabel('RA', loc='right')
 		axs.set_ylabel('DEC', loc='top')
 		if saveas != None :
-			save_figure(fig, outpath, 'onsky/', saveas)
+			save_figure(fig, outpath+'onsky/', saveas)
 			#for path in outpath :
 			#	if not os.path.exists(path+'onsky/') :
 			#		os.makedirs(path+'onsky/')
@@ -144,7 +184,7 @@ def plot_redshift_hist(zs, bin_width=0.05, fill=False, color='C0', title=None, l
 		if title != None :
 			fig[0].text(0,0, title, va='baseline', ha='left', size='small')
 		if saveas != None :
-			save_figure(fig[0], outpath, 'redshifts/', saveas)
+			save_figure(fig[0], outpath+'redshifts/', saveas)
 		if show :
 			plt.show()
 
@@ -170,7 +210,7 @@ def plot_redshift_zVSz(z1, z2, xlabel=None, ylabel=None, diagonal=False, title=N
 	axs.set_xlim(0,1.5)
 	axs.set_ylim(0,1.5)
 	if saveas != None :
-		save_figure(fig, outpath, 'redshifts/', saveas)
+		save_figure(fig, outpath+'redshifts/', saveas)
 	if show :
 		plt.show()
 
@@ -203,7 +243,7 @@ def plot_redshift_std_and_mean(z1, z2, Nbins=50, label=None, title=None, outpath
 		fig[1][1].set_xlabel('truez', loc='right')
 		fig[1][1].set_ylabel('STD', loc='top')
 		if saveas != None :
-			save_figure(fig[0], outpath, 'redshifts/', saveas)
+			save_figure(fig[0], outpath+'redshifts/', saveas)
 			#for path in outpath :
 			#	if not os.path.exists(path+'redshifts/') :
 			#		os.makedirs(path+'redshifts/')
@@ -213,18 +253,18 @@ def plot_redshift_std_and_mean(z1, z2, Nbins=50, label=None, title=None, outpath
 			plt.show()
 
 
-def plot_richness_mass(r1, r2, xlabel=None, ylabel=None, title=None, label=None, fit=False, outpath=None, saveas=None, show=False,) :
+def plot_richness_mass(x, y, yerr, xlabel=None, ylabel=None, title=None, label=None, fit=False, outpath=None, saveas=None, show=False) :
 	fig = plt.subplots(1,1, figsize=(3.5,3.5))
 	fig[1].ticklabel_format(axis='both', style='scientific', scilimits=[-2,2])
 	
-	Nhex = 30
-	p = fig[1].hexbin(r1, r2, gridsize=(int(Nhex*hex_w),int(Nhex*hex_h)), norm=mpl.colors.LogNorm(), edgecolors='none');
+	Nhex = 60
+	p = fig[1].hexbin(x, y, gridsize=Nhex, norm=mpl.colors.LogNorm(), edgecolors='none');
 
 	if fit :
 		def richness_mass_relation(x, c0, c1, c2, c3) :
 			return 0.5*c0*((x-c2)/c1*erf((x-c2)/c1) + 1/np.sqrt(np.pi)*np.exp(-((x-c2)/c1)**2) + (x-c2)/c1) + c3
 
-		params, pcov = curve_fit(richness_mass_relation, r1, r2, bounds=((0.1,0.1,12,0),(5,5,15,2)))
+		params, pcov = curve_fit(richness_mass_relation, x, y, sigma=yerr, bounds=((0.1,0.1,12,0),(5,5,15,2)))
 		perrs = np.sqrt(np.diag(pcov))
 		slope_err = np.sqrt((perrs[0]/params[1])**2 + (params[0]*perrs[1]/params[1]**2)**2)
 		x4plot = np.linspace(13,16,100)
@@ -243,7 +283,7 @@ def plot_richness_mass(r1, r2, xlabel=None, ylabel=None, title=None, label=None,
 	fig[1].set_xlim(13, 15.5)
 	fig[1].set_ylim(0.25, 2.5)
 	if saveas != None :
-		save_figure(fig[0], outpath, 'richness/', saveas)
+		save_figure(fig[0], outpath+'richness/', saveas)
 		#for path in outpath :
 		#	if not os.path.exists(path+'richness/') :
 		#		os.makedirs(path+'richness/')
@@ -282,7 +322,7 @@ def plot_richness_richness(r1, r2, xlabel=None, ylabel=None, title=None, label=N
 	fig[1].set_xlim(0.5, 3)
 	fig[1].set_ylim(0.25,3)
 	if saveas != None :
-		save_figure(fig[0], outpath, 'richness/', saveas)
+		save_figure(fig[0], outpath+'richness/', saveas)
 		#for path in outpath :
 		#	if not os.path.exists(path+'richness/') :
 		#		os.makedirs(path+'richness/')
