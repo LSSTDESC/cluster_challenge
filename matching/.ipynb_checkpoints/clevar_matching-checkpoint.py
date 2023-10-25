@@ -25,6 +25,7 @@ inpath  = '/sps/lsst/groups/clusters/cluster_comparison_project/before_matching/
 outpath = '/sps/lsst/groups/clusters/cluster_comparison_project/after_matching/'
 
 
+
 ## COLLECT THE CATALOGS TO MATCH.
 cats = []
 if np.any([c[0] == 'cosmoDC2' for c in requested_cats]) :
