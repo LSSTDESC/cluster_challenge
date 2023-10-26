@@ -110,11 +110,11 @@ for c in requested_cats :
 
 
 ## SET ORDERING OF CATALOG NAMBES TO BE CONSISTENT IN DIRECTORIES.
-if np.any([c[0] == 'cosmoDC2' for c in cats]) :
-        first = np.argwhere(np.array([c[0] == 'cosmoDC2' for c in cats]))[0][0]
-        last  = np.argwhere(np.array([c[0] != 'cosmoDC2' for c in cats]))[0][0]
+if np.any([c[0] == 'cosmoDC2' for c in requested_cats]) :
+        first = np.argwhere(np.array([c[0] == 'cosmoDC2' for c in requested_cats]))[0][0]
+        last  = np.argwhere(np.array([c[0] != 'cosmoDC2' for c in requested_cats]))[0][0]
 else :
-        (first, last) = np.argsort([c[0] for c in cats])
+        (first, last) = np.argsort([c[0] for c in requested_cats])
 outpath += f"{'.'.join(requested_cats[first][:-1])}_{'.'.join(requested_cats[last][:-1])}/"
 outpath += f"{requested_cats[first][-1]}_{requested_cats[last][-1]}/"
 
