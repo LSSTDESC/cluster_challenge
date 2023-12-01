@@ -13,15 +13,22 @@ import pandas as pd
 #print("performing cut" + str(cut))
 # ---Paths---#
 
-#CosmoDC2
+###CosmoDC2
+####magi
+#cl_inpath = '/sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/raw_amico_cats/cosmoDC2_photoz_flexzboost_v1_iband/map_detections_refined_noBuffer_all_noDoubles.fits'
+#mb_inpath = '/sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/amico_cats/amico_map_associations_flxzb_mag/mag_i/all_maps.fits'
+#outpath = '/sps/lsst/groups/clusters/cluster_comparison_project/before_matching/amico/cosmoDC2.fzb/magi/'
+####magy
 cl_inpath = '/sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/raw_amico_cats/cosmoDC2_photoz_flexzboost_v1_yband/map_detections_refined_noBuffer_all_noDoubles_handFix.fits'
 mb_inpath = '/sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/amico_cats/amico_map_associations_flxzb_mag/mag_y/all_maps.fits'
 outpath = '/sps/lsst/groups/clusters/cluster_comparison_project/before_matching/amico/cosmoDC2.fzb/magy/'
 
-#DC2
+###DC2
+####magy
 #cl_inpath = '/sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/raw_amico_cats/DC2_v0_yband/map_detections_refined_noBuffer_all_noDoubles.fits'
 #mb_inpath = '/sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/amico_cats/DC2/mag_y/all_maps.fits'
-#outpath = '/sps/lsst/groups/clusters/cluster_comparison_project/before_matching/amico/DC2.fzb.magy/sn' + str(cut) + '/'
+#outpath = '/sps/lsst/groups/clusters/cluster_comparison_project/before_matching/amico/DC2.fzb.magy/v0/'
+
 #print('Reading clusters at', cl_inpath, '\nReading members at', mb_inpath, '\nSaving table at', outpath)
 
 

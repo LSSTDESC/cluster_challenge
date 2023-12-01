@@ -13,11 +13,27 @@ start = time.time()
 
 # ---Paths---#
 
-#cdc2
-inpath = "/sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/raw_amico_cats/cosmoDC2_photoz_flexzboost_v1_yband/DETECTIONS_DERIVED/"
-#DC2
+###CosmoDC2
+neighbours_path = '/sps/lsst/groups/clusters/amico_validation_project/catalogs/CosmoDC2/cosmodc2_neighbours.fits'
+healpath = '/sps/lsst/users/tguillem/web/clusters/catalogs/cosmoDC2_photoz_flexzboost/v1/'
+####iband
+inpath = "/sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/raw_amico_cats/cosmoDC2_photoz_flexzboost_v1_iband/DETECTIONS_DERIVED/"
+outpath = '/sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/amico_cats/amico_map_associations_flxzb_mag/mag_i/'
+cl_inpath = '/sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/raw_amico_cats/cosmoDC2_photoz_flexzboost_v1_iband/map_detections_refined_noBuffer_all_noDoubles.fits'
+####yband
+#inpath = "/sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/raw_amico_cats/cosmoDC2_photoz_flexzboost_v1_yband/DETECTIONS_DERIVED/"
+#outpath = '/sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/amico_cats/amico_map_associations_flxzb_mag/mag_y/'
+#cl_inpath = '/sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/raw_amico_cats/cosmoDC2_photoz_flexzboost_v1_yband/map_detections_refined_noBuffer_all_noDoubles_handFix.fits'
+
+
+###DC2
+####yband
 #inpath = '/sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/raw_amico_cats/DC2_v0_yband/output/DETECTIONS_DERIVED/'
-outpath = '/sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/amico_cats/amico_map_associations_flxzb_mag/mag_y/'
+#outpath = '/sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/amico_cats/DC2/mag_y/'
+#neighbours_path = '/sps/lsst/groups/clusters/amico_validation_project/catalogs/DC2/dc2_neighbours.fits'
+#healpath = "/sps/lsst/users/tguillem/web/clusters/catalogs/DC2_photoz_flexzboost/v0/"
+#cl_inpath = '/sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/raw_amico_cats/DC2_v0_yband/map_detections_refined_noBuffer_all_noDoubles.fits'
+
 print('\nCatalog loaded at', inpath, 'and will be saved in', outpath)
 
 curr_tile = str(sys.argv[1])
@@ -28,25 +44,17 @@ if not os.path.exists(outpath):
      
 
 # ---Reading tables---#
-
+print("\nReading members table")
 mbn = Table.read(inpath + str(curr_tile) + '_map_associations_noBuffer.fits')
 
-#CosmoDC2
-tile_t = Table.read('/sps/lsst/groups/clusters/amico_validation_project/catalogs/CosmoDC2/cosmodc2_neighbours.fits')
-#DC2
-#tile_t = Table.read("/sps/lsst/groups/clusters/amico_validation_project/catalogs/DC2/dc2_neighbours.fits")
+tile_t = Table.read(neighbours_path)
 
 tile_l = tile_t[tile_t['tile']==int(curr_tile)]['list_of_neighbour_tiles'][0].split(',') #Because neighbours listed w/ comas in a long string --> need to convert it to a list
 for i in range(len(tile_l)):
     tile_l[i] = int(tile_l[i])
-print('Neighbour healpix list', ':', tile_l, '\nNow merging all input healpix files')
-#CosmoDC2
-healpath = '/sps/lsst/users/tguillem/web/clusters/catalogs/cosmoDC2_photoz_flexzboost/v1/'
-#DC2
-#healpath = "/sps/lsst/users/tguillem/web/clusters/catalogs/DC2_photoz_flexzboost/v0/"
+print('Neighbour healpix list (including current healpix)', ':', tile_l, '\nNow merging all input healpix files')
 
 large_heal = Table.read(healpath + str(tile_l[0]) + '/galaxies.fits')
-
 for tile in tile_l[1:]:
     heal = Table.read(healpath + str(tile) + '/galaxies.fits')
     large_heal = vstack([large_heal, heal])
@@ -123,9 +131,7 @@ print('Now adding clusters informations...')
 
 
 # ---Paths---#
-cl_inpath = '/sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/raw_amico_cats/cosmoDC2_photoz_flexzboost_v1_yband/map_detections_refined_noBuffer_all_noDoubles_handFix.fits'
-#DC2
-#cl_inpath = '/sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/raw_amico_cats/DC2_v0_yband/map_detections_refined_noBuffer_all_noDoubles.fits'
+
 print('Reading clusters at', cl_inpath, '\nSaving table at', outpath)  
 
 
@@ -149,13 +155,13 @@ new_table = {'mb_id' : [], 'cl_id' : [], 'prob' : [], 'f_prob' : [], 'uid' : [],
 
 # ---Creating the table---#
 
-for cluster_id in amico_cl_data[amico_cl_data['TILE']==int(tile)]['ID']: 
+for cluster_id in amico_cl_data[amico_cl_data['TILE']==int(curr_tile)]['ID']: 
     if cluster_id in table['ASSOC_ID']:
         table_cdt = table[(table['ASSOC_ID']==cluster_id)]
         mb_id, cl_id, prob, f_prob = table_cdt['GALID'], table_cdt['ASSOC_ID'], table_cdt['ASSOC_PROB'], table_cdt['FIELD_PROB']
         mag_g, mag_i, mag_r, mag_z, mag_y = table_cdt['mag_g'], table_cdt['mag_i'], table_cdt['mag_r'], table_cdt['mag_z'], table_cdt['mag_y']
         ra, dec, z = table_cdt['ra'], table_cdt['dec'], table_cdt['redshift']
-        amico_cl = amico_cl_data[(amico_cl_data['TILE'] == int(tile)) * (amico_cl_data['ID'] == cluster_id)]
+        amico_cl = amico_cl_data[(amico_cl_data['TILE'] == int(curr_tile)) * (amico_cl_data['ID'] == cluster_id)]
         lenght = np.ones(len(table_cdt['ASSOC_ID']))
         uid, lambstar, sn = int(amico_cl['UID'][0])*lenght, amico_cl['LAMBSTAR'][0]*lenght, amico_cl['SN'][0]*lenght
         new_table['mb_id'] += list(mb_id)

@@ -18,15 +18,16 @@ echo "GO1"
 #cd /pbs/home/n/namourou/workspace/cluster_challenge/pre_processing/AMICO/
 #cd /pbs/home/n/namourou/workspace/cluster_challenge/prepare_catalogs/
 #cd /pbs/home/n/namourou/workspace/cluster_challenge/validation/
-cd /pbs/home/n/namourou/workspace/cluster_challenge/matching/
+#cd /pbs/home/n/namourou/workspace/cluster_challenge/matching/
 #cd /pbs/home/n/namourou/workspace/cluster_challenge/performance/
+cd /pbs/home/n/namourou/workspace/side_codes/clusters/DC2/DC2_mask/production/
 echo "GO2"
 
 #python galaxy_selection.py ${healpix_pixel}
 #python Skysim_selection.py ${healpix_pixel}
 #python read_cosmoDC2.py
 #python read_cosmoDC2_matching_skysim.py
-python clevar_matching.py cosmoDC2_v0 amico_cosmoDC2.fzb_magy proximity
+#python clevar_matching.py cosmoDC2_v0 amico_cosmoDC2.fzb_magy proximity
 #python selection_function_halos.py
 #python selection_function_halos_global_fit.py
 #python cosmoDC2_skysim5000_matching.py
@@ -40,6 +41,7 @@ python clevar_matching.py cosmoDC2_v0 amico_cosmoDC2.fzb_magy proximity
 #python completeness_2D.py amico_DC2/mag_y/ p_matching
 #python purity.py amico_DC2/mag_y/ p_matching
 #python purity_versus_completeness.py cosmoDC2_DC2.masked amico_DC2.fzb.magy_v0 proximity
+python mask_dc2_holes.py ${healpix_pixel}
 
 echo "GO3"
 

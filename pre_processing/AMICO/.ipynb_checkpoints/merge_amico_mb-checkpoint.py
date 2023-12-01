@@ -9,10 +9,14 @@ import os
 
 
 # ---Paths---#
-#cosmoDC2
-inpath = '/sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/amico_cats/amico_map_associations_flxzb_mag/mag_y/'
+###CosmoDC2
+####magi
+inpath = '/sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/amico_cats/amico_map_associations_flxzb_mag/mag_i/'
+####magy
+#inpath = '/sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/amico_cats/amico_map_associations_flxzb_mag/mag_y/'
 
-#DC2
+###DC2
+####magy
 #inpath = '/sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/amico_cats/DC2/mag_y/'
 
 outpath = inpath
