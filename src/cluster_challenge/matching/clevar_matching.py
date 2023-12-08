@@ -3,8 +3,7 @@
 import numpy as np
 from astropy import units as u
 from astropy.io import fits
-import sys
-import os
+import os, sys, yaml
 import json
 import shutil
 
@@ -17,23 +16,22 @@ from clevar.cosmology import AstroPyCosmology
 from IPython.display import display
 
 
+config = sys.argv[1]
+with open(config) as fstream :
+	cfg = yaml.safe_load(fstream)
 
-requested_cats = [sys.argv[1].split('_'), sys.argv[2].split('_')]
-matching_method = sys.argv[3]
-matching_preference = sys.argv[4]
 
-inpath  = '/sps/lsst/groups/clusters/cluster_comparison_project/before_matching/'
-outpath = '/sps/lsst/groups/clusters/cluster_comparison_project/after_matching/'
+requested_cats = [cfg['cats']['cat1'].split('.'), cfg['cats']['cat2'].split('.')]
+mt_method = cfg['matching']['method']
+mt_preference = cfg['matching']['pref']
+
+inpath  = cfg['paths']['matching']['in']
+outpath = cfg['paths']['matching']['out']
 
 
 
 ## COLLECT THE CATALOGS TO MATCH.
 cats = []
-if np.any([c[0] == 'cosmoDC2' for c in requested_cats]) :
-	matched_to_cosmoDC2 = True
-else :
-	matched_to_cosmoDC2 = False
-
 
 for c in requested_cats :
 	if c[0] == 'cosmoDC2' :
@@ -50,12 +48,12 @@ for c in requested_cats :
 			'ra':'ra_mb',
 			'dec':'dec_mb',
 			'z':'z_mb',
-			'pmem':'pmem',
-			'mag_g':'mag_g',
-			'mag_r':'mag_r',
-			'mag_i':'mag_i',
-			'mag_z':'mag_z',
-			'mag_y':'mag_y'}
+			'pmem':'pmem',}
+			#'mag_g':'mag_g',
+			#'mag_r':'mag_r',
+			#'mag_i':'mag_i',
+			#'mag_z':'mag_z',
+			#'mag_y':'mag_y'}
 
 		print(f"loading from {inpath}halos/cosmoDC2/{c[1]}/...")
 		if os.path.exists(inpath + f'halos/cosmoDC2/{c[1]}/') :
@@ -80,17 +78,17 @@ for c in requested_cats :
 			'ra':'ra_mb',
 			'dec':'dec_mb',
 			'z':'z_mb',
-			'pmem':'pmem',
-			'mag_g':'mag_g',
-			'mag_r':'mag_r',
-			'mag_i':'mag_i',
-			'mag_z':'mag_z',
-			'mag_y':'mag_y'}
+			'pmem':'pmem',}
+			#'mag_g':'mag_g',
+			#'mag_r':'mag_r',
+			#'mag_i':'mag_i',
+			#'mag_z':'mag_z',
+			#'mag_y':'mag_y'}
 		
 		print(f"loading from {inpath}{c[0]}/{c[1]}/{c[2]}/...")
-		if os.path.exists(inpath + f'{c[0]}/{c[1]}/{c[2]}/') :
-			cat = ClCatalog.read(inpath + f'{c[0]}/{c[1]}/{c[2]}/Catalog.fits', f'{c[0]}.{c[1]}.{c[2]}', tags=cltags)
-			cat.read_members(inpath + f'{c[0]}/{c[1]}/{c[2]}/Catalog_members.fits', tags=mbtags)
+		if os.path.exists(inpath + f'{c[0]}/{c[1]}.{c[2]}/') :
+			cat = ClCatalog.read(inpath+f'{c[0]}/{c[1]}.{c[2]}/{c[3]}/Catalog.fits', f'{c[0]}.{c[1]}.{c[2]}', tags=cltags)
+			cat.read_members(inpath + f'{c[0]}/{c[1]}.{c[2]}/{c[3]}/Catalog_members.fits', tags=mbtags)
 			cats.append(cat)
 		else :
 			sys.exit(f"The catalog {'_'.join(c)} does not exist.")
@@ -109,32 +107,26 @@ for c in requested_cats :
 ##		|- cosmoDC2_wazp.DC2/
 
 
-## SET ORDERING OF CATALOG NAMBES TO BE CONSISTENT IN DIRECTORIES.
-if np.any([c[0] == 'cosmoDC2' for c in requested_cats]) :
-        first = np.argwhere(np.array([c[0] == 'cosmoDC2' for c in requested_cats]))[0][0]
-        last  = np.argwhere(np.array([c[0] != 'cosmoDC2' for c in requested_cats]))[0][0]
-else :
-        (first, last) = np.argsort([c[0] for c in requested_cats])
-outpath += f"{'.'.join(requested_cats[first][:-1])}_{'.'.join(requested_cats[last][:-1])}/"
-outpath += f"{requested_cats[first][-1]}_{requested_cats[last][-1]}/"
+outpath += f"{'.'.join(requested_cats[0][:-1])}_{'.'.join(requested_cats[1][:-1])}/"
+outpath += f"{requested_cats[0][-1]}_{requested_cats[1][-1]}/"
 
 
 
 ## PERFORM PROXIMITY MATCHING
-if matching_method == 'proximity' :
+if mt_method == 'proximity' :
 	mt = ProximityMatch()
 
-	delta_z = float(sys.argv[5])#0.05
-	match_radius =  float(sys.argv[6])#1 ## in Mpc
+	delta_z = float(cfg['matching']['delta_z'])
+	match_radius = float(cfg['matching']['delta_z'])	## in Mpc
 	match_config = {
-		'type':'cross',				## OPTIONS: cross, cat1, cat2
-		'which_radius':'max',			## OPTIONS: cat1, cat2, min, max
-		'preference':matching_preference,	## OPTIONS: more_massive, angular_proximity, redshift_proximity
+		'type':'cross',			## OPTIONS: cross, cat1, cat2
+		'which_radius':'max',		## OPTIONS: cat1, cat2, min, max
+		'preference':mt_preference,	## OPTIONS: more_massive, angular_proximity, redshift_proximity
 		'catalog1':{'delta_z':delta_z, 'match_radius':f'{match_radius} mpc'},
 		'catalog2':{'delta_z':delta_z, 'match_radius':f'{match_radius} mpc'}
 		}
 
-	outpath += f'proximity_matching/deltaz_{delta_z}_matchradius_{match_radius}mpc_pref_{matching_preference}/'
+	outpath += f'proximity_matching/deltaz_{delta_z}_matchradius_{match_radius}mpc_pref_{mt_preference}/'
 
 	if not os.path.exists(outpath) :
 		os.makedirs(outpath)
@@ -159,18 +151,18 @@ if matching_method == 'proximity' :
 	#display(cats_raw[1])
 
 ## PERFORM MEMBER MATCHING
-if matching_method == 'member' :
+if mt_method == 'member' :
 	mt = MembershipMatch()
 	
-	minimum_share_fraction = float(sys.argv[5])
+	minimum_share_fraction = float(cfg['matching']['minimum_share_fraction'])
 	match_config = {
-	  	'type':'cross',				## OPTIONS: cross, cat1, cat2
-	  	'preference':matching_preference,	## OPTIONS: shared_member_fraction, more_massive, angular_proximity, redshift_proximity
+	  	'type':'cross',			## OPTIONS: cross, cat1, cat2
+	  	'preference':mt_preference,	## OPTIONS: shared_member_fraction, more_massive, angular_proximity, redshift_proximity
 	  	'minimum_share_fraction':minimum_share_fraction,
 	  	'match_members_kwargs': {'method':'id'},
 	  	}
 	
-	outpath += f'member_matching/fshare_{minimum_share_fraction}_pref_{matching_preference}/'
+	outpath += f'member_matching/fshare_{minimum_share_fraction}_pref_{mt_preference}/'
 	
 	if not os.path.exists(outpath) :
 		os.makedirs(outpath)
