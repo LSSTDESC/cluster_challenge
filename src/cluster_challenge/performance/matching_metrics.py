@@ -31,7 +31,7 @@ inpath = sfigs.make_path(
 	mt_method = cfg['matching']['method'],
 	mt_pref = cfg['matching']['pref'],
 	mt_params = cfg['matching']['params'],
-	base = cfg['path_base']['in']
+	base = cfg['paths']['performance']['in']
 )
 
 outpath = sfigs.make_path(
@@ -40,8 +40,7 @@ outpath = sfigs.make_path(
 	mt_method = cfg['matching']['method'],
 	mt_pref = cfg['matching']['pref'],
 	mt_params = cfg['matching']['params'],
-	base = cfg['path_base']['out'],
-	addon = 'testing/matching_metrics'
+	base = cfg['paths']['performance']['out'],
 )
 
 
@@ -54,18 +53,18 @@ cats = {cat1: ClCatalog.read_full(f"{inpath}{cat1}.fits"),
 
 
 ## create the cosmology object (matching cosmoDC2 simulation)
-h = 0.71
-Omega_dm0 = 0.1109 / h**2
-Omega_b0  = 0.02258 / h**2
-Omega_k0 = 1 - (Omega_dm0 + Omega_b0)
-cosmo = AstroPyCosmology(H0=h*100, Omega_b0=Omega_b0, Omega_dm0=Omega_dm0, Omega_k0=Omega_k0)
+H0 = cfg['cosmology']['h'] * 100
+Omega_dm0 = cfg['cosmology']['Omega_dm0']
+Omega_b0  = cfg['cosmology']['Omega_b0']
+Omega_k0  = cfg['cosmology']['Omega_k0']
+cosmo = AstroPyCosmology(H0=H0, Omega_b0=Omega_b0, Omega_dm0=Omega_dm0, Omega_k0=Omega_k0)
 
 
 deg_bins = make_bins('radius', cfg, units='degrees', grain='both')
 Mpc_bins = make_bins('radius', cfg, units='Mpc', grain='both')
 mass_bins   = make_bins('mass', cfg, grain='both')
 z_bins	    = make_bins('redshift', cfg, grain='both')
-deltaz_bins = make_bins('delta_redshift', cfg, grain='both')
+deltaz_bins = make_bins('delta_redshift', cfg, log=True, grain='both')
 rich_bins   = make_bins('richness', cfg, grain='both')
 
 
@@ -611,7 +610,7 @@ for i in range(len(rich_bins['coarse'])-1) :
 	bin_heights = info['data']['hist'][:,i] / bin_widths
 	label = f"$[{rich_bins['coarse'][i]:.1f}:{rich_bins['coarse'][i+1]:.1f}]$"
 	axs.step(bin_positions, bin_heights, where='mid', lw=1, label=label)
-axs.set_ylabel('No. of matches / $\Delta z$', loc='top')
+axs.set_ylabel('No. of matches$\\times (1+z) / \Delta z$', loc='top')
 axs.set_xlabel('$\Delta z / (1+z)$', loc='right')
 
 leg = plt.legend(labelcolor='mec', frameon=True, fontsize='small', title=cfg['latex']['richness_2'], alignment='right', handlelength=0, handletextpad=0)

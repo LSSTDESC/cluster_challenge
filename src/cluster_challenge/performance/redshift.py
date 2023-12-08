@@ -31,7 +31,7 @@ inpath = sfigs.make_path(
 	mt_method = cfg['matching']['method'],
 	mt_pref = cfg['matching']['pref'],
 	mt_params = cfg['matching']['params'],
-	base = cfg['path_base']['in']
+	base = cfg['paths']['performance']['in']
 )
 
 outpath = sfigs.make_path(
@@ -40,8 +40,7 @@ outpath = sfigs.make_path(
 	mt_method = cfg['matching']['method'],
 	mt_pref = cfg['matching']['pref'],
 	mt_params = cfg['matching']['params'],
-	base = cfg['path_base']['out'],
-	addon = 'testing/redshift'
+	base = cfg['paths']['performance']['out'],
 )
 
 
@@ -71,7 +70,7 @@ plot_redshift_redshift(x, y, Nhex=200, xlabel=xlabel, ylabel=ylabel, diagonal=Tr
 
 ## redshift scatter vs redshift
 saveas = 'zscatter_redshift'
-plot_zscatter_redshift(x, y, Nhex=1000, title=title, outpath=outpath, saveas=saveas)
+plot_zscatter_redshift(x, y, Nhex=200, cfg=cfg, title=title, outpath=outpath, saveas=saveas)
 
 ## binned offset and STD from true redshift
 xlabel = "$z_{halo}$"

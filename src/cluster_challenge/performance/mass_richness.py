@@ -23,29 +23,18 @@ config = sys.argv[1]
 with open(config) as fstream:
 	cfg = yaml.safe_load(fstream)
 
-inpath = sfigs.make_path(
-	cat1 = cfg['cats']['cat1'],
-	cat2 = cfg['cats']['cat2'],
-	mt_method = cfg['matching']['method'],
-	mt_pref = cfg['matching']['pref'],
-	mt_params = cfg['matching']['params'],
-	base = cfg['path_base']['in']
-)
+cat1 = cfg['cats']['cat1'],
+cat2 = cfg['cats']['cat2'],
+mt_method = cfg['matching']['method'],
+mt_pref = cfg['matching']['pref'],
+if mt_method == 'member' :
+	mt_params = [cfg['matching']['minimum_share_fraction']]
+else :
+	mt_params = [cfg['matching']['delta_z'], cfg['matching']['match_radius']]
 
-outpath = sfigs.make_path(
-	cat1 = cfg['cats']['cat1'],
-	cat2 = cfg['cats']['cat2'],
-	mt_method = cfg['matching']['method'],
-	mt_pref = cfg['matching']['pref'],
-	mt_params = cfg['matching']['params'],
-	base = cfg['path_base']['out'],
-	addon = 'testing/mass_richness'
-)
+inpath = sfigs.make_path(cat1, cat2, mt_method, mt_pref, mt_params, base=cfg['paths']['performance']['in'])
+outpath = sfigs.make_path(cat1, cat2, mt_method, mt_pref, mt_params, base=cfg['paths']['performance']['out'])
 
-
-## Select the catalogs.
-cat1 = cfg['cats']['cat1']
-cat2 = cfg['cats']['cat2']
 
 
 ## Create a merged catalog for the cross-matched pairs if it does not already exist.

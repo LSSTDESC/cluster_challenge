@@ -54,14 +54,16 @@ def make_outpath(cats, mt_method, mt_pref, mt_params, base='/sps/lsst/users/rsol
 	return outpath
 
 
-def make_bins(param, cfg, units=None, grain='both') :
+def make_bins(param, cfg, log=False, units=None, grain='both') :
 	'''
-	Creates linear bins in the parameter of choice from the config file.
+	Creates log or linear  bins in the parameter of choice from the config file.
 	***
 	param: str
 		name of parameter to bin (should match naming in config file)
 	cfg: dict
 		dict containing the range and No. for coarse and finely grained bins
+	log: bool (default: False)
+		use linear (False) or logarithmic (True) bin sizes
 	grain: str (default: both)
 		 coarse or fine binning
 
@@ -78,19 +80,24 @@ def make_bins(param, cfg, units=None, grain='both') :
 	left  = info['range'][0]
 	right = info['range'][1]
 	
+	def space(l, r, N) :
+		if not log :
+			return np.linspace(l, r, N)
+		else :
+			return np.logspace(l, r, N)
+
 	if grain == 'both' :
 		Ncoarse = info['N']['coarse']
 		Nfine   = info['N']['fine']
 		
-		coarse_bins = np.linspace(left, right, Ncoarse)
-		fine_bins = np.linspace(left, right, Nfine)
-
+		coarse_bins = space(left, right, Ncoarse)
+		fine_bins = space(left, right, Nfine)
 
 		return {'coarse':coarse_bins, 'fine':fine_bins}
 	else :
 		N = info['N'][grain]
 		
-		bins = np.linspace(left, right, N)
+		bins = space(left, right, N)
 
 		return bins
 
