@@ -117,7 +117,7 @@ if mt_method == 'proximity' :
 	mt = ProximityMatch()
 
 	delta_z = float(cfg['matching']['delta_z'])
-	match_radius = float(cfg['matching']['delta_z'])	## in Mpc
+	match_radius = float(cfg['matching']['match_radius'])	## in Mpc
 	match_config = {
 		'type':'cross',			## OPTIONS: cross, cat1, cat2
 		'which_radius':'max',		## OPTIONS: cat1, cat2, min, max
