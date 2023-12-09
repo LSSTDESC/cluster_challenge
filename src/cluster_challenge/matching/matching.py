@@ -5,7 +5,7 @@ import os, sys, yaml
 current_dir = os.path.dirname(__file__)
 
 
-def slurm_submit(task, config) :#cat1, cat2, mt_method, mt_pref, mt_params) :
+def slurm_submit(task, config) :
 	slurm_mem = 32
 	time.sleep(5)
 
@@ -55,43 +55,4 @@ def slurm_submit(task, config) :#cat1, cat2, mt_method, mt_pref, mt_params) :
 config_file = sys.argv[1]
 
 slurm_submit('clevar_matching', config_file)
-
-### MATCH COSMODC2 AND WAZP.COSMODC2.TRUEZ
-#slurm_submit('clevar_matching', 'cosmoDC2_v0', 'wazp_cosmoDC2.truez_v0', 'proximity', 'more_massive', [0.05, 1])
-#slurm_submit('clevar_matching', 'cosmoDC2_v0', 'wazp_cosmoDC2.truez_v0', 'proximity', 'angular_proximity', [0.05, 1])
-#slurm_submit('clevar_matching', 'cosmoDC2_v0', 'wazp_cosmoDC2.truez_v0', 'member', 'more_massive', [0.0])
-#slurm_submit('clevar_matching', 'cosmoDC2_v0', 'wazp_cosmoDC2.truez_v0', 'member', 'more_massive', [0.1])
-#slurm_submit('clevar_matching', 'cosmoDC2_v0', 'wazp_cosmoDC2.truez_v0', 'member', 'shared_member_fraction', [0.0])
-#slurm_submit('clevar_matching', 'cosmoDC2_v0', 'wazp_cosmoDC2.truez_v0', 'member', 'shared_member_fraction', [0.1])
-
-
-### MATCH COSMODC2 AND WAZP.COSMODC2.FZB
-#slurm_submit('clevar_matching', 'cosmoDC2_v0', 'wazp_cosmoDC2.fzb_v0', 'proximity', 'more_massive', [0.05, 1])
-#slurm_submit('clevar_matching', 'cosmoDC2_v0', 'wazp_cosmoDC2.fzb_v0', 'proximity', 'angular_proximity', [0.05, 1])
-#slurm_submit('clevar_matching', 'cosmoDC2_v0', 'wazp_cosmoDC2.fzb_v0', 'member', 'more_massive', [0.0])
-#slurm_submit('clevar_matching', 'cosmoDC2_v0', 'wazp_cosmoDC2.fzb_v0', 'member', 'more_massive', [0.1])
-#slurm_submit('clevar_matching', 'cosmoDC2_v0', 'wazp_cosmoDC2.fzb_v0', 'member', 'shared_member_fraction', [0.0])
-#slurm_submit('clevar_matching', 'cosmoDC2_v0', 'wazp_cosmoDC2.fzb_v0', 'member', 'shared_member_fraction', [0.1])
-
-### MATCH COSMODC2 AND PYWAZP.COSMODC2.TRUEZ
-#slurm_submit('clevar_matching', 'cosmoDC2_v0', 'pywazp_cosmoDC2.truez_v0', 'proximity', 'more_massive', [0.05, 1])
-
-### MATCH COSMODC2 AND WAZP.DC2.FZB
-#slurm_submit('clevar_matching', 'cosmoDC2_v0', 'wazp_DC2.fzb_v0', 'proximity', 'more_massive', [0.05, 1])
-#slurm_submit('clevar_matching', 'cosmoDC2_v0', 'wazp_DC2.fzb_v0', 'proximity', 'angular_proximity', [0.05, 1])
-#
-#
-### MATCH COSMODC2 AND REDMAPPER.COSMODC2
-#slurm_submit('clevar_matching', 'cosmoDC2_v0', 'redmapper_cosmoDC2_v0', 'proximity', 'more_massive', [0.05, 1])
-#slurm_submit('clevar_matching', 'cosmoDC2_v0', 'redmapper_cosmoDC2_v0', 'proximity', 'angular_proximity', [0.05, 1])
-#slurm_submit('clevar_matching', 'cosmoDC2_v0', 'redmapper_cosmoDC2_v0', 'member', 'more_massive', [0.0])
-#slurm_submit('clevar_matching', 'cosmoDC2_v0', 'redmapper_cosmoDC2_v0', 'member', 'more_massive', [0.1])
-#slurm_submit('clevar_matching', 'cosmoDC2_v0', 'redmapper_cosmoDC2_v0', 'member', 'shared_member_fraction', [0.0])
-#slurm_submit('clevar_matching', 'cosmoDC2_v0', 'redmapper_cosmoDC2_v0', 'member', 'shared_member_fraction', [0.1])
-#
-#
-### MATCH COSMODC2 AND REDMAPPER.DC2
-#slurm_submit('clevar_matching', 'cosmoDC2_v0', 'redmapper_DC2_v0', 'proximity', 'more_massive', [0.05, 1])
-#slurm_submit('clevar_matching', 'cosmoDC2_v0', 'redmapper_DC2_v0', 'proximity', 'angular_proximity', [0.05, 1])
-
 
