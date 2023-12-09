@@ -25,28 +25,19 @@ config = sys.argv[1]
 with open(config) as fstream:
 	cfg = yaml.safe_load(fstream)
 
-inpath = sfigs.make_path(
-	cat1 = cfg['cats']['cat1'],
-	cat2 = cfg['cats']['cat2'],
-	mt_method = cfg['matching']['method'],
-	mt_pref = cfg['matching']['pref'],
-	mt_params = cfg['matching']['params'],
-	base = cfg['paths']['performance']['in']
-)
-
-outpath = sfigs.make_path(
-	cat1 = cfg['cats']['cat1'],
-	cat2 = cfg['cats']['cat2'],
-	mt_method = cfg['matching']['method'],
-	mt_pref = cfg['matching']['pref'],
-	mt_params = cfg['matching']['params'],
-	base = cfg['paths']['performance']['out'],
-)
-
-
-## Select the catalogs.
 cat1 = cfg['cats']['cat1']
 cat2 = cfg['cats']['cat2']
+mt_method = cfg['matching']['method']
+mt_pref = cfg['matching']['pref']
+if mt_method == 'member' :
+        mt_params = [cfg['matching']['minimum_share_fraction']]
+else :
+        mt_params = [cfg['matching']['delta_z'], cfg['matching']['match_radius']]
+
+inpath = sfigs.make_path(cat1, cat2, mt_method, mt_pref, mt_params, base=cfg['paths']['performance']['in'])
+outpath = sfigs.make_path(cat1, cat2, mt_method, mt_pref, mt_params, base=cfg['paths']['performance']['out'],
+        addon='redshift')
+
 
 
 ## Create a merged catalog for the cross-matched pairs if it does not already exist.
@@ -54,8 +45,10 @@ cltags = cfg['merged_keys']
 try :
 	mtcats = ClCatalog.read(f"{inpath}{cat1}_{cat2}_merged.fits", 'merged', tags=cltags)
 except :
+	cats = {cat1: ClCatalog.read_full(f"{inpath}{cat1}.fits"),
+		cat2: ClCatalog.read_full(f"{inpath}{cat2}.fits")}
 	output_matched_catalog(f"{inpath}{cat1}.fits", f"{inpath}{cat2}.fits", f"{inpath}{cat1}_{cat2}_merged.fits",
-		cats[0], cats[1], matching_type='cross', overwrite=True)
+		cats[cat1], cats[cat2], matching_type='cross', overwrite=True)
 	mtcats = ClCatalog.read(f"{inpath}{cat1}_{cat2}_merged.fits", 'merged', tags=cltags)
 
 
