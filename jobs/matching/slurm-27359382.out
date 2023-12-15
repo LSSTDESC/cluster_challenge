@@ -1,0 +1,54 @@
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+* Date:                 Wed Apr 26 09:03:57 CEST 2023
+* Job name:             run_py.sh
+* Job id:               27359382
+* User:                 namourou
+* Account:              lsst
+* Submit host:          cca002
+* Partition:            htc
+* Quality of service:   normal
+* Nodelist:             ccwslurm0364
+****************************************************************
+DESC setup
+GO1
+/var/spool/slurmd/job27359382/slurm_script: line 11:  9970 Killed                  python /pbs/home/n/namourou/test_jupyter/cluster_challenge/matching/clevar_matching.py amico_redmapper
+G02
+Opening catalog in path:  /sps/lsst/groups/clusters/amico_validation_project/catalogs/matching_cats/amico_redmapper/
+/sps/lsst/groups/clusters/amico_validation_project/catalogs/matching_cats/amico_redmapper/
+c1 infos from mb-matching with cosmoDC2_small 
+#c1 
+total objects 135916 
+unique (self): 38944 
+unique (other): 38944 
+multiple (self): 49095 
+multiple (other): 49095 
+cross: 38915
+
+cosmoDC2_small infos from mb-matching with amico 
+#c2 
+total objects 45081 
+unique (self): 38944 
+unique (other): 38944 
+multiple (self): 39718 
+multiple (other): 39718 
+cross: 38915
+ id total  unique (self) unique (other) multiple (self) multiple (other) cross
+--- ------ ------------- -------------- --------------- ---------------- -----
+ c1 135916         38944          38944           49095            49095 38915
+ c2  45081         38944          38944           39718            39718 38915
+GO3
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+Date: Wed Apr 26 09:10:23 CEST 2023
+Job informations can be found using these commands:
+Accounting:
+sacct -j 27359382
+Efficiency:
+seff 27359382
+****************************************************************
+slurmstepd: error: Detected 1 oom-kill event(s) in StepId=27359382.batch. Some of your processes may have been killed by the cgroup out-of-memory handler.

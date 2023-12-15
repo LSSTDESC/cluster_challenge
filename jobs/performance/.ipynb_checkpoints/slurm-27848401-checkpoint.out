@@ -1,0 +1,19 @@
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+* Date:                 Tue May  2 17:20:11 CEST 2023
+* Job name:             run_py.sh
+* Job id:               27848401
+* User:                 namourou
+* Account:              lsst
+* Submit host:          cca001
+* Partition:            htc
+* Quality of service:   normal
+* Nodelist:             ccwslurm0352
+****************************************************************
+DESC setup
+/sps/lsst/users/namourou/conda_clone_210223/descv1.1/clevar/clevar/catalog.py:280: UserWarning: id column missing, additional one is being created.
+  warnings.warn(f"{id_name} column missing, additional one is being created.")
+/sps/lsst/users/namourou/conda_clone_210223/descv1.1/clevar/clevar/catalog.py:1093: UserWarning: Some galaxies were not members of the cluster catalog. They are stored in leftover_members attribute.
+  warnings.warn(

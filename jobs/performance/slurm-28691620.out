@@ -1,0 +1,89 @@
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+* Date:                 Tue May  9 09:35:16 CEST 2023
+* Job name:             run_py.sh
+* Job id:               28691620
+* User:                 namourou
+* Account:              lsst
+* Submit host:          cca008
+* Partition:            htc
+* Quality of service:   normal
+* Nodelist:             ccwslurm0315
+****************************************************************
+DESC setup
+/sps/lsst/users/namourou/conda_clone_210223/descv1.1/clevar/clevar/catalog.py:280: UserWarning: id column missing, additional one is being created.
+  warnings.warn(f"{id_name} column missing, additional one is being created.")
+reading tables
+cat1_id
+-------
+      1
+      2
+      3
+      4
+      5
+      6
+      7
+      8
+      9
+     10
+    ...
+ 135899
+ 135900
+ 135902
+ 135903
+ 135904
+ 135906
+ 135908
+ 135912
+ 135914
+ 135915
+ 135916
+Length = 110954 rows
+creating merged tables
+c1:
+  id   cat1_id  cat1_ra   cat1_dec  ... mt_other mt_multi_self mt_multi_other
+------ ------- --------- ---------- ... -------- ------------- --------------
+     0       1 50.113525  -40.03647 ...     None            []             []
+     1       2 50.642569 -41.402661 ...     None            []             []
+     2       3 50.421896 -39.587457 ...     None            []             []
+     3       4 50.603551 -39.582656 ...     None            []             []
+     4       5 50.577077 -40.162645 ...     None            []             []
+     5       6 51.048368 -41.281951 ...     None            []             []
+     6       7 50.085692 -40.246344 ...     None            []             []
+     7       8 50.590563 -39.602651 ...     None            []             []
+     8       9 51.576131  -40.01887 ...     None            []             []
+     9      10 51.329314 -40.145608 ...     None            []             []
+   ...     ...       ...        ... ...      ...           ...            ...
+110943  135899 74.459952 -38.206461 ...     None            []             []
+110944  135900 74.491862 -37.911472 ...     None            []             []
+110945  135902 74.523611 -38.486474 ...     None            []             []
+110946  135903 74.109775 -38.245769 ...     None            []             []
+110947  135904 75.058765 -38.300211 ...     None            []             []
+110948  135906 74.934134 -37.685718 ...     None            []             []
+110949  135908 73.814582 -39.139395 ...     None            []             []
+110950  135912 74.275797 -38.096228 ...     None            []             []
+110951  135914 73.463895 -38.441748 ...     None            []             []
+110952  135915 74.653667 -39.681394 ...     None            []             []
+110953  135916 73.590208  -38.54782 ...     None            []             []
+Length = 110954 rows
+Traceback (most recent call last):
+  File "/pbs/home/n/namourou/test_jupyter/cluster_challenge/notebooks/NB_analysis/am-cdc/magi-magr.py", line 26, in <module>
+    c_merged12_1.read_members(am_inpath, id=am_mb['id'], id_cluster=am_mb['id_cluster'], pmem=am_mb['pmem'], z = am_mb['z'],
+NameError: name 'am_mb' is not defined
+matching infos
+completeness
+purity
+overmerging & fragmentation
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+Date: Tue May  9 09:36:53 CEST 2023
+Job informations can be found using these commands:
+Accounting:
+sacct -j 28691620
+Efficiency:
+seff 28691620
+****************************************************************

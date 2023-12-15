@@ -1,0 +1,60 @@
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+* Date:                 Tue Apr 25 16:15:34 CEST 2023
+* Job name:             run_py_subp.sh
+* Job id:               27318432
+* User:                 namourou
+* Account:              lsst
+* Submit host:          cca004
+* Partition:            htc
+* Quality of service:   normal
+* Nodelist:             ccwslurm0199
+****************************************************************
+DESC setup
+GO1
+Incorporation of magnitudes in AMICO catalog
+
+Catalog loaded at /sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/raw_amico_cats/cosmoDC2_small_photoz_flexzboost_v1_yband/DETECTIONS_DERIVED/ and will be saved in /sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/amico_cats/amico_map_associations_flxzb_mag/mag_y/
+
+processing 8921
+Healpix list : [8921, 8793, 8794, 8920, 9049, 9050, 9177] 
+Now merging all input healpix files
+Done. 
+Incorporation of magnitudes
+63091 0.1
+129502 0.2
+262324 0.4
+395147 0.6
+527969 0.8
+660791 1.0
+  GALID    FIELD_PROB ASSOC_ID ...       mag_y        mt_id_final
+---------- ---------- -------- ... ------------------ -----------
+1687500062 0.73499477     2152 ... 20.222959518432617     1613699
+1687500062 0.73499477     1753 ... 20.222959518432617     1613699
+1687500152  0.8084433     1753 ... 21.795126072373005     1613789
+1687500237  0.8979262     1753 ... 22.302571968273536     1613874
+1687500444  0.7170521     1753 ... 21.720398112997398     1614081
+There are : 0 galaxies which are not found inside input catalog
+Program ran in : 421.3455801010132
+Done.
+G02
+Reading amico files before merging
+Configuration arguments:  8921
+Traceback (most recent call last):
+  File "/pbs/home/n/namourou/test_jupyter/cluster_challenge/prepare_catalogs/read_amico_mb_subp.py", line 33, in <module>
+    table = Table.read(cat_path)
+NameError: name 'cat_path' is not defined. Did you mean: 'outpath'?
+GO3
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+Date: Tue Apr 25 16:22:44 CEST 2023
+Job informations can be found using these commands:
+Accounting:
+sacct -j 27318432
+Efficiency:
+seff 27318432
+****************************************************************

@@ -1,0 +1,46 @@
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+* Date:                 Wed Apr 26 09:10:32 CEST 2023
+* Job name:             run_py.sh
+* Job id:               27359824
+* User:                 namourou
+* Account:              lsst
+* Submit host:          cca002
+* Partition:            htc
+* Quality of service:   normal
+* Nodelist:             ccwslurm0340
+****************************************************************
+DESC setup
+GO1
+/var/spool/slurmd/job27359824/slurm_script: line 11: 23525 Killed                  python /pbs/home/n/namourou/test_jupyter/cluster_challenge/matching/clevar_matching.py $param
+charged $param
+G02
+Opening catalog in path:  /sps/lsst/groups/clusters/amico_validation_project/catalogs/matching_cats/amico_redmapper/mag_i/
+/sps/lsst/groups/clusters/amico_validation_project/catalogs/matching_cats/amico_redmapper/mag_i/
+Traceback (most recent call last):
+  File "/pbs/home/n/namourou/test_jupyter/cluster_challenge/matching/get_match_info.py", line 33, in <module>
+    cat1 = Table.read(catpath + 'c1_p.fits')
+  File "/sps/lsst/users/namourou/conda_clone_210223/descv1.1/lib/python3.10/site-packages/astropy/table/connect.py", line 62, in __call__
+    out = self.registry.read(cls, *args, **kwargs)
+  File "/sps/lsst/users/namourou/conda_clone_210223/descv1.1/lib/python3.10/site-packages/astropy/io/registry/core.py", line 197, in read
+    fileobj = ctx.__enter__()
+  File "/sps/lsst/users/namourou/conda_clone_210223/descv1.1/lib/python3.10/contextlib.py", line 135, in __enter__
+    return next(self.gen)
+  File "/sps/lsst/users/namourou/conda_clone_210223/descv1.1/lib/python3.10/site-packages/astropy/utils/data.py", line 271, in get_readable_fileobj
+    fileobj = io.FileIO(name_or_obj, 'r')
+FileNotFoundError: [Errno 2] No such file or directory: '/sps/lsst/groups/clusters/amico_validation_project/catalogs/matching_cats/amico_redmapper/mag_i/c1_p.fits'
+GO3
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+Date: Wed Apr 26 09:17:45 CEST 2023
+Job informations can be found using these commands:
+Accounting:
+sacct -j 27359824
+Efficiency:
+seff 27359824
+****************************************************************
+slurmstepd: error: Detected 1 oom-kill event(s) in StepId=27359824.batch. Some of your processes may have been killed by the cgroup out-of-memory handler.

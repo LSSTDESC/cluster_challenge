@@ -1,0 +1,59 @@
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+* Date:                 Tue Apr 25 16:15:36 CEST 2023
+* Job name:             run_py_subp.sh
+* Job id:               27318462
+* User:                 namourou
+* Account:              lsst
+* Submit host:          cca004
+* Partition:            htc
+* Quality of service:   normal
+* Nodelist:             ccwslurm0059
+****************************************************************
+DESC setup
+GO1
+Incorporation of magnitudes in AMICO catalog
+
+Catalog loaded at /sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/raw_amico_cats/cosmoDC2_small_photoz_flexzboost_v1_yband/DETECTIONS_DERIVED/ and will be saved in /sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/amico_cats/amico_map_associations_flxzb_mag/mag_y/
+
+processing 9426
+Healpix list : [9426, 9170, 9298, 9299, 9425, 9427, 9554, 9555, 9682] 
+Now merging all input healpix files
+Done. 
+Incorporation of magnitudes
+68238 0.1
+140067 0.2
+283725 0.4
+427382 0.6
+571040 0.8
+714698 1.0
+  GALID    FIELD_PROB ASSOC_ID ...       mag_y        mt_id_final
+---------- ---------- -------- ... ------------------ -----------
+3251708615  0.9488818      767 ... 24.977967524899867     2271388
+4000000298  0.8987932     2011 ... 23.445079524958487     3248494
+4000000429  0.8394883     2011 ... 21.894340095728097     3248625
+4000000442 0.97861713     1924 ...  23.30843660847808     3248638
+4000000636  0.9134211     1924 ... 15.275926199120564     3248832
+There are : 0 galaxies which are not found inside input catalog
+Program ran in : 680.463308095932
+Done.
+G02
+Reading amico files before merging
+Traceback (most recent call last):
+  File "/pbs/home/n/namourou/test_jupyter/cluster_challenge/prepare_catalogs/read_amico_mb_subp.py", line 20, in <module>
+    
+NameError: name 'tile' is not defined. Did you mean: 'time'?
+GO3
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+Date: Tue Apr 25 16:27:12 CEST 2023
+Job informations can be found using these commands:
+Accounting:
+sacct -j 27318462
+Efficiency:
+seff 27318462
+****************************************************************

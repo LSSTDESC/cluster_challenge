@@ -1,0 +1,61 @@
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+* Date:                 Tue Apr 25 16:15:33 CEST 2023
+* Job name:             run_py_subp.sh
+* Job id:               27318406
+* User:                 namourou
+* Account:              lsst
+* Submit host:          cca004
+* Partition:            htc
+* Quality of service:   normal
+* Nodelist:             ccwslurm0328
+****************************************************************
+DESC setup
+GO1
+Incorporation of magnitudes in AMICO catalog
+
+Catalog loaded at /sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/raw_amico_cats/cosmoDC2_small_photoz_flexzboost_v1_yband/DETECTIONS_DERIVED/ and will be saved in /sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/amico_cats/amico_map_associations_flxzb_mag/mag_y/
+
+processing 10444
+Healpix list : [10444, 10193, 10321, 10445] 
+Now merging all input healpix files
+Done. 
+Incorporation of magnitudes
+52638 0.1
+108047 0.2
+218864 0.4
+329680 0.6
+440497 0.8
+551314 1.0
+   GALID    FIELD_PROB ASSOC_ID ...       mag_y        mt_id_final
+----------- ---------- -------- ... ------------------ -----------
+10187937522  0.7175731     1463 ...  24.92034262754779     1813522
+10937500516  0.9777434      182 ... 22.894728777341847     3166828
+10937501217  0.9439845     1350 ...  23.25057367913753     3167529
+10937501217  0.9439845       64 ...  23.25057367913753     3167529
+10937501457  0.9877942      182 ... 22.944419814068578     3167769
+There are : 0 galaxies which are not found inside input catalog
+Program ran in : 335.82201170921326
+Done.
+G02
+Reading amico files before merging
+Configuration arguments:  10444
+10444 1215
+first step done in 14.604710340499878
+554084
+[11562517389, 11562527021, 11562533209, 11562533473, 11562535419] [34996.0, 34996.0, 34996.0, 34996.0, 34996.0]
+--------done--------
+GO3
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+Date: Tue Apr 25 16:21:37 CEST 2023
+Job informations can be found using these commands:
+Accounting:
+sacct -j 27318406
+Efficiency:
+seff 27318406
+****************************************************************

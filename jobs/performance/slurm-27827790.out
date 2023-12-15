@@ -1,0 +1,36 @@
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+* Date:                 Tue May  2 15:31:08 CEST 2023
+* Job name:             run_py.sh
+* Job id:               27827790
+* User:                 namourou
+* Account:              lsst
+* Submit host:          cca001
+* Partition:            htc
+* Quality of service:   normal
+* Nodelist:             ccwslurm0028
+****************************************************************
+DESC setup
+/sps/lsst/users/namourou/conda_clone_210223/descv1.1/clevar/clevar/catalog.py:280: UserWarning: id column missing, additional one is being created.
+  warnings.warn(f"{id_name} column missing, additional one is being created.")
+/sps/lsst/users/namourou/conda_clone_210223/descv1.1/clevar/clevar/catalog.py:1093: UserWarning: Some galaxies were not members of the cluster catalog. They are stored in leftover_members attribute.
+  warnings.warn(
+/var/spool/slurmd/job27827790/slurm_script: line 11: 34639 Killed                  python /pbs/home/n/namourou/test_jupyter/cluster_challenge/notebooks/NB_analysis/am-cdc/magi-magr.py
+matching infos
+completeness
+purity
+overmerging & fragmentation
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+Date: Tue May  2 15:42:50 CEST 2023
+Job informations can be found using these commands:
+Accounting:
+sacct -j 27827790
+Efficiency:
+seff 27827790
+****************************************************************
+slurmstepd: error: Detected 1 oom-kill event(s) in StepId=27827790.batch. Some of your processes may have been killed by the cgroup out-of-memory handler.

@@ -1,0 +1,45 @@
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+* Date:                 Wed May 10 09:28:41 CEST 2023
+* Job name:             run_py.sh
+* Job id:               28871527
+* User:                 namourou
+* Account:              lsst
+* Submit host:          cca010
+* Partition:            htc
+* Quality of service:   normal
+* Nodelist:             ccwslurm0134
+****************************************************************
+DESC setup
+matching infos
+Using catalogs located at : /sps/lsst/groups/clusters/amico_validation_project/catalogs/matching_cats/amico_cosmoDC2/mag_i/
+Saving plots at : /sps/lsst/groups/clusters/amico_validation_project/catalogs/matching_cats/amico_cosmoDC2/mag_i/
+c1 infos from p-matching with cosmoDC2_small 
+#c1 
+total objects 135916 
+unique (self): 111052 
+unique (other): 111051 
+multiple (self): 116438 
+multiple (other): 116438 
+cross: 110954
+
+cosmoDC2_small infos from p-matching with amico 
+#c2 
+total objects 454475 
+unique (self): 111051 
+unique (other): 111052 
+multiple (self): 178907 
+multiple (other): 178907 
+cross: 110954
+ id total  unique (self) unique (other) multiple (self) multiple (other) cross 
+--- ------ ------------- -------------- --------------- ---------------- ------
+ c1 135916        111052         111051          116438           116438 110954
+ c2 454475        111051         111052          178907           178907 110954
+completeness
+/sps/lsst/users/namourou/conda_clone_210223/descv1.1/clevar/clevar/catalog.py:280: UserWarning: id column missing, additional one is being created.
+  warnings.warn(f"{id_name} column missing, additional one is being created.")
+Using catalogs located at : /sps/lsst/groups/clusters/amico_validation_project/catalogs/matching_cats/amico_cosmoDC2/mag_i/
+Saving plots at : /pbs/home/n/namourou/test_jupyter/cluster_challenge/plots/amico_cosmoDC2/mag_i/
+completeness vs mass in z bins

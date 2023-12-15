@@ -1,0 +1,71 @@
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+* Date:                 Tue Apr 25 16:59:00 CEST 2023
+* Job name:             run_py_subp.sh
+* Job id:               27323838
+* User:                 namourou
+* Account:              lsst
+* Submit host:          cca004
+* Partition:            htc
+* Quality of service:   normal
+* Nodelist:             ccwslurm0342
+****************************************************************
+DESC setup
+GO1
+Incorporation of magnitudes in AMICO catalog
+
+Catalog loaded at /sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/raw_amico_cats/cosmoDC2_small_photoz_flexzboost_v1_iband/DETECTIONS_DERIVED/ and will be saved in /sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/amico_cats/amico_map_associations_flxzb_mag/mag_i/
+
+processing 8787
+Healpix list : [8787, 8786, 8788, 8914, 8915, 9043] 
+Now merging all input healpix files
+Done. 
+Incorporation of magnitudes
+32338 0.1
+66377 0.2
+134456 0.4
+202534 0.6
+270613 0.8
+338692 1.0
+  GALID    FIELD_PROB ASSOC_ID ...       mag_y        mt_id_final
+---------- ---------- -------- ... ------------------ -----------
+1250004248  0.9514599      587 ... 24.275863245130456     1571124
+1250005912  0.9736737      587 ... 24.568721817786287     1572774
+1250008388 0.90402734      587 ... 22.440810978542217     1575185
+1250016324 0.89526635      587 ... 21.700312686875034     1582777
+1250022001 0.89922625      587 ... 23.285861963773844     1587832
+There are : 0 galaxies which are not found inside input catalog
+Program ran in : 308.10406970977783
+Done.
+G02
+Reading amico files before merging
+Reading tile =  8787
+Reading clusters at /sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/raw_amico_cats/cosmoDC2_small_photoz_flexzboost_v1_iband/map_detections_refined_noBuffer_all_noDoubles_handFix.fits 
+Reading members at /sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/amico_cats/amico_map_associations_flxzb_mag/mag_i/8787_map_associations_w_mag.fits 
+Saving table at /sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/amico_cats/amico_map_associations_flxzb_mag/mag_i/
+Traceback (most recent call last):
+  File "/pbs/home/n/namourou/test_jupyter/cluster_challenge/prepare_catalogs/read_amico_mb_subp.py", line 29, in <module>
+    amico_cl_data = Table.read(cl_inpath)['ID', 'Xphys', 'Yphys', 'Zphys','LAMBSTAR', 'SN_NO_CLUSTER', 'SN', 'UID', 'TILE']  
+  File "/sps/lsst/users/namourou/conda_clone_210223/descv1.1/lib/python3.10/site-packages/astropy/table/connect.py", line 62, in __call__
+    out = self.registry.read(cls, *args, **kwargs)
+  File "/sps/lsst/users/namourou/conda_clone_210223/descv1.1/lib/python3.10/site-packages/astropy/io/registry/core.py", line 197, in read
+    fileobj = ctx.__enter__()
+  File "/sps/lsst/users/namourou/conda_clone_210223/descv1.1/lib/python3.10/contextlib.py", line 135, in __enter__
+    return next(self.gen)
+  File "/sps/lsst/users/namourou/conda_clone_210223/descv1.1/lib/python3.10/site-packages/astropy/utils/data.py", line 271, in get_readable_fileobj
+    fileobj = io.FileIO(name_or_obj, 'r')
+FileNotFoundError: [Errno 2] No such file or directory: '/sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/raw_amico_cats/cosmoDC2_small_photoz_flexzboost_v1_iband/map_detections_refined_noBuffer_all_noDoubles_handFix.fits'
+GO3
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+Date: Tue Apr 25 17:04:34 CEST 2023
+Job informations can be found using these commands:
+Accounting:
+sacct -j 27323838
+Efficiency:
+seff 27323838
+****************************************************************

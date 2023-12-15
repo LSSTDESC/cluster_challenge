@@ -1,0 +1,36 @@
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+* Date:                 Fri Jun 30 10:48:48 CEST 2023
+* Job name:             run_py.sh
+* Job id:               35357552
+* User:                 namourou
+* Account:              lsst
+* Submit host:          cca019
+* Partition:            htc
+* Quality of service:   normal
+* Nodelist:             ccwslurm0321
+****************************************************************
+DESC setup
+GO1
+charged: amico_cosmoDC2 p_matching
+Matching Initialisation
+Using matching : p_matching
+Traceback (most recent call last):
+  File "/pbs/home/n/namourou/test_jupyter/cluster_challenge/matching/clevar_matching.py", line 29, in <module>
+    cut = str(sys.argv[3])
+IndexError: list index out of range
+G02
+GO3
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+Date: Fri Jun 30 10:49:08 CEST 2023
+Job informations can be found using these commands:
+Accounting:
+sacct -j 35357552
+Efficiency:
+seff 35357552
+****************************************************************

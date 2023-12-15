@@ -1,0 +1,34 @@
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+* Date:                 Tue May  2 15:24:03 CEST 2023
+* Job name:             run_py.sh
+* Job id:               27826970
+* User:                 namourou
+* Account:              lsst
+* Submit host:          cca001
+* Partition:            htc
+* Quality of service:   normal
+* Nodelist:             ccwslurm0138
+****************************************************************
+DESC setup
+/sps/lsst/users/namourou/conda_clone_210223/descv1.1/clevar/clevar/catalog.py:280: UserWarning: id column missing, additional one is being created.
+  warnings.warn(f"{id_name} column missing, additional one is being created.")
+/var/spool/slurmd/job27826970/slurm_script: line 11: 51824 Killed                  python /pbs/home/n/namourou/test_jupyter/cluster_challenge/notebooks/NB_analysis/am-cdc/magi-magr.py
+matching infos
+completeness
+purity
+overmerging & fragmentation
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+Date: Tue May  2 15:28:46 CEST 2023
+Job informations can be found using these commands:
+Accounting:
+sacct -j 27826970
+Efficiency:
+seff 27826970
+****************************************************************
+slurmstepd: error: Detected 1 oom-kill event(s) in StepId=27826970.batch. Some of your processes may have been killed by the cgroup out-of-memory handler.

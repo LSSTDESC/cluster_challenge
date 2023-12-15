@@ -1,0 +1,19 @@
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+* Date:                 Wed Apr 26 10:27:30 CEST 2023
+* Job name:             run_py.sh
+* Job id:               27361227
+* User:                 namourou
+* Account:              lsst
+* Submit host:          cca002
+* Partition:            htc
+* Quality of service:   normal
+* Nodelist:             ccwslurm0317
+****************************************************************
+DESC setup
+GO1
+charged: amico_cosmoDC2 mb_matching
+/sps/lsst/users/namourou/conda_clone_210223/descv1.1/clevar/clevar/catalog.py:1093: UserWarning: Some galaxies were not members of the cluster catalog. They are stored in leftover_members attribute.
+  warnings.warn(

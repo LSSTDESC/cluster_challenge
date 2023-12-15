@@ -1,0 +1,16 @@
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+* Date:                 Tue Apr 25 16:45:25 CEST 2023
+* Job name:             run_py.sh
+* Job id:               27322525
+* User:                 namourou
+* Account:              lsst
+* Submit host:          cca004
+* Partition:            htc
+* Quality of service:   normal
+* Nodelist:             ccwslurm0019
+****************************************************************
+DESC setup
+GO1

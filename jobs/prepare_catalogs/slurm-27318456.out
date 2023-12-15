@@ -1,0 +1,59 @@
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+* Date:                 Tue Apr 25 16:15:35 CEST 2023
+* Job name:             run_py_subp.sh
+* Job id:               27318456
+* User:                 namourou
+* Account:              lsst
+* Submit host:          cca004
+* Partition:            htc
+* Quality of service:   normal
+* Nodelist:             ccwslurm0026
+****************************************************************
+DESC setup
+GO1
+Incorporation of magnitudes in AMICO catalog
+
+Catalog loaded at /sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/raw_amico_cats/cosmoDC2_small_photoz_flexzboost_v1_yband/DETECTIONS_DERIVED/ and will be saved in /sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/amico_cats/amico_map_associations_flxzb_mag/mag_y/
+
+processing 9302
+Healpix list : [9302, 9046, 9173, 9174, 9301, 9303, 9429, 9430, 9558] 
+Now merging all input healpix files
+Done. 
+Incorporation of magnitudes
+58614 0.1
+120312 0.2
+243708 0.4
+367104 0.6
+490500 0.8
+613896 1.0
+  GALID    FIELD_PROB ASSOC_ID ...       mag_y        mt_id_final
+---------- ---------- -------- ... ------------------ -----------
+3437501559 0.95392394      426 ... 25.184765929215178     3189526
+3437502495  0.9812223      426 ... 24.531810562746305     3190461
+3437503121  0.9788582      306 ... 23.794005872104233     3191084
+3437506544  0.9937104      426 ... 24.072686875149305     3194471
+3437506840  0.9768889      306 ... 24.047591551108432     3194760
+There are : 0 galaxies which are not found inside input catalog
+Program ran in : 607.5226888656616
+Done.
+G02
+Reading amico files before merging
+Traceback (most recent call last):
+  File "/pbs/home/n/namourou/test_jupyter/cluster_challenge/prepare_catalogs/read_amico_mb_subp.py", line 20, in <module>
+    cat_path = ('/sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/amico_cats/amico_map_associations_flxzb_mag/mag_y/' + tile + '_map_associations_w_mag' + '.fits')
+NameError: name 'tile' is not defined. Did you mean: 'time'?
+GO3
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+Date: Tue Apr 25 16:25:57 CEST 2023
+Job informations can be found using these commands:
+Accounting:
+sacct -j 27318456
+Efficiency:
+seff 27318456
+****************************************************************

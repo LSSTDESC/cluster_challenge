@@ -1,0 +1,64 @@
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+* Date:                 Fri Jun 30 10:05:43 CEST 2023
+* Job name:             run_py_subp.sh
+* Job id:               35351445
+* User:                 namourou
+* Account:              lsst
+* Submit host:          cca019
+* Partition:            htc
+* Quality of service:   normal
+* Nodelist:             ccwslurm0330
+****************************************************************
+DESC setup
+GO1
+Incorporation of magnitudes in AMICO catalog
+
+Catalog loaded at /sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/raw_amico_cats/cosmoDC2_photoz_flexzboost_v1_iband/DETECTIONS_DERIVED/ and will be saved in /sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/amico_cats/amico_map_associations_flxzb_mag/mag_i/
+
+processing 10452
+Healpix list : [10452, 10328, 10329, 10451] 
+Now merging all input healpix files
+Done. 
+Incorporation of magnitudes
+35321 0.1
+72501 0.2
+146860 0.4
+221219 0.6
+295578 0.8
+369937 1.0
+   GALID    FIELD_PROB ASSOC_ID ...       mag_y        mt_id_final
+----------- ---------- -------- ... ------------------ -----------
+11375001566  0.9750591     1423 ... 23.841219222857575     1583995
+11375009296 0.85129374     1423 ... 19.955887826615125     1591636
+11375010213  0.9416063      379 ... 24.306039018421377     1592511
+11375011024 0.89235747     1662 ... 24.503983691797405     1593270
+11375012815 0.90288186      980 ... 24.337904776509102     1594940
+There are : 0 galaxies which are not found inside input catalog
+Program ran in : 328.86284923553467
+Done.
+G02
+Reading amico files before merging
+Reading tile =  10452
+Reading clusters at /sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/raw_amico_cats/cosmoDC2_photoz_flexzboost_v1_iband/map_detections_refined_noBuffer_all_noDoubles.fits 
+Reading members at /sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/amico_cats/amico_map_associations_flxzb_mag/mag_i/10452_map_associations_w_mag.fits 
+Saving table at /sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/amico_cats/amico_map_associations_flxzb_mag/mag_i/
+Number of clusters in tract =  1037
+Catalog created in 11.059940338134766 seconds
+created table lenght =  371795
+[12063263465, 12063515108, 12063516191, 12063520938, 12063520939] [36866.0, 36866.0, 36866.0, 36866.0, 36866.0]
+--------done--------
+GO3
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+Date: Fri Jun 30 10:12:17 CEST 2023
+Job informations can be found using these commands:
+Accounting:
+sacct -j 35351445
+Efficiency:
+seff 35351445
+****************************************************************

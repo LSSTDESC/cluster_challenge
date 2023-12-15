@@ -1,0 +1,29 @@
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+* Date:                 Fri Jun 16 17:24:23 CEST 2023
+* Job name:             CosmoDC2_add_rich.py
+* Job id:               33132329
+* User:                 namourou
+* Account:              lsst
+* Submit host:          cca012
+* Partition:            htc
+* Quality of service:   normal
+* Nodelist:             ccwslurm0129
+****************************************************************
+Traceback (most recent call last):
+  File "/var/spool/slurmd/job33132329/slurm_script", line 15, in <module>
+    from amico_functions import *
+ModuleNotFoundError: No module named 'amico_functions'
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+Date: Fri Jun 16 17:25:59 CEST 2023
+Job informations can be found using these commands:
+Accounting:
+sacct -j 33132329
+Efficiency:
+seff 33132329
+****************************************************************

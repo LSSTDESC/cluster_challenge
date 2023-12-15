@@ -1,0 +1,60 @@
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+* Date:                 Tue Apr 25 16:15:33 CEST 2023
+* Job name:             run_py_subp.sh
+* Job id:               27318400
+* User:                 namourou
+* Account:              lsst
+* Submit host:          cca004
+* Partition:            htc
+* Quality of service:   normal
+* Nodelist:             ccwslurm0329
+****************************************************************
+DESC setup
+GO1
+Incorporation of magnitudes in AMICO catalog
+
+Catalog loaded at /sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/raw_amico_cats/cosmoDC2_small_photoz_flexzboost_v1_yband/DETECTIONS_DERIVED/ and will be saved in /sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/amico_cats/amico_map_associations_flxzb_mag/mag_y/
+
+processing 10324
+Healpix list : [10324, 10069, 10196, 10197, 10198, 10323, 10325, 10447, 10448] 
+Now merging all input healpix files
+Done. 
+Incorporation of magnitudes
+62709 0.1
+128718 0.2
+260736 0.4
+392754 0.6
+524772 0.8
+656790 1.0
+  GALID    FIELD_PROB ASSOC_ID ...       mag_y        mt_id_final
+---------- ---------- -------- ... ------------------ -----------
+9628341033  0.6955263     1387 ... 22.437157977513603     2638517
+9628352955 0.82702386     1387 ... 22.922898724491375     2647227
+9628371404 0.92492443     1387 ... 24.501046282626337     2660587
+9628377118  0.8418374     1387 ... 20.832054021715177     2664680
+9628377119 0.98367953     1387 ... 24.673778791747097     2664681
+There are : 0 galaxies which are not found inside input catalog
+Program ran in : 467.3176190853119
+Done.
+G02
+Reading amico files before merging
+Configuration arguments:  10324
+Traceback (most recent call last):
+  File "/pbs/home/n/namourou/test_jupyter/cluster_challenge/prepare_catalogs/read_amico_mb_subp.py", line 33, in <module>
+    table = Table.read(cat_path)
+NameError: name 'cat_path' is not defined. Did you mean: 'outpath'?
+GO3
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+Date: Tue Apr 25 16:23:32 CEST 2023
+Job informations can be found using these commands:
+Accounting:
+sacct -j 27318400
+Efficiency:
+seff 27318400
+****************************************************************

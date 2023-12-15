@@ -1,0 +1,29 @@
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+* Date:                 Fri May 12 09:35:42 CEST 2023
+* Job name:             run_py.sh
+* Job id:               29104973
+* User:                 namourou
+* Account:              lsst
+* Submit host:          cca004
+* Partition:            htc
+* Quality of service:   normal
+* Nodelist:             ccwslurm0188
+****************************************************************
+DESC setup
+GO1
+charged: amico_redmapper p_matching
+slurmstepd: error: *** JOB 29104973 ON ccwslurm0188 CANCELLED AT 2023-05-12T09:41:59 ***
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+Date: Fri May 12 09:41:59 CEST 2023
+Job informations can be found using these commands:
+Accounting:
+sacct -j 29104973
+Efficiency:
+seff 29104973
+****************************************************************

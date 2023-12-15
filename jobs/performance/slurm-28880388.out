@@ -1,0 +1,36 @@
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+* Date:                 Wed May 10 10:27:09 CEST 2023
+* Job name:             run_py.sh
+* Job id:               28880388
+* User:                 namourou
+* Account:              lsst
+* Submit host:          cca010
+* Partition:            htc
+* Quality of service:   normal
+* Nodelist:             ccwslurm0367
+****************************************************************
+DESC setup
+matching infos
+completeness
+purity
+overmerging & fragmentation
+/sps/lsst/users/namourou/conda_clone_210223/descv1.1/clevar/clevar/catalog.py:280: UserWarning: id column missing, additional one is being created.
+  warnings.warn(f"{id_name} column missing, additional one is being created.")
+Using catalogs located at : /sps/lsst/groups/clusters/amico_validation_project/catalogs/matching_cats/amico_cosmoDC2/mag_i/
+Saving plots at : /pbs/home/n/namourou/test_jupyter/cluster_challenge/plots/amico_cosmoDC2/mag_i/
+
+------Overmerging------
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+Date: Wed May 10 10:28:20 CEST 2023
+Job informations can be found using these commands:
+Accounting:
+sacct -j 28880388
+Efficiency:
+seff 28880388
+****************************************************************

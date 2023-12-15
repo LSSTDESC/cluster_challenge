@@ -1,0 +1,18 @@
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+* Date:                 Wed Apr 26 09:24:30 CEST 2023
+* Job name:             run_py.sh
+* Job id:               27359902
+* User:                 namourou
+* Account:              lsst
+* Submit host:          cca002
+* Partition:            htc
+* Quality of service:   normal
+* Nodelist:             ccwslurm0367
+****************************************************************
+DESC setup
+GO1
+charged: amico_redmapper
+amico_redmapper

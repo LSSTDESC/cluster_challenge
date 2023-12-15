@@ -1,0 +1,39 @@
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+* Date:                 Tue Apr 25 17:10:04 CEST 2023
+* Job name:             run_py_subp.sh
+* Job id:               27325497
+* User:                 namourou
+* Account:              lsst
+* Submit host:          cca004
+* Partition:            htc
+* Quality of service:   normal
+* Nodelist:             ccwslurm0323
+****************************************************************
+DESC setup
+GO1
+G02
+Reading amico files before merging
+Reading tile =  8917
+Reading clusters at /sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/raw_amico_cats/cosmoDC2_small_photoz_flexzboost_v1_iband/map_detections_refined_noBuffer_all_noDoubles.fits 
+Reading members at /sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/amico_cats/amico_map_associations_flxzb_mag/mag_i/8917_map_associations_w_mag.fits 
+Saving table at /sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/amico_cats/amico_map_associations_flxzb_mag/mag_i/
+Number of clusters in tract =  928
+Catalog created in 9.625375509262085 seconds
+created table lenght =  320874
+[2062508131, 2062517500, 2062522082, 2062524553, 2062525619] [51054.0, 51054.0, 51054.0, 51054.0, 51054.0]
+--------done--------
+GO3
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+Date: Tue Apr 25 17:10:18 CEST 2023
+Job informations can be found using these commands:
+Accounting:
+sacct -j 27325497
+Efficiency:
+seff 27325497
+****************************************************************

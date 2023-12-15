@@ -1,0 +1,35 @@
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+* Date:                 Wed May 10 10:11:16 CEST 2023
+* Job name:             run_py.sh
+* Job id:               28878940
+* User:                 namourou
+* Account:              lsst
+* Submit host:          cca010
+* Partition:            htc
+* Quality of service:   normal
+* Nodelist:             ccwslurm0336
+****************************************************************
+DESC setup
+matching infos
+completeness
+purity
+overmerging & fragmentation
+Using catalogs located at : /sps/lsst/groups/clusters/amico_validation_project/catalogs/matching_cats/amico_cosmoDC2/mag_i/
+Traceback (most recent call last):
+  File "/pbs/home/n/namourou/test_jupyter/cluster_challenge/performance/overmerging.py", line 27, in <module>
+    outpath += matching + '_matching/'  
+NameError: name 'matching' is not defined
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+Date: Wed May 10 10:11:59 CEST 2023
+Job informations can be found using these commands:
+Accounting:
+sacct -j 28878940
+Efficiency:
+seff 28878940
+****************************************************************

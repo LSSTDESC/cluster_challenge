@@ -1,0 +1,32 @@
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+* Date:                 Mon May 22 14:09:22 CEST 2023
+* Job name:             run_py.sh
+* Job id:               30257309
+* User:                 namourou
+* Account:              lsst
+* Submit host:          cca007
+* Partition:            htc
+* Quality of service:   normal
+* Nodelist:             ccwslurm0338
+****************************************************************
+DESC setup
+GO1
+charged: amico_cosmoDC2 p_matching
+/var/spool/slurmd/job30257309/slurm_script: line 11: 47100 Killed                  python /pbs/home/n/namourou/test_jupyter/cluster_challenge/matching/clevar_matching.py ${param1} ${param2}
+G02
+GO3
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+Date: Mon May 22 14:17:15 CEST 2023
+Job informations can be found using these commands:
+Accounting:
+sacct -j 30257309
+Efficiency:
+seff 30257309
+****************************************************************
+slurmstepd: error: Detected 1 oom-kill event(s) in StepId=30257309.batch. Some of your processes may have been killed by the cgroup out-of-memory handler.

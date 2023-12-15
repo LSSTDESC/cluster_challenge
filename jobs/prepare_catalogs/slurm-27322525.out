@@ -1,0 +1,311 @@
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+* Date:                 Tue Apr 25 16:45:25 CEST 2023
+* Job name:             run_py.sh
+* Job id:               27322525
+* User:                 namourou
+* Account:              lsst
+* Submit host:          cca004
+* Partition:            htc
+* Quality of service:   normal
+* Nodelist:             ccwslurm0019
+****************************************************************
+DESC setup
+GO1
+Merging amico files
+Reading files at /sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/amico_cats/amico_map_associations_flxzb_mag/mag_y/ which will be saved at /sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/amico_cats/amico_map_associations_flxzb_mag/mag_y/
+processing tile = 10067
+Done
+processing tile = 10068
+Done
+processing tile = 10069
+Done
+processing tile = 10070
+Done
+processing tile = 10071
+Done
+processing tile = 10072
+Done
+processing tile = 10073
+Done
+processing tile = 10074
+Done
+processing tile = 10193
+Done
+processing tile = 10194
+Done
+processing tile = 10195
+Done
+processing tile = 10196
+Done
+processing tile = 10197
+Done
+processing tile = 10198
+Done
+processing tile = 10199
+Done
+processing tile = 10200
+Done
+processing tile = 10201
+Done
+processing tile = 10202
+Done
+processing tile = 10321
+Done
+processing tile = 10322
+Done
+processing tile = 10323
+Done
+processing tile = 10324
+Done
+processing tile = 10325
+Done
+processing tile = 10326
+Done
+processing tile = 10327
+Done
+processing tile = 10328
+Done
+processing tile = 10329
+Done
+processing tile = 10444
+Done
+processing tile = 10445
+Done
+processing tile = 10446
+Done
+processing tile = 10447
+Done
+processing tile = 10448
+Done
+processing tile = 10449
+Done
+processing tile = 10450
+Done
+processing tile = 10451
+Done
+processing tile = 10452
+Done
+processing tile = 8786
+Done
+processing tile = 8787
+Done
+processing tile = 8788
+Done
+processing tile = 8789
+Done
+processing tile = 8790
+Done
+processing tile = 8791
+Done
+processing tile = 8792
+Done
+processing tile = 8793
+Done
+processing tile = 8794
+Done
+processing tile = 8913
+Done
+processing tile = 8914
+Done
+processing tile = 8915
+Done
+processing tile = 8916
+Done
+processing tile = 8917
+Done
+processing tile = 8918
+Done
+processing tile = 8919
+Done
+processing tile = 8920
+Done
+processing tile = 8921
+Done
+processing tile = 9042
+Done
+processing tile = 9043
+Done
+processing tile = 9044
+Done
+processing tile = 9045
+Done
+processing tile = 9046
+Done
+processing tile = 9047
+Done
+processing tile = 9048
+Done
+processing tile = 9049
+Done
+processing tile = 9050
+Done
+processing tile = 9169
+Done
+processing tile = 9170
+Done
+processing tile = 9171
+Done
+processing tile = 9172
+Done
+processing tile = 9173
+Done
+processing tile = 9174
+Done
+processing tile = 9175
+Done
+processing tile = 9176
+Done
+processing tile = 9177
+Done
+processing tile = 9178
+Done
+processing tile = 9298
+Done
+processing tile = 9299
+Done
+processing tile = 9300
+Done
+processing tile = 9301
+Done
+processing tile = 9302
+Done
+processing tile = 9303
+Done
+processing tile = 9304
+Done
+processing tile = 9305
+Done
+processing tile = 9306
+Done
+processing tile = 9425
+Done
+processing tile = 9426
+Done
+processing tile = 9427
+Done
+processing tile = 9428
+Done
+processing tile = 9429
+Done
+processing tile = 9430
+Done
+processing tile = 9431
+Done
+processing tile = 9432
+Done
+processing tile = 9433
+Done
+processing tile = 9434
+Done
+processing tile = 9554
+Done
+processing tile = 9555
+Done
+processing tile = 9556
+Done
+processing tile = 9557
+Done
+processing tile = 9558
+Done
+processing tile = 9559
+Done
+processing tile = 9560
+Done
+processing tile = 9561
+Done
+processing tile = 9562
+Done
+processing tile = 9681
+Done
+processing tile = 9682
+Done
+processing tile = 9683
+Done
+processing tile = 9684
+Done
+processing tile = 9685
+Done
+processing tile = 9686
+Done
+processing tile = 9687
+Done
+processing tile = 9688
+Done
+processing tile = 9689
+Done
+processing tile = 9690
+Done
+processing tile = 9810
+Done
+processing tile = 9811
+Done
+processing tile = 9812
+Done
+processing tile = 9813
+Done
+processing tile = 9814
+Done
+processing tile = 9815
+Done
+processing tile = 9816
+Done
+processing tile = 9817
+Done
+processing tile = 9818
+Done
+processing tile = 9937
+Done
+processing tile = 9938
+Done
+processing tile = 9939
+Done
+processing tile = 9940
+Done
+processing tile = 9941
+Done
+processing tile = 9942
+Done
+processing tile = 9943
+Done
+processing tile = 9944
+Done
+processing tile = 9945
+Done
+processing tile = 9946
+Done
+G02
+Reading AMICO files
+Reading clusters at /sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/raw_amico_cats/cosmoDC2_small_photoz_flexzboost_v1_yband/map_detections_refined_noBuffer_all_noDoubles_handFix.fits 
+Reading members at /sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/amico_cats/amico_map_associations_flxzb_mag/mag_y/all_maps.fits 
+Saving table at /sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/amico_cats/amico_map_associations_flxzb_mag/mag_y/
+Number of AMICO clusters =  165149
+First 5 elements of cluster list and member list :
+  id     ra       dec      z      mass  
+--- --------- ---------- ---- ---------
+  1 50.603551 -39.582656  1.1 142.18232
+  2 50.113525  -40.03647 0.44 88.436957
+  3 50.642569 -41.397661  0.2 71.745564
+  4 50.421896 -39.587457 0.39 54.827034
+  5 51.069455 -40.426866 1.09 102.87221
+    id     id_cluster     ra    ...       mag_z              mag_y       
+---------- ---------- --------- ... ------------------ ------------------
+9439468892          1 50.603551 ... 25.020624504375387 24.812643394756247
+9439469826          1 50.603551 ... 25.000994345725978   25.0277697058334
+9439471605          1 50.603551 ... 25.083599190055413 24.852909187614006
+9439595076          1 50.603551 ...  25.17371704764027  24.75144913382191
+9439675887          1 50.603551 ... 20.831973396455204 20.540126167451298
+GO3
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+Date: Tue Apr 25 17:04:53 CEST 2023
+Job informations can be found using these commands:
+Accounting:
+sacct -j 27322525
+Efficiency:
+seff 27322525
+****************************************************************

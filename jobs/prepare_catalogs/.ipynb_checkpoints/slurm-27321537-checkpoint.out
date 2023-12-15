@@ -1,0 +1,23 @@
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+* Date:                 Tue Apr 25 16:37:28 CEST 2023
+* Job name:             run_py.sh
+* Job id:               27321537
+* User:                 namourou
+* Account:              lsst
+* Submit host:          cca004
+* Partition:            htc
+* Quality of service:   normal
+* Nodelist:             ccwslurm0343
+****************************************************************
+DESC setup
+GO1
+Merging amico files
+Reading files at /sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/amico_cats/amico_map_associations_flxzb_mag/mag_y/ which will be saved at /sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/amico_cats/amico_map_associations_flxzb_mag/mag_y/
+Traceback (most recent call last):
+  File "/pbs/home/n/namourou/test_jupyter/cluster_challenge/prepare_catalogs/merge_amico_mb.py", line 21, in <module>
+    large_amico_data = Table.read(inpath + tiles[0] + 'map_associations.fits') 
+NameError: name 'tiles' is not defined
+G02

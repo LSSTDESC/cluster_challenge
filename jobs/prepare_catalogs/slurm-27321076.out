@@ -1,0 +1,37 @@
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+* Date:                 Tue Apr 25 16:31:21 CEST 2023
+* Job name:             run_py_subp.sh
+* Job id:               27321076
+* User:                 namourou
+* Account:              lsst
+* Submit host:          cca004
+* Partition:            htc
+* Quality of service:   normal
+* Nodelist:             ccwslurm0334
+****************************************************************
+DESC setup
+GO1
+G02
+Reading amico files before merging
+Reading tile =  10196
+
+Number of clusters in tract =  1171
+Catalog created in 19.726696968078613 seconds
+created table lenght =  551634
+[10375012644, 10375014287, 10375019148, 10375019537, 10375020038] [14711.0, 14711.0, 14711.0, 14711.0, 14711.0]
+--------done--------
+GO3
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+Date: Tue Apr 25 16:32:06 CEST 2023
+Job informations can be found using these commands:
+Accounting:
+sacct -j 27321076
+Efficiency:
+seff 27321076
+****************************************************************

@@ -1,0 +1,63 @@
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+* Date:                 Tue Apr 25 16:05:23 CEST 2023
+* Job name:             run_py_subp.sh
+* Job id:               27317096
+* User:                 namourou
+* Account:              lsst
+* Submit host:          cca004
+* Partition:            htc
+* Quality of service:   normal
+* Nodelist:             ccwslurm0180
+****************************************************************
+DESC setup
+GO1
+/sps/lsst/users/namourou/conda_clone_210223/descv1.1/lib/python3.10/site-packages/astropy/table/column.py:321: FutureWarning: elementwise comparison failed; returning scalar instead, but in the future will perform elementwise comparison
+  result = getattr(super(Column, self), op)(other)
+Incorporation of magnitudes in AMICO catalog
+
+Catalog loaded at /sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/raw_amico_cats/cosmoDC2_small_photoz_flexzboost_v1_yband/DETECTIONS_DERIVED/ and will be saved in /sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/amico_cats/amico_map_associations_flxzb_mag/mag_y/
+
+processing 9942
+Healpix list : [10066, 10067, 10193, 10194, 10321, 9810, 9937, 9938] 
+Now merging all input healpix files
+Done. 
+Incorporation of magnitudes
+58294 0.1
+119655 0.2
+242377 0.4
+365099 0.6
+487821 0.8
+610543 1.0
+  GALID    FIELD_PROB ASSOC_ID  ASSOC_PROB ... mag_r mag_z mag_y mt_id_final
+---------- ---------- -------- ----------- ... ----- ----- ----- -----------
+7000000641   0.736692     2963    0.263308 ...   0.0   0.0   0.0        None
+7000001077 0.91437036     2963  0.08562964 ...   0.0   0.0   0.0        None
+7000001898  0.8890802     2963  0.11091977 ...   0.0   0.0   0.0        None
+7000002754 0.96191335     2963 0.038086675 ...   0.0   0.0   0.0        None
+7000005248  0.9880447     2963   0.0119553 ...   0.0   0.0   0.0        None
+There are : 613611 galaxies which are not found inside input catalog
+Program ran in : 213.35581636428833
+Done.
+G02
+Reading amico files before merging
+Configuration arguments:  9942
+9942 1276
+first step done in 15.703483819961548
+613611
+[8875000161, 8875000403, 8875000405, 8875000483, 8875000857] [158705.0, 158705.0, 158705.0, 158705.0, 158705.0]
+--------done--------
+GO3
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+Date: Tue Apr 25 16:10:29 CEST 2023
+Job informations can be found using these commands:
+Accounting:
+sacct -j 27317096
+Efficiency:
+seff 27317096
+****************************************************************

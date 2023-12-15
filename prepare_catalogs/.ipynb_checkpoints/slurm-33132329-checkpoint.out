@@ -1,0 +1,14 @@
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+* Date:                 Fri Jun 16 17:24:23 CEST 2023
+* Job name:             CosmoDC2_add_rich.py
+* Job id:               33132329
+* User:                 namourou
+* Account:              lsst
+* Submit host:          cca012
+* Partition:            htc
+* Quality of service:   normal
+* Nodelist:             ccwslurm0129
+****************************************************************

@@ -1,0 +1,29 @@
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+* Date:                 Mon Jun 26 11:02:01 CEST 2023
+* Job name:             run_py.sh
+* Job id:               34938231
+* User:                 namourou
+* Account:              lsst
+* Submit host:          cca013
+* Partition:            htc
+* Quality of service:   normal
+* Nodelist:             ccwslurm0089
+****************************************************************
+DESC setup
+GO1
+charged: amico_cosmoDC2 p_matching
+slurmstepd: error: *** JOB 34938231 ON ccwslurm0089 CANCELLED AT 2023-06-26T11:02:46 ***
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+Date: Mon Jun 26 11:02:46 CEST 2023
+Job informations can be found using these commands:
+Accounting:
+sacct -j 34938231
+Efficiency:
+seff 34938231
+****************************************************************

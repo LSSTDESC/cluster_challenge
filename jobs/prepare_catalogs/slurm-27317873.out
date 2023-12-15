@@ -1,0 +1,45 @@
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+* Date:                 Tue Apr 25 16:13:47 CEST 2023
+* Job name:             run_py_subp.sh
+* Job id:               27317873
+* User:                 namourou
+* Account:              lsst
+* Submit host:          cca004
+* Partition:            htc
+* Quality of service:   normal
+* Nodelist:             ccwslurm0015
+****************************************************************
+DESC setup
+GO1
+Incorporation of magnitudes in AMICO catalog
+
+Catalog loaded at /sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/raw_amico_cats/cosmoDC2_small_photoz_flexzboost_v1_yband/DETECTIONS_DERIVED/ and will be saved in /sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/amico_cats/amico_map_associations_flxzb_mag/mag_y/
+
+processing 8790
+Traceback (most recent call last):
+  File "/pbs/home/n/namourou/test_jupyter/cluster_challenge/prepare_catalogs/amico_add_mag.py", line 26, in <module>
+    tile_l = tile_t[tile_t['tile']==int(curr_tile)]['list_of_neighbour_tiles'].split(',')
+AttributeError: 'Column' object has no attribute 'split'
+G02
+Reading amico files before merging
+Configuration arguments:  8790
+8790 1215
+first step done in 12.061241865158081
+543582
+[1500009741, 1500025316, 1500026715, 1500028876, 1500031375] [51076.0, 51076.0, 51076.0, 51076.0, 51076.0]
+--------done--------
+GO3
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+Date: Tue Apr 25 16:14:05 CEST 2023
+Job informations can be found using these commands:
+Accounting:
+sacct -j 27317873
+Efficiency:
+seff 27317873
+****************************************************************
