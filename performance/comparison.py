@@ -4,50 +4,42 @@
 ###import
 import numpy as np
 import matplotlib.pyplot as plt
-from astropy.table import Table, hstack
-from astropy import units as u
-from astropy.cosmology import FlatLambdaCDM
-from astropy.io import fits
-from astropy.io import ascii
-import numpy as np
-from scipy.optimize import curve_fit
+from astropy.table import Table
 import sys
 import os
-import shutil
-import pickle
-import math
-from scipy.optimize import minimize
 
 ###clevar
 import clevar
 from clevar.catalog import ClCatalog
-from clevar.match import ProximityMatch
-from clevar.match import get_matched_pairs
-from clevar.match_metrics import scaling
-from clevar.match_metrics import recovery
-from clevar.match_metrics import distances
-from clevar.match_metrics.recovery import ClCatalogFuncs as r_cf
-from clevar.match import output_matched_catalog
 
-matching_folder_1 = '/sps/lsst/groups/clusters/redmapper_validation_project/cosmoDC2_v1.1.4/extragal/after_matching/v0/'
-matching_folder_2 = '/sps/lsst/groups/clusters/wazp_validation_project/cosmoDC2_v1.1.4/extragal/after_matching/v0/'
+inpath = '/sps/lsst/groups/clusters/amico_validation_project/catalogs/matching_cats/'
+cat_path = inpath + str(sys.argv[1])
 
-outpath = '/pbs/home/t/tguillem/web/clusters/cluster_challenge/comparison_after_matching/'
+print('Using catalogs located at :', cat_path)
+
+##---Select catalogs to match---##
+
+outpath = '/pbs/home/n/namourou/test_jupyter/cluster_challenge/plots/'
+outpath += str(sys.argv[1])
+
+print('Saving plots at :', outpath)
 
 if os.path.exists(outpath):
      shutil.rmtree(outpath)
 os.makedirs(outpath)
 
 ##########select case
-catalog1 = 'c1.fits'
-catalog2 = 'c2.fits'
+if str(sys.argv[1]) == 'p_matching':
+    matching = 'p'
+elif str(sys.argv[1]) == 'mb_matching':
+    matching = 'mb'
+catalog1 = 'c1_' + matching + '.fits'
+catalog2 = 'c2_' + matching + '.fits'
 ##########
 
 #load c1, c2, c3 and c4
-c1 = ClCatalog.read_full(matching_folder_1 + catalog1)
-c2 = ClCatalog.read_full(matching_folder_1 + catalog2)
-c3 = ClCatalog.read_full(matching_folder_2 + catalog1)
-c4 = ClCatalog.read_full(matching_folder_2 + catalog2)
+c1 = ClCatalog.read_full(cat_path + catalog1)
+c2 = ClCatalog.read_full(cat_path + catalog2)
 
 #create a merged catalog for the cross-matched pairs
 output_matched_catalog(matching_folder_1+catalog1, matching_folder_1+catalog2,matching_folder_1+'output_catalog_12.fits', c1, c2, matching_type='cross', overwrite=True)

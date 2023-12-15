@@ -1,169 +1,187 @@
 #!/usr/bin/env python
 # coding: utf-8
-
+print('Matching Initialisation') 
 ###import
 import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib.patches import Rectangle
 from astropy.table import Table
-from astropy.coordinates import SkyCoord
-from astropy import units as u
 from astropy.cosmology import FlatLambdaCDM
-from astropy.io import fits
-from astropy.io import ascii
 import sys
 import os
-import shutil
-import pickle
 
 ###clevar
 import clevar
 from clevar.catalog import ClCatalog
 from clevar.match import ProximityMatch
 from clevar.match import MembershipMatch
-from clevar.match_metrics import scaling
-from clevar.match_metrics import recovery
-from clevar.match_metrics import distances
+from clevar.match import get_matched_pairs
+from clevar.match import output_matched_catalog
 from clevar.cosmology import AstroPyCosmology
 from clevar.match import output_catalog_with_matching
-from IPython.display import display
 
-inpath = "/sps/lsst/users/tguillem/DESC/desc_april_2022/cluster_challenge/clevar_catalogs/"
-outpath = "/sps/lsst/users/tguillem/DESC/desc_april_2022/cluster_challenge/clevar_catalogs/after_matching/member_f0_pmem_check1/"
 
-#select the catalogs to match
-wazp_cosmoDC2 = True
-redmapper_cosmoDC2 = False
-amico_cosmoDC2 = False
+#---Parameters selection---#
+##---Matching type(s)---##
+param = str(sys.argv[2])
+print('Using matching :', param)
 
-if wazp_cosmoDC2 == True:
-     #c1 = ClCatalog.read_full(inpath+'wazp/6685/ClCatalog.fits')
-     #c1_members = ClCatalog.read_full(inpath+'wazp/6685/ClCatalog_members.fits')
-     #c2 = ClCatalog.read_full(inpath+'cosmoDC2/cosmoDC2_v1.1.4_small/ClCatalog.fits')
-     #c2_members = ClCatalog.read_full(inpath+'cosmoDC2/cosmoDC2_v1.1.4_small/ClCatalog_members.fits')
-     c1  = ClCatalog.read(inpath+'wazp/6980/Catalog.fits', 'c1', id='id', ra='ra', dec='dec', z='z', mass='mass')
-     #c1_members = ClCatalog.read(inpath+'wazp/6685/Catalog_members.fits', 'c1_members', id='id', id_cluster='id_cluster', ra='ra', dec='dec', z='z', pmem='pmem')
-     c1.read_members(inpath+'wazp/6980/Catalog_members.fits',id='id', id_cluster='id_cluster', ra='ra', dec='dec', z='z', pmem='pmem')
-     #c2  = ClCatalog.read(inpath+'cosmoDC2/with_m200c/cosmoDC2_v1.1.4/Catalog.fits', 'c2', id='id', ra='ra', dec='dec', z='z', mass='mass', log_mass='log_mass', m200c='m200c', log_m200c='log_m200c')
-     #c2_members = ClCatalog.read(inpath+'cosmoDC2/cosmoDC2_v1.1.4_small/Catalog_members.fits', 'c2_members', id='id', id_cluster='id_cluster', ra='ra', dec='dec', z='z', pmem='pmem')
-     #c2.read_members(inpath+'cosmoDC2/with_m200c/cosmoDC2_v1.1.4/Catalog_members.fits', id='id', id_cluster='id_cluster', ra='ra', dec='dec', z='z', pmem='pmem')
-     #same as the one used for the redmapper reference case
-     c2  = ClCatalog.read(inpath+'/cosmoDC2/m200c_gt_13.0/cosmoDC2_v1.1.4/Catalog.fits', 'c2', id='id', ra='ra', dec='dec', z='z', mass='mass', log_mass='log_mass', m200c='m200c', log_m200c='log_m200c')
-     c2.read_members(inpath+'/cosmoDC2/m200c_gt_13.0/cosmoDC2_v1.1.4/Catalog_members.fits', id='id', id_cluster='id_cluster', ra='ra', dec='dec', z='z', pmem='pmem')
-elif redmapper_cosmoDC2 == True:
-     c1  = ClCatalog.read(inpath+'redmapper/full_pmem/cosmoDC2_v1.1.4_redmapper_v0.8.1/Catalog.fits', 'c1', id='id', ra='ra', dec='dec', z='z', mass='mass')
-     #c1_members = ClCatalog.read(inpath+'redmapper/cosmoDC2_v1.1.4_redmapper_v0.8.1/Catalog_members.fits', 'c1_members', id='id', id_cluster='id_cluster', ra='ra', dec='dec',pmem='pmem')
-     c1.read_members(inpath+'redmapper/full_pmem/cosmoDC2_v1.1.4_redmapper_v0.8.1/Catalog_members.fits', id='id', id_cluster='id_cluster', ra='ra', dec='dec',pmem='pmem')
-     #c2  = ClCatalog.read(inpath+'cosmoDC2/cosmoDC2_v1.1.4_small/Catalog.fits', 'c2', id='id', ra='ra', dec='dec', z='z', mass='mass', log_mass='log_mass', m200c='m200c', log_m200c='log_m200c')
-     #c2_members = ClCatalog.read(inpath+'cosmoDC2/cosmoDC2_v1.1.4_small/Catalog_members.fits', 'c2_members', id='id', id_cluster='id_cluster', ra='ra', dec='dec', z='z', pmem='pmem')
-     #c2.read_members(inpath+'cosmoDC2/cosmoDC2_v1.1.4_small/Catalog_members.fits', id='id', id_cluster='id_cluster', ra='ra', dec='dec', z='z', pmem='pmem')
-     #m200c
-     c2  = ClCatalog.read(inpath+'/cosmoDC2/m200c_gt_13.0/cosmoDC2_v1.1.4/Catalog.fits', 'c2', id='id', ra='ra', dec='dec', z='z', mass='mass', log_mass='log_mass', m200c='m200c', log_m200c='log_m200c')
-     c2.read_members(inpath+'/cosmoDC2/m200c_gt_13.0/cosmoDC2_v1.1.4/Catalog_members.fits', id='id', id_cluster='id_cluster', ra='ra', dec='dec', z='z', pmem='pmem')
-elif amico_cosmoDC2 == True:
-     c1  = ClCatalog.read(inpath+'amico/test/Catalog.fits', 'c1', id='id', ra='ra', dec='dec', z='z', mass='mass')
-     #c1_members = ClCatalog.read(inpath+'redmapper/cosmoDC2_v1.1.4_redmapper_v0.8.1/Catalog_members.fits', 'c1_members', id='id', id_cluster='id_cluster', ra='ra', dec='dec',pmem='pmem')
-     #c1.read_members(inpath+'redmapper/cosmoDC2_v1.1.4_redmapper_v0.8.1/Catalog_members.fits', id='id', id_cluster='id_cluster', ra='ra', dec='dec',pmem='pmem')
-     #c2  = ClCatalog.read(inpath+'cosmoDC2/cosmoDC2_v1.1.4_small/Catalog.fits', 'c2', id='id', ra='ra', dec='dec', z='z', mass='mass', log_mass='log_mass', m200c='m200c', log_m200c='log_m200c')
-     c2  = ClCatalog.read(inpath+'cosmoDC2/with_m200c/cosmoDC2_v1.1.4/Catalog.fits', 'c2', id='id', ra='ra', dec='dec', z='z', mass='mass', log_mass='log_mass', m200c='m200c', log_m200c='log_m200c')
-     #c2  = ClCatalog.read(inpath+'cosmoDC2/cosmoDC2_v1.1.4_small/Catalog.fits', 'c2', tags={'id':'id', 'ra':'ra', 'dec':'dec', 'z':'z', 'mass':'mass', 'log_mass':'log_mass'})
-     #c2  = ClCatalog.read(inpath+'cosmoDC2/cosmoDC2_v1.1.4_small/Catalog.fits', 'c2', full=True, id='id')
-     #c2_members = ClCatalog.read(inpath+'cosmoDC2/cosmoDC2_v1.1.4_small/Catalog_members.fits', 'c2_members', id='id', id_cluster='id_cluster', ra='ra', dec='dec', z='z', pmem='pmem')
-     #c2.read_members(inpath+'cosmoDC2/cosmoDC2_v1.1.4_small/Catalog_members.fits', id='id', id_cluster='id_cluster', ra='ra', dec='dec', z='z', pmem='pmem')
+##---Select catalogs to match---##
+catalog = str(sys.argv[1])
+cut = str(sys.argv[3])
+#cut = ''
+print('Opening catalogs : ', catalog, cut)
+
+
+
+#---Paths---#
+
+inpath = "/sps/lsst/groups/clusters/amico_validation_project/catalogs/"
+
+#cosmoDC2
+#amico_path_i = inpath + 'AMICO/amico_cats/amico_map_associations_flxzb_mag/mag_i/'
+#amico_path_y = inpath + 'AMICO/amico_cats/amico_map_associations_flxzb_mag/mag_y/'
+#amico_path = amico_path_i
+#DC2
+amico_path = inpath + "AMICO/amico_cats/DC2/mag_y/"
+
+rm_path = '/sps/lsst/users/tguillem/DESC/desc_april_2022/cluster_challenge/clevar_catalogs/redmapper/full_pmem/cosmoDC2_v1.1.4_redmapper_v0.8.1/'
+#rm_path = '/sps/lsst/groups/clusters/amico_validation_project/catalogs/RedMapper/' #Uncomment when cut on redMaPPer is performed
+
+#cdc2_path = '/sps/lsst/users/tguillem/DESC/desc_april_2022/cluster_challenge/clevar_catalogs/cosmoDC2/m200c_gt_13.0/cosmoDC2_v1.1.4_image/'
+#cdc2_path = "/sps/lsst/groups/clusters/amico_validation_project/catalogs/CosmoDC2/cosmoDC2_photoz_flexzboost/m14/" #Uncomment when cut on cosmoDC2 is performed
+
+dc2_path = ""
+
+outpath = "/sps/lsst/groups/clusters/amico_validation_project/catalogs/matching_cats/"
+
+
+#---Reading catalogs---#
+
+if catalog == 'amico_cosmoDC2':
+    print('AMICO CosmoDC2 matching')
+    path1 = amico_path + 'cuts/'
+    path2 = cdc2_path
+    cut1 = cut
+    cut2 = ''
+    c1 = ClCatalog.read(amico_path + 'cuts/Catalog' + cut1 + '.fits', 'c1', full = True)
+    c1.read_members(amico_path + 'cuts/Catalog_members' + cut1 + '.fits', full = True)
+    c2 = ClCatalog.read(dc2_path + 'Catalog' + cut2 + '.fits', 'c2', full = True)
+    c2.read_members(dc2_path + 'Catalog_members' + cut2 + '.fits', full = True)
+    matching = 'amico_cosmoDC2/mag_i/w_rich/m14/cuts/'
+    
+elif catalog == 'amico_redmapper':
+    print('AMICO RedMapper matching')
+    path1 = amico_path
+    path2 = rm_path
+    cut1 = '_sn5'
+    cut2 = '_ls12'
+    c1 = ClCatalog.read(amico_path + 'Catalog' + cut1 + '.fits', 'c1', full = True)
+    c1.read_members(amico_path + 'Catalog_members' + cut1 + '.fits', full = True)
+    c2 = ClCatalog.read(rm_path + 'Catalog' + cut2 + '.fits', 'c2', full = True)
+    c2.read_members(rm_path + 'Catalog_members' + cut2 + '.fits', full = True)  
+    matching = 'amico_redmapper/mag_i/'
+    
+elif catalog == 'redmapper_cosmoDC2':
+    path1 = rm_path
+    path2 = dc2_path
+    cut1 = ''
+    cut2 = ''
+    print('RedMapper CosmoDC2 matching')
+    c1  = ClCatalog.read(rm_path + 'Catalog' + cut1 + '.fits', 'c2', full = True)
+    c1.read_members(rm_path + 'Catalog_members' + cut1 + '.fits', full = True)
+    c2 = ClCatalog.read(dc2_path + 'Catalog' + cut2 + '.fits', 'c2', full = True)
+    c2.read_members(dc2_path + 'Catalog_members' + cut2 + '.fits', full = True)
+    matching = 'redmapper_cosmoDC2/'
+    
+elif catalog == 'amico_amico':
+    print('AMICO AMICO match')
+    c1 = ClCatalog.read(amico_path_i + 'Catalog.fits', 'c1', full = True)
+    c1.read_members(amico_path_i + 'Catalog_members.fits', full = True)
+    c2 = ClCatalog.read(amico_path_y + 'Catalog.fits', 'c2', full = True)
+    c2.read_members(amico_path_y + 'Catalog_members.fits', full = True)
+    matching = 'amico_amico/'
+
 else:
-     print('Catalog selection is wrong.')
-     sys.exit()
+    print('Catalog selection is wrong.')
+    sys.exit()
 
-#create final output folder
-matching = 'default'
-if (wazp_cosmoDC2 == True):
-     matching = 'wazp_cosmoDC2'
-elif (redmapper_cosmoDC2 == True):
-     matching = 'redmapper_cosmoDC2'
-elif (amico_cosmoDC2 == True):
-     matching = 'amico_cosmoDC2'
-outpath = outpath + matching + '/'
+    
+#---Condition---#
+"""
+#c2 = c2[c2['z']<1.15]
+#c2.members = c2.members[c2.members['z']<1.15]
+"""
 
-if os.path.exists(outpath):
-     shutil.rmtree(outpath)
-os.makedirs(outpath)
-print('outpath = ' + outpath)
 
-#define catalogs without members
-#c1_raw = c1.raw()
-#c2_raw = c2.raw()
-#print(c2.data)
-###perform proximity matching
-if False:
-     mt = ProximityMatch()
+#---Create final output folder---#
 
-     #old way but working     
-     #mt_config1 = {'delta_z':0.05,
-     #              'match_radius': '1 mpc',
-     #              'cosmo':AstroPyCosmology()}
-     #mt_config2 = {'delta_z':0.05,
-     #              'match_radius': '1 mpc',
-     #              'cosmo':AstroPyCosmology()}
-     #mt.prep_cat_for_match(c1_raw, **mt_config1)
-     #mt.prep_cat_for_match(c2_raw, **mt_config2)
-     #mt.multiple(c1_raw, c2_raw)
-     #mt.multiple(c2_raw, c1_raw)
-     #mt.unique(c1_raw, c2_raw, preference='angular_proximity')
-     #mt.unique(c2_raw, c1_raw, preference='angular_proximity')
-     #c1_raw.cross_match()
-     #c2_raw.cross_match()
+outpath += matching + ''
+if not os.path.exists(outpath):
+    os.makedirs(outpath)
+print('outpath = ', outpath)
 
-     #new way
-     match_config = {
-          'type': 'cross', # options are cross, cat1, cat2
-          'which_radius': 'max', # Case of radius to be used, can be: cat1, cat2, min, max
-          'preference': 'angular_proximity', # options are more_massive, angular_proximity or redshift_proximity
-          'catalog1': {'delta_z':.05,
-                       'match_radius': '1 mpc'
-                       },
-          'catalog2': {'delta_z':.05,
-                       'match_radius': '1 mpc'
-                       }
-          }
-     cosmo = AstroPyCosmology()
-     #tmp: remove _raw
-     mt.match_from_config(c1, c2, match_config, cosmo=cosmo)
-     c1.cross_match()
-     c2.cross_match()
 
-     c1.write(outpath + 'c1.fits', overwrite=True)
-     c2.write(outpath + 'c2.fits', overwrite=True)
-     mt.save_matches(c1, c2, out_dir=outpath, overwrite=True)
-     
-     #to print summary
-     mt.load_matches(c1, c2, out_dir=outpath)
-     display(c1)
-     display(c2)
+#---Matchings---#
 
-###perform member matching
-if True:
-     mt = MembershipMatch()
-     match_config = {
-          'type': 'cross', # options are cross, cat1, cat2
-          'preference': 'shared_member_fraction', # other options are more_massive, angular_proximity or redshift_proximity
-          'minimum_share_fraction': 0.0,
-          'match_members_kwargs': {'method':'id'},
-          }
-     mt.match_from_config(c1, c2, match_config)
 
-     #to investigate matching issues
-     mt.fill_shared_members(c1, c2)
-     mt.save_shared_members(c1, c2, fileprefix='mem_share')
+##---Proximity matching---##
 
-     #c1_raw.cross_match()
-     #c2_raw.cross_match()
-     c1.write(outpath + 'c1.fits', overwrite=True)
-     c2.write(outpath + 'c2.fits', overwrite=True)
-     mt.save_matches(c1, c2, out_dir=outpath, overwrite=True) 
+if param == 'p_matching':
+    
+    print('Proximity matching is processing')
+    
+    #Define catalogs without members
+    c1_raw = c1.raw()
+    c2_raw = c2.raw()
+    
+    mt = ProximityMatch()
+    match_config = {
+      'type': 'cross', # options are cross, cat1, cat2
+      'which_radius': 'max', # Case of radius to be used, can be: cat1, cat2, min, max
+      'preference': 'angular_proximity', # options are more_massive, angular_proximity or redshift_proximity
+      'catalog1': {'delta_z':.05,
+                   'match_radius': '1 mpc'
+                   },
+      'catalog2': {'delta_z':.05,
+                   'match_radius': '1 mpc'
+                   }
+      }
+    cosmo = AstroPyCosmology()
+    #mt.match_from_config(c1_raw, c2_raw, match_config, cosmo=cosmo)
+    mt.match_from_config(c1_raw, c2_raw, match_config, cosmo=cosmo)
+    c1_raw.write(outpath + 'c1_p' + cut1 + cut2 + '.fits', overwrite=True)
+    c2_raw.write(outpath + 'c2_p' + cut1 + cut2 + '.fits', overwrite=True)
+    c1_m = c1_raw[c1_raw['mt_cross'] != None]
+    c2_m = c2_raw[c2_raw['mt_cross'] != None]
+    c1_m.read_members(path1 + 'Catalog_members' + cut1 + '.fits', full = True)
+    c2_m.read_members(path2 + 'Catalog_members' + cut2 + '.fits', full = True)  
+    c1_m.members.write(outpath + 'c1_p_members' + cut1 + cut2 + '.fits', overwrite=True)
+    c2_m.members.write(outpath + 'c2_p_members' + cut1 + cut2 + '.fits', overwrite=True)
+    output_matched_catalog(outpath + 'c1_p' + cut1 + cut2 + '.fits', outpath + 'c2_p' + cut1 + cut2 + '.fits', outpath + 'output_catalog_p' + cut1 + cut2 + '.fits', c1_raw, c2_raw, matching_type='cross', overwrite = True)
 
-     #to print summary
-     mt.load_matches(c1, c2, out_dir=outpath)
-     display(c1)
-     display(c2)
+##---Membership matching---##
 
+elif param == 'mb_matching' :
+    
+    print('Membership matching is performing')
+    
+    fshare = 0.00
+    print('fshare = ', fshare)
+    outpath += str(fshare) + '/'
+    if not os.path.exists(outpath):
+        os.makedirs(outpath)
+    mt = MembershipMatch()
+    match_config = {
+      'type': 'cross', # options are cross, cat1, cat2
+      'preference': 'shared_member_fraction', # other options are more_massive, angular_proximity or redshift_proximity
+      'minimum_share_fraction1' : fshare,
+      'minimum_share_fraction2' : fshare,
+      'match_members_kwargs': {'method':'id'},
+      }
+    mt.match_from_config(c1, c2, match_config)
+    c1.write(outpath + 'c1_mb.fits', overwrite=True)
+    c2.write(outpath + 'c2_mb.fits', overwrite=True)
+    mt.save_matches(c1, c2, out_dir=outpath, overwrite=True) 
+    output_matched_catalog(outpath + 'c1_mb.fits', outpath + 'c2_mb.fits', outpath + 'output_catalog_mb.fits', c1, c2, matching_type='cross', overwrite = True)
+
+    
 sys.exit()

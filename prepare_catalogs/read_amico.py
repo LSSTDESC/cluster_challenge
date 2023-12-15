@@ -1,77 +1,52 @@
 #!/usr/bin/env python
 # coding: utf-8
-
+print('Reading AMICO files')
 ###import
 import GCRCatalogs
-from GCRCatalogs.helpers.tract_catalogs import tract_filter, sample_filter
 import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib.patches import Rectangle
 from astropy.table import Table
-from astropy.coordinates import SkyCoord
-from astropy import units as u
-from astropy.cosmology import FlatLambdaCDM
-from astropy.io import fits
-from astropy.io import ascii
 import sys
 import os
-import shutil
-import pickle
-import healpy as hp
-import h5py
 import pandas as pd
 
-from wazp_functions import *
 
-###clevar
-import clevar
-from clevar import ClCatalog
-from clevar.match import ProximityMatch
-from clevar.match_metrics import scaling
-from clevar.match_metrics import recovery
-from clevar.match_metrics import distances
+#---Paths---#
 
-#outpath
-algo = 'AMICO'
-catalog_amico = 'test'
+cl_inpath = '/sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/raw_amico_cats/cosmoDC2_photoz_flexzboost_v1_iband/map_detections_refined_noBuffer_all_noDoubles.fits'
 
-outpath = "/sps/lsst/users/tguillem/DESC/desc_april_2022/cluster_challenge/clevar_catalogs/amico/" + catalog_amico + "/"
+mb_inpath = '/sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/amico_cats/amico_map_associations_flxzb_mag/mag_i/all_maps.fits'
 
-if os.path.exists(outpath):
-     shutil.rmtree(outpath)
-os.makedirs(outpath)
-print('outpath = ' + outpath)
+outpath = '/sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/amico_cats/amico_map_associations_flxzb_mag/mag_i/cuts/'
+print('Reading clusters at', cl_inpath, '\nReading members at', mb_inpath, '\nSaving table at', outpath)
 
-#richness and mass cuts
-min_richness = 0
-inpath = '/sps/lsst/users/tguillem/DESC/desc_april_2022/cluster_challenge/clevar_catalogs/amico/map_detections_refined_noBuffer_all.fits'
 
-amico_data = Table.read(inpath) 
-#print(cat_amico)
-print(amico_data.colnames)
+#---Reading tables---#
 
-####General catalog properties
-print("Number of AMICO clusters = ", len(amico_data))
+amico_cl_data = Table.read(cl_inpath)['ID', 'Xphys', 'Yphys', 'Zphys','LAMBSTAR', 'SN_NO_CLUSTER', 'SN', 'UID', 'TILE']    
+c1 = Table([amico_cl_data['UID'],amico_cl_data['Xphys'],amico_cl_data['Yphys'],amico_cl_data['Zphys'],amico_cl_data['LAMBSTAR'], amico_cl_data['SN']],names=('id','ra','dec','z','mass','sn'))
+print("Number of AMICO clusters = ", len(amico_cl_data))
 
-#create clevar catalog
-#c1 = ClCatalog('Cat1', ra=wazp_data['ra'], dec=wazp_data['dec'], z=wazp_data['redshift'], mass = wazp_data['NGALS'], id=wazp_data['ID'])
-c1 = Table([amico_data['uid'],amico_data['Xphys'],amico_data['Yphys'],amico_data['Zphys'],amico_data['LAMBSTAR']],names=('id','ra','dec','z','mass'))
-#fix by hand the id issue
-#c1.add_column(1.0, name='id', index=1)
-#for i in range(0,len(c1)):
-#     c1['id'][i]=i+1
-#c1['id']=c1['id'].astype(int)
+mb_amico_data = Table.read(mb_inpath)
+c1_members = Table([mb_amico_data['mb_id'],mb_amico_data['uid'].astype(int),mb_amico_data['ra'],mb_amico_data['dec'],mb_amico_data['z'],mb_amico_data['prob'], mb_amico_data['f_prob'], mb_amico_data['lambstar'], mb_amico_data['mag_g'], mb_amico_data['mag_i'], mb_amico_data['mag_r'], mb_amico_data['mag_z'], mb_amico_data['mag_y'],mb_amico_data['SN']], names=('id','id_cluster','ra','dec','z','pmem', 'f_prob', 'lambstar', 'mag_g', 'mag_i', 'mag_r', 'mag_z', 'mag_y', 'sn'))
 
-#add members
-#c1.add_members(id=wazp_members_data['ID_g'], id_cluster=wazp_members_data['ID_CLUSTER'], ra=wazp_members_data['ra'], dec=wazp_members_data['dec'], pmem=wazp_members_data['PMEM'])
-#c1_members = Table([wazp_members_data['ID_g'],wazp_members_data['ID_CLUSTER'],wazp_members_data['ra'],wazp_members_data['dec'],wazp_members_data['redshift'],wazp_members_data['PMEM']],names=('id','id_cluster','ra','dec','z','pmem'))
-#print(c1)
-#print(c1.members)
-#c1.write(outpath + 'ClCatalog.fits', overwrite=True)
-#c1.members.write(outpath + 'ClCatalog_members.fits', overwrite=True)
-print(c1)
-#print(c1_members)
-c1.write(outpath + 'Catalog.fits', overwrite=True)
-#c1_members.write(outpath + 'Catalog_members.fits', overwrite=True)
+
+#---Adding cuts---#
+
+
+#z_max = 2
+sn_min = 8
+#ls_min = 38
+c1 = c1[(c1['sn']>=sn_min)]
+c1_members = c1_members[(c1_members['sn']>=sn_min)]
+
+
+print('First 5 elements of cluster list and member list :\n', c1[:5])
+print(c1_members[:5])
+
+
+#---Saving---#
+
+c1.write(outpath + 'Catalog_sn8.fits', overwrite=True)
+c1_members.write(outpath + 'Catalog_members_sn8.fits', overwrite=True)
 
 sys.exit()
