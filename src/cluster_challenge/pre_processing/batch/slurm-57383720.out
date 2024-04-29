@@ -1,0 +1,65 @@
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+* Date:                 Mon Dec 11 14:11:26 CET 2023
+* Job name:             run_batch.sh
+* Job id:               57383720
+* User:                 namourou
+* Account:              lsst
+* Submit host:          cca013
+* Partition:            lsst
+* Quality of service:   normal
+* Nodelist:             ccwslurm2012
+****************************************************************
+DESC setup
+GO1
+GO2
+Processing AMICO members catalogs
+
+Catalog loaded at /sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/raw_amico_cats/DC2_v0_yband/output/DETECTIONS_DERIVED/ and will be saved in /sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/amico_cats/DC2/mag_y/
+
+Processing 3263
+
+Reading members table
+Neighbour healpix list (including current healpix) : [3263, 3449, 3448, 3447, 3264, 3262, 3082, 3081, 3080] 
+Now merging all input healpix files
+Done. 
+Incorporation of magnitudes
+32326 0.1
+66353 0.2
+134406 0.4
+202459 0.6
+270513 0.8
+338566 1.0
+      GALID       FIELD_PROB ASSOC_ID ...       redshift      mt_id_final
+----------------- ---------- -------- ... ------------------- -----------
+14346427719222729 0.97613245      489 ...  1.1141830682754517     4041098
+14346427719223133  0.9478704      489 ...  0.9507999420166016     4041173
+14346427719223228  0.8888778       92 ... 0.46038150787353516     4041185
+14346427719223319  0.8663544       92 ... 0.40312838554382324     4041208
+14346427719223373  0.8812785       92 ... 0.42619889974594116     4041216
+There are : 0 galaxies which are not found inside input catalog
+Magnitudes added in : 298.4546973705292
+Now saving...
+Done.
+Now adding clusters informations...
+Reading clusters at /sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/raw_amico_cats/DC2_v0_yband/map_detections_refined_noBuffer_all_noDoubles.fits 
+Saving table at /sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/amico_cats/DC2/mag_y/
+Number of clusters in tract =  585
+Catalog created in 300.48232436180115 seconds
+created table lenght =  340267
+[14351534435336640, 14351534435336717, 14351534435336747, 14351534435336962, 14351534435337003] [16692.0, 16692.0, 16692.0, 16692.0, 16692.0]
+Done.
+GO3
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+Date: Mon Dec 11 14:16:35 CET 2023
+Job informations can be found using these commands:
+Accounting:
+sacct -j 57383720
+Efficiency:
+seff 57383720
+****************************************************************

@@ -1,0 +1,31 @@
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+* Date:                 Mon Dec 11 13:56:43 CET 2023
+* Job name:             run_batch.sh
+* Job id:               57379052
+* User:                 namourou
+* Account:              lsst
+* Submit host:          cca013
+* Partition:            lsst
+* Quality of service:   normal
+* Nodelist:             ccwslurm2011
+****************************************************************
+DESC setup
+GO1
+/var/spool/slurmd/job57379052/slurm_script: line 18: cd: /pbs/home/n/namourou/workspace/cluster_challenge/pre_processing/AMICO/: No such file or directory
+GO2
+python: can't open file 'amico_members_preproc.py': [Errno 2] No such file or directory
+GO3
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+Date: Mon Dec 11 13:56:47 CET 2023
+Job informations can be found using these commands:
+Accounting:
+sacct -j 57379052
+Efficiency:
+seff 57379052
+****************************************************************

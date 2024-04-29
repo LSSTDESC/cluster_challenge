@@ -1,0 +1,48 @@
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+* Date:                 Mon Dec 11 13:58:36 CET 2023
+* Job name:             run_batch.sh
+* Job id:               57379640
+* User:                 namourou
+* Account:              lsst
+* Submit host:          cca013
+* Partition:            lsst
+* Quality of service:   normal
+* Nodelist:             ccwslurm2008
+****************************************************************
+DESC setup
+GO1
+GO2
+Processing AMICO members catalogs
+
+Catalog loaded at /sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/raw_amico_cats/DC2_v0_yband/output/DETECTIONS_DERIVED/ and will be saved in /sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/amico_cats/DC2/mag_y/
+
+Processing 4428
+
+Reading members table
+Traceback (most recent call last):
+  File "amico_members_preproc.py", line 48, in <module>
+    mbn = Table.read(inpath + str(curr_tile) + '_map_associations_noBuffer.fits')
+  File "/sps/lsst/users/tguillem/DESC/desc_april_2022/lib/python3.8/site-packages/astropy/table/connect.py", line 61, in __call__
+    out = registry.read(cls, *args, **kwargs)
+  File "/sps/lsst/users/tguillem/DESC/desc_april_2022/lib/python3.8/site-packages/astropy/io/registry.py", line 512, in read
+    fileobj = ctx.__enter__()
+  File "/sps/lsst/users/tguillem/DESC/desc_april_2022/lib/python3.8/contextlib.py", line 113, in __enter__
+    return next(self.gen)
+  File "/sps/lsst/users/tguillem/DESC/desc_april_2022/lib/python3.8/site-packages/astropy/utils/data.py", line 262, in get_readable_fileobj
+    fileobj = io.FileIO(name_or_obj, 'r')
+FileNotFoundError: [Errno 2] No such file or directory: '/sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/raw_amico_cats/DC2_v0_yband/output/DETECTIONS_DERIVED/4428_map_associations_noBuffer.fits'
+GO3
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+Date: Mon Dec 11 14:00:12 CET 2023
+Job informations can be found using these commands:
+Accounting:
+sacct -j 57379640
+Efficiency:
+seff 57379640
+****************************************************************

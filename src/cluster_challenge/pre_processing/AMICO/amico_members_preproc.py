@@ -14,12 +14,12 @@ start = time.time()
 # ---Paths---#
 
 ###CosmoDC2
-neighbours_path = '/sps/lsst/groups/clusters/amico_validation_project/catalogs/CosmoDC2/cosmodc2_neighbours.fits'
-healpath = '/sps/lsst/users/tguillem/web/clusters/catalogs/cosmoDC2_photoz_flexzboost/v1/'
+#neighbours_path = '/sps/lsst/groups/clusters/amico_validation_project/catalogs/CosmoDC2/cosmodc2_neighbours.fits'
+#healpath = '/sps/lsst/users/tguillem/web/clusters/catalogs/cosmoDC2_photoz_flexzboost/v1/'
 ####iband
-inpath = "/sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/raw_amico_cats/cosmoDC2_photoz_flexzboost_v1_iband/DETECTIONS_DERIVED/"
-outpath = '/sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/amico_cats/amico_map_associations_flxzb_mag/mag_i/'
-cl_inpath = '/sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/raw_amico_cats/cosmoDC2_photoz_flexzboost_v1_iband/map_detections_refined_noBuffer_all_noDoubles.fits'
+#inpath = "/sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/raw_amico_cats/cosmoDC2_photoz_flexzboost_v1_iband/DETECTIONS_DERIVED/"
+#outpath = '/sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/amico_cats/amico_map_associations_flxzb_mag/mag_i/'
+#cl_inpath = '/sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/raw_amico_cats/cosmoDC2_photoz_flexzboost_v1_iband/map_detections_refined_noBuffer_all_noDoubles.fits'
 ####yband
 #inpath = "/sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/raw_amico_cats/cosmoDC2_photoz_flexzboost_v1_yband/DETECTIONS_DERIVED/"
 #outpath = '/sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/amico_cats/amico_map_associations_flxzb_mag/mag_y/'
@@ -28,11 +28,11 @@ cl_inpath = '/sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/r
 
 ###DC2
 ####yband
-#inpath = '/sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/raw_amico_cats/DC2_v0_yband/output/DETECTIONS_DERIVED/'
-#outpath = '/sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/amico_cats/DC2/mag_y/'
-#neighbours_path = '/sps/lsst/groups/clusters/amico_validation_project/catalogs/DC2/dc2_neighbours.fits'
-#healpath = "/sps/lsst/users/tguillem/web/clusters/catalogs/DC2_photoz_flexzboost/v0/"
-#cl_inpath = '/sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/raw_amico_cats/DC2_v0_yband/map_detections_refined_noBuffer_all_noDoubles.fits'
+inpath = '/sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/raw_amico_cats/DC2_v0_yband/output/DETECTIONS_DERIVED/'
+outpath = '/sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/amico_cats/DC2/mag_y/'
+neighbours_path = '/sps/lsst/groups/clusters/amico_validation_project/catalogs/DC2/dc2_neighbours.fits'
+healpath = "/sps/lsst/users/tguillem/web/clusters/catalogs/DC2_photoz_flexzboost/v0/"
+cl_inpath = '/sps/lsst/groups/clusters/amico_validation_project/catalogs/AMICO/raw_amico_cats/DC2_v0_yband/map_detections_refined_noBuffer_all_noDoubles.fits'
 
 print('\nCatalog loaded at', inpath, 'and will be saved in', outpath)
 
@@ -66,12 +66,12 @@ print('Done. \nIncorporation of magnitudes')
 heal_dict = {}
 
 #CosmoDC2
-for i, ID in enumerate(large_heal['galaxy_id']):
-    heal_dict[ID] = heal_dict.get(ID, [])+[i]
+#€for i, ID in enumerate(large_heal['galaxy_id']):
+#    heal_dict[ID] = heal_dict.get(ID, [])+[i]
 
 #DC2
-#for i, ID in enumerate(large_heal['id']):
-#    heal_dict[ID] = heal_dict.get(ID, [])+[i]
+for i, ID in enumerate(large_heal['id']):
+    heal_dict[ID] = heal_dict.get(ID, [])+[i]
 mbn['matched'] = np.array([i in heal_dict for i in mbn['GALID']])
 mbn['mt_ids'] = None
 for i, ID in enumerate(mbn['GALID']):
