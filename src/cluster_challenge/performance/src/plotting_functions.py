@@ -15,7 +15,7 @@ from scipy.special import erf
 
 from src.plot_style import set_style, figsize
 import src.saving_figures as sfigs
-from fit_func import linear, lawnchair, gauss
+from src.fit_func import linear, lawnchair, gauss
 
 
 ## Initialize style for plots.

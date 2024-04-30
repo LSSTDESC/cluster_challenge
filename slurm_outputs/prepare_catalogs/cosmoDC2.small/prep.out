@@ -1,0 +1,29 @@
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+* Date:                 Wed Apr 24 16:06:20 CEST 2024
+* Job name:             prepare_catalogs
+* Job id:               9748983
+* User:                 rsolomon
+* Account:              lsst
+* Submit host:          cca019
+* Partition:            lsst
+* Quality of service:   normal
+* Nodelist:             ccwslurm2011
+****************************************************************
+Producing reduced cosmoDC2.small catalog
+outpath = /sps/lsst/groups/clusters/cluster_comparison_project/before_matching/halos/cosmoDC2.small/
+['id_mb', 'clid_mb', 'halo_mass', 'is_central', 'ra_true', 'dec_true', 'ra_mb', 'dec_mb', 'mag_u', 'mag_r', 'mag_g', 'mag_i', 'mag_z', 'mag_y', 'z_mb']
+['id_mb', 'clid_mb', 'halo_mass', 'is_central', 'ra_true', 'dec_true', 'ra_mb', 'dec_mb', 'mag_u', 'mag_r', 'mag_g', 'mag_i', 'mag_z', 'mag_y', 'z_mb', 'pmem']
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+Date: Wed Apr 24 16:06:48 CEST 2024
+Job informations can be found using these commands:
+Accounting:
+sacct -j 9748983
+Efficiency:
+seff 9748983
+****************************************************************

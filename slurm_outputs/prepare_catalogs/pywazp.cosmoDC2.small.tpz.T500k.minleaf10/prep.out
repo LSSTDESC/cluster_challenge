@@ -1,0 +1,27 @@
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+* Date:                 Fri Apr 26 17:48:31 CEST 2024
+* Job name:             prepare_catalogs
+* Job id:               9988971
+* User:                 rsolomon
+* Account:              lsst
+* Submit host:          cca010
+* Partition:            lsst
+* Quality of service:   normal
+* Nodelist:             ccwslurm2001
+****************************************************************
+Producing reduced pywazp.cosmoDC2.small.tpz.T500k.minleaf10 catalog
+outpath = /sps/lsst/groups/clusters/cluster_comparison_project/before_matching/pywazp/cosmoDC2.small.tpz.T500k.minleaf10/
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+Date: Fri Apr 26 17:49:09 CEST 2024
+Job informations can be found using these commands:
+Accounting:
+sacct -j 9988971
+Efficiency:
+seff 9988971
+****************************************************************

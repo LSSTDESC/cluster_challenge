@@ -1,0 +1,28 @@
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+* Date:                 Thu Apr 18 11:49:29 CEST 2024
+* Job name:             performance
+* Job id:               9109224
+* User:                 rsolomon
+* Account:              lsst
+* Submit host:          cca012
+* Partition:            lsst
+* Quality of service:   normal
+* Nodelist:             ccwslurm2004
+****************************************************************
+9109325
+9109328
+9109333
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+Date: Thu Apr 18 11:49:49 CEST 2024
+Job informations can be found using these commands:
+Accounting:
+sacct -j 9109224
+Efficiency:
+seff 9109224
+****************************************************************
