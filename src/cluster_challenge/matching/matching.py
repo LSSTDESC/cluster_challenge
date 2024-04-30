@@ -1,58 +1,145 @@
-import time
-import subprocess
+
+
+import numpy as np
+from astropy import units as u
+from astropy.io import fits
 import os, sys, yaml
+import json
+import shutil
 
-current_dir = os.path.dirname(__file__)
+###clevar
+import clevar
+from clevar.catalog import ClCatalog
+from clevar.match import output_catalog_with_matching
+from clevar.match import output_matched_catalog
+from clevar.cosmology import AstroPyCosmology
+from IPython.display import display
 
 
-def slurm_submit(task, config) :
-	slurm_mem = 32
-	time.sleep(5)
+config = sys.argv[1]
+with open(config) as fstream :
+	cfg = yaml.safe_load(fstream)
 
-	with open(config) as fstream :
-		cfg = yaml.safe_load(fstream)
 
-	cat1 = cfg['cats']['cat1']
-	cat2 = cfg['cats']['cat2']
+#requested_cats = [cfg['cats']['cat1'].split('.'), cfg['cats']['cat2'].split('.')]
+mt_method = cfg['matching']['method']
+mt_preference = cfg['matching']['pref']
 
-	mt_method = cfg['matching']['method']
-	mt_pref   = cfg['matching']['pref']
-	if mt_method == 'member' :
-		mt_params = [cfg['matching']['minimum_share_fraction']]
+inpath  = cfg['paths']['matching']['in']
+outpath = cfg['paths']['matching']['out']
+
+
+
+## COLLECT THE CATALOGS TO MATCH.
+cats = []
+cat_locs = []
+
+#for c in requested_cats :
+for c in ['cat1', 'cat2'] :
+	print(f"loading from {inpath[c]}...")
+	if os.path.exists(inpath[c]) :
+		cltags = cfg['cat_keys'][c]['cluster']
+		mbtags = cfg['cat_keys'][c]['member']
+
+		cat_locs.append({inpath[c]})
+		cat = ClCatalog.read(os.path.join(inpath[c], 'Catalog.fits'), cfg['cats'][c], tags=cltags, full=True)
+		cat.read_members(os.path.join(inpath[c], 'Catalog_members.fits'), tags=mbtags, full=True)
+		cats.append(cat)
 	else :
-		mt_params = [cfg['matching']['delta_z'], cfg['matching']['match_radius']]
-
-	slogs_path = f"{current_dir}/slurm_outputs/{cat1}_{cat2}/{mt_method}/{mt_pref}/"
-	if not os.path.exists(slogs_path) :
-		os.makedirs(slogs_path)	
-
-	cmd  = f"sbatch "
+		sys.exit(f"The {cfg['cats'][c]} catalog does not exist.")
+	print(f"{cfg['cats'][c]} catalog is loaded...")
 	
-	## sbatch options
-	## \\\\\\\\\\\\\\\\\\V//////////////////
-	cmd += f"--job-name=matching "
-	cmd += f"-t  0-05:00 "
-	cmd += f"-n 2 "
-	cmd += f"--mem {slurm_mem}G "
-	cmd += f"-D {current_dir} "
-	cmd += f"-L sps "
-	cmd += f"-o {slogs_path}{'_'.join([str(p) for p in mt_params])}.out"
-	## //////////////////A\\\\\\\\\\\\\\\\\\
 
-	cmd += f"<<?\n"
-	cmd += "#!/usr/bin/bash\n"
-	cmd += f"source /pbs/throng/lsst/software/desc/common/miniconda/setup_current_python.sh\n"
-	cmd += f"conda activate /sps/lsst/users/rsolomon/conda_envs/desc_dev/\n"
 
-	cmd += f"python {current_dir}/{task}.py {config}"
+### apply cuts
+#if not (cfg['matching']['cuts'] is None) :
+#	for key in cfg['matching']['cuts']['cat1'].keys() :
+		
 
-	res = subprocess.run(cmd, shell=True, capture_output=True)
-	job_id = str(res.stdout).split('batch job ')[1].split('\\')[0]
-	print(f"Matching {job_id}")
+## SET OUTPUT PATH	
+## OUTPATH DIRECTORY STRUCTURE:
+##	after_matching/
+##		|- cosmoDC2_wazp.cosmoDC2.truez/
+##			|- v0_v0/
+##				|- member_matching/
+##				|- proximity_matching/
+##					|- deltaz_0.05_matchradius_1.0mpc_pref_angular_proximity
+##					|- deltaz_0.05_matchradius_1.0mpc_pref_more_massive
+##		|- cosmoDC2_wazp.cosmoDC2.fzb/
+##		|- cosmoDC2_wazp.DC2/
 
-	return 0
 
-config_file = sys.argv[1]
+#outpath += f"{'.'.join(requested_cats[0][:-1])}_{'.'.join(requested_cats[1][:-1])}/"
+#outpath += f"{requested_cats[0][-1]}_{requested_cats[1][-1]}/"
 
-slurm_submit('clevar_matching', config_file)
 
+
+## PERFORM PROXIMITY MATCHING
+if mt_method == 'proximity' :
+	from clevar.match import ProximityMatch
+	mt = ProximityMatch()
+	
+	delta_z = float(cfg['matching']['delta_z'])
+	match_radius = float(cfg['matching']['match_radius'])	## in Mpc
+	
+	outpath += f'proximity_matching/deltaz_{delta_z}_matchradius_{match_radius}mpc_pref_{mt_preference}/'
+
+	match_config = {
+		'type':'cross',			## OPTIONS: cross, cat1, cat2
+		'which_radius':'max',		## OPTIONS: cat1, cat2, min, max
+		'preference':mt_preference,	## OPTIONS: more_massive, angular_proximity, redshift_proximity
+		'catalog1':{'delta_z':delta_z, 'match_radius':f'{match_radius} mpc'},
+		'catalog2':{'delta_z':delta_z, 'match_radius':f'{match_radius} mpc'},
+		}
+
+
+	if os.path.exists(outpath) :
+		shutil.rmtree(outpath)
+	os.makedirs(outpath)
+	print(f'OUTPATH = {outpath}')
+
+	#cats_raw = [cats[0].raw(), cats[1].raw()]
+	cosmo = AstroPyCosmology()
+
+	print('MATCHING...')
+	mt.match_from_config(cats[0], cats[1], match_config, cosmo=cosmo)
+
+	print('WRITING...')
+	cats[0].write(f"{outpath}{cats[0].name}.fits", overwrite=True)
+	cats[1].write(f"{outpath}{cats[1].name}.fits", overwrite=True)
+
+
+
+
+## PERFORM MEMBER MATCHING
+if mt_method == 'member' :
+	from clevar.match import MembershipMatch
+	mt = MembershipMatch()
+	
+	minimum_share_fraction = float(cfg['matching']['minimum_share_fraction'])
+
+	outpath += f'member_matching/fshare_{minimum_share_fraction}_pref_{mt_preference}/'
+
+	match_config = {
+	  	'type':'cross',			## OPTIONS: cross, cat1, cat2
+	  	'preference':mt_preference,	## OPTIONS: shared_member_fraction, more_massive, angular_proximity, redshift_proximity
+	  	'minimum_share_fraction':minimum_share_fraction,
+	  	'match_members_kwargs': {'method':'id'},
+	  	}
+	
+	
+	if os.path.exists(outpath) :
+		shutil.rmtree(outpath)
+	os.makedirs(outpath)
+	print(f'OUTPATH = {outpath}')
+	
+	print('MATCHING...')
+	mt.match_from_config(cats[0], cats[1], match_config)
+	
+	print('WRITING...')
+	cats[0].write(f"{outpath}{cats[0].name}.fits", overwrite=True)
+	cats[1].write(f"{outpath}{cats[1].name}.fits", overwrite=True)
+
+
+
+sys.exit()

@@ -13,8 +13,8 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 from scipy.optimize import minimize, curve_fit
 from scipy.special import erf
 
-from plot_style import set_style, figsize
-import saving_figures as sfigs
+from src.plot_style import set_style, figsize
+import src.saving_figures as sfigs
 from fit_func import linear, lawnchair, gauss
 
 
@@ -103,6 +103,47 @@ def make_bins(param, cfg, log=False, units=None, grain='both') :
 
 
 
+def plot_hist(x, bins, xlabel, ylabel='Count', fill=False, color='C0',
+	title=None, label=None, annotate=None, xscale='linear', yscale='linear',
+	outpath=None, saveas=None, show=False,
+	only_layer=True, fig=None, last_layer=True) :
+	
+	if fig is None :        ## IN CASE OF MULTIPLE DATASETS ON SAME PLOT
+		fig, axs = plt.subplots(1,1, figsize=figsize())
+	else :
+		fig, axs = fig
+
+	axs.ticklabel_format(axis='both', style='scientific', scilimits=[-2,2])
+	
+	if fill == True :
+	        alpha = 0.3
+	else :
+	        alpha = 1
+
+	h = axs.hist(x, bins=bins, histtype='step', fill=fill, color=color, alpha=alpha, label=label)
+	
+	if last_layer and label != None :
+		#axs.set_ylim(top=1.3*np.max(axs.get_ylim()))
+		leg = axs.legend(labelcolor='mec', frameon=True, fontsize='small', loc='lower left', handlelength=0, handletextpad=0)
+		for item in leg.legendHandles :
+			item.set_visible(False)
+	if last_layer and annotate != None :
+		axs.annotate(annotate, xy=(axs.axis()[1], axs.axis()[3]), xycoords='data', va='top', ha='right',
+			bbox=dict(boxstyle='round', fc='w', lw=1), zorder=np.inf)
+	if last_layer :
+		axs.set_xscale(xscale)
+		axs.set_yscale(yscale)
+		axs.set_xlabel(xlabel, loc='right')
+		axs.set_ylabel(ylabel, loc='top')
+		if title != None :
+			fig.text(0,0, title, va='baseline', ha='left', size='x-small')
+		if (outpath != None) & (saveas != None) :
+			sfigs.save_figure(fig, outpath, saveas)
+		if show :
+			plt.show()
+
+
+
 def plot_on_sky(ra, dec, Nhex, title=None, label=None, outpath=None, saveas=None, show=False,
 	only_layer=True, axs=None, last_layer=True) :
 	
@@ -112,53 +153,17 @@ def plot_on_sky(ra, dec, Nhex, title=None, label=None, outpath=None, saveas=None
 	axs.hexbin(ra, dec, gridsize=Nhex, norm=mpl.colors.LogNorm());
 	
 	if title != None :
-		fig.text(0,0, title, va='baseline', ha='left', size='small')
+		fig.text(0,0, title, va='baseline', ha='left', size='x-small')
 	if last_layer and label != None :
 		axs.annotate(label, xy=(axs.axis()[1], axs.axis()[3]), xycoords='data', va='top', ha='right', bbox=dict(boxstyle='round', fc='w', lw=1))
 	if last_layer :
 		axs.set_xlabel('RA', loc='right')
 		axs.set_ylabel('DEC', loc='top')
 		if saveas != None :
-			save_figure(fig, outpath+'onsky/', saveas)
+			sfigs.save_figure(fig, outpath, saveas)
 		if show :
 			plt.show()
 
-
-
-def plot_redshift_hist(zs, bin_width=0.05, fill=False, color='C0', title=None, label=None, annotate=None, outpath=None, saveas=None, show=False,
-	only_layer=True, fig=None, last_layer=True) :
-	
-	if fig == None :        ## IN CASE OF MULTIPLE DATASETS ON SAME PLOT
-		fig = plt.subplots(1,1, figsize=(3.5,3.5))
-	fig[1].ticklabel_format(axis='both', style='scientific', scilimits=[-2,2])
-	
-	if fill == True :
-	        alpha = 0.3
-	else :
-	        alpha = 1
-
-	bins = int(np.ptp(zs)/bin_width)
-	h = fig[1].hist(zs, bins=bins, histtype='step', fill=fill, color=color, alpha=alpha, label=label)
-	
-	#if title != None :
-	#	fig.text(0,0, title, va='baseline', ha='left')
-	if last_layer and label != None :
-		fig[1].set_ylim(top=1.3*np.max(fig[1].get_ylim()))
-		leg = fig[1].legend(labelcolor='mec', frameon=False, fontsize='small', loc='upper left', handlelength=0, handletextpad=0)
-		for item in leg.legendHandles :
-			item.set_visible(False)
-	if last_layer and annotate != None :
-		fig[1].annotate(annotate, xy=(fig[1].axis()[1], fig[1].axis()[3]), xycoords='data', va='top', ha='right',
-			bbox=dict(boxstyle='round', fc='w', lw=1), zorder=np.inf)
-	if last_layer :
-		fig[1].set_xlabel('Redshift', loc='right')
-		fig[1].set_ylabel('Count', loc='top')
-		if title != None :
-			fig[0].text(0,0, title, va='baseline', ha='left', size='small')
-		if saveas != None :
-			save_figure(fig[0], outpath+'redshifts/', saveas)
-		if show :
-			plt.show()
 
 
 
@@ -170,9 +175,10 @@ def plot_redshift_redshift(z1, z2, Nhex=100, xlabel=None, ylabel=None, diagonal=
 		axs.plot([min(z1),max(z1)],[min(z1),max(z1)], lw=0.5, c='r', ls='--')
 
 	axs.hexbin(z1, z2, gridsize=Nhex, norm=mpl.colors.LogNorm());
+	axs.grid(which='major', axis='both', ls='-', lw=0.5, color='grey')
 	
 	if title != None :
-		fig.text(0,0, title, va='baseline', ha='left', size='small')
+		fig.text(0,0, title, va='baseline', ha='left', size='x-small')
 	        
 	axs.set_xlabel(xlabel, loc='right')
 	axs.set_ylabel(ylabel, loc='top')
@@ -196,7 +202,7 @@ def plot_zscatter_redshift(z1, z2, cfg, Nhex=100,
 	fig[1][1].hexbin(z2, (z2-z1), gridsize=Nhex, norm=mpl.colors.LogNorm())
 
 	if title != None :
-		fig[0].text(0,0, title, va='baseline', ha='left', size='small')
+		fig[0].text(0,0, title, va='baseline', ha='left', size='x-small')
 	        
 	fig[1][0].set_xlabel(cfg['latex']['redshift_1'], loc='right')
 	fig[1][1].set_xlabel(cfg['latex']['redshift_2'], loc='right')
@@ -520,14 +526,14 @@ def plot_richnessLogProb_binned_popt(bin_fits, bintype='zbin', ylabel='Mo[$P\lef
 
 
 
-def plot_richness_richness(x, y, yerr=None, richcut=0, Nhex=50, 
+def plot_richness_richness(x_, y_, yerr_=None, richcut=0, Nhex=50, 
 	xlabel=None, ylabel=None, title=None, label=None,
 	fit=None, outpath=None, saveas=None, show=False,) :
 
 	if yerr_ is None :
 		yerr_ = np.ones_like(y_)
 	
-	cut = x_ > masscut
+	cut = x_ > richcut
 	x = x_[cut]
 	y = y_[cut]
 	yerr = yerr_[cut]
@@ -538,62 +544,111 @@ def plot_richness_richness(x, y, yerr=None, richcut=0, Nhex=50,
 	p = fig[1].hexbin(x, y, gridsize=Nhex, norm=mpl.colors.LogNorm(), edgecolors='none');
 	fig[1].grid(which='major', axis='both', ls='-', lw=0.5, color='grey')
 
+	#if fit != None :
+#		params, pcov = curve_fit(linear, x, y, sigma=yerr)
+#		perrs = np.sqrt(np.diag(pcov))
+#		x4plot = np.linspace(0,3,3)
+#		fig[1].plot(x4plot, linear(x4plot, *params), lw=1, c='r',
+#			label='$\lambda_|=\lambda_{{-}}^{{({:.2f}\pm{:.2f})}}10^{{({:.2f}\pm{:.2f})}} $'.format(params[1],perrs[1],params[0], perrs[0]));
 	if fit != None :
-		params, pcov = curve_fit(linear, x, y, sigma=yerr)
-		perrs = np.sqrt(np.diag(pcov))
 		x4plot = np.linspace(0,3,3)
-		fig[1].plot(x4plot, richness_richness_relation(x4plot, *params), lw=1, c='r',
-			label='$\lambda_|=\lambda_{{-}}^{{({:.2f}\pm{:.2f})}}10^{{({:.2f}\pm{:.2f})}} $'.format(params[1],perrs[1],params[0], perrs[0]));
-	if fit != None :
-		x4plot = np.linspace(0,3,100)
 		
-		params, pcov = curve_fit(globals()[fit], x, y, sigma=yerr)
+		params, pcov = curve_fit(linear, x, y)#, sigma=yerr, bounds=((0,-0.5),(2,0.5)))
 		perrs = np.sqrt(np.diag(pcov))
 
 		if title != None :
 			cats = title.split(' - ')
-			cat0 = cats[0].split('.')[0]
-			cat1 = cats[1].split('.')[0]
+			cat1 = cats[0].split('.')[0]
+			cat2 = cats[1].split('.')[0]
 		else :
-			cat0 = '_'
-			cat1 = '|'
+			cat1 = '_'
+			cat2 = '|'
 		
-		if fit == 'linear' :
-			slope = params[0]
-			inter = params[1]
-			shift = 0
-			slope_err = perrs[0]
-			fig[1].plot(x4plot, globals()[fit](x4plot, *params), lw=1, c='r',
-				label='$\lambda_{cat1} \propto \lambda_{cat0}^{{{{{:.2f}}} \pm {{{:.2f}}}}}$'.format(slope, slope_err))
-		elif fit == 'lawnchair' :
-			slope = params[0]/params[1]
-			inter = params[3]
-			shift = params[2]
-			slope_err = np.sqrt((perrs[0]/params[1])**2 + (params[0]*perrs[1]/params[1]**2)**2)
-			fig[1].plot(x4plot, globals()[fit](x4plot, *params), lw=1, c='r');
-			fig[1].plot(x4plot, slope*(x4plot - shift) + inter, lw=1, c='r', ls='--',
-				label='$\lambda_{cat1} \propto \lambda_{cat0}^{{{{{:.2f}}} \pm {{{:.2f}}}}}$'.format(slope, slope_err))
+		slope = params[0]
+		inter = params[1]
+		slope_err = perrs[0]
+		inter_err = perrs[1]
+		label = f"$\lambda_{{{cat2}}} = 10^{{{inter:.2f}}}\lambda_{{{cat1}}}^{{{slope:.2f}}}$"
+		fig[1].plot(x4plot, linear(x4plot, *params), lw=1, c='r', label=label)
 
 	
 	if title != None :
-		fig[0].text(0,0, title, va='baseline', ha='left', size='small')
+		fig[0].text(0,0, title, va='baseline', ha='left', size='x-small')
 	if label != None :
-	        plt.legend(loc='lower right', frameon=False)
+	        plt.legend(loc='lower right', frameon=True)
 	        
 	fig[1].set_xlabel(xlabel, loc='right')
 	fig[1].set_ylabel(ylabel, loc='top')
-	fig[1].set_xlim(0.5, 3)
-	fig[1].set_ylim(0.25,3)
-	if saveas != None :
-		save_figure(fig[0], outpath+'richness/', saveas)
-		#for path in outpath :
-		#	if not os.path.exists(path+'richness/') :
-		#		os.makedirs(path+'richness/')
-		#plt.savefig(outpath[0] + 'richness/' + saveas + '.png')
-		#plt.savefig(outpath[1] + 'richness/' + saveas + '.pdf')
+	fig[1].set_xlim(0, 3)
+	fig[1].set_ylim(0,3)
+
+
+	if (outpath != None) & (saveas != None) :
+		sfigs.save_figure(fig[0], outpath, saveas=saveas)
 	if show :
 		plt.show()
-	return
 
 
 
+def plot_richness_richness_zbinned(x_, y_, z_, yerr_=None, richcut=0, zbins=3, Nhex=50,
+	xlabel=None, ylabel=None, title=None, label=None,
+	fit=None, outpath=None, saveas=None, show=False) :
+
+	if yerr_ is None :
+		yerr_ = np.ones_like(y_)
+
+	cut = x_ > richcut
+	x = x_[cut]
+	y = y_[cut]
+	z = z_[cut]
+	yerr = yerr_[cut]
+
+	if type(zbins) is int :
+		zbins = np.linspace(0, max(z), zbins)
+	
+	when_zbin = np.digitize(z, zbins) - 1
+	Nzbins = max(when_zbin)
+
+	fig = plt.subplots(1, Nzbins, figsize=figsize(Nzbins,1), sharex=True, sharey=True)
+	[ax.ticklabel_format(axis='both', style='scientific', scilimits=[-2,2]) for ax in fig[1]]
+	[ax.grid(which='major', axis='both', ls='-', lw=0.5, color='grey') for ax in fig[1]]
+
+	if fig != None :
+		x4plot = np.linspace(0,3,3)
+
+		if fit != None :
+			if title != None :
+				cats = title.split(' - ')
+				cat1 = cats[0].split('.')[0]
+				cat2 = cats[1].split('.')[0]
+			else :
+				cat1 = '_'
+				cat2 = '|'
+		
+			params = [curve_fit(linear, x[when_zbin==i], y[when_zbin==i]) for i in range(Nzbins)]
+			perrs = [np.sqrt(np.diag(ps[1])) for ps in params]
+			for i in range(Nzbins) :
+				slope = params[i][0][0]
+				inter = params[i][0][1]
+				shift = 0
+				slope_err = perrs[i][0]
+				label = f"$\lambda_{{{cat2}}} = 10^{{{inter:.2f}}}\lambda_{{{cat1}}}^{{{slope:.2f}}}$"
+				fig[1][i].plot(x4plot, linear(x4plot, *params[i][0]), lw=1, c='r',label=label)
+				fig[1][i].hexbin(x[when_zbin==i], y[when_zbin==i], gridsize=Nhex, norm=mpl.colors.LogNorm(), edgecolors='none')
+				fig[1][i].annotate(f'${{{zbins[i]:.1f}}} < z_{{halo}} \leq {{{zbins[i+1]:.1f}}}$',
+					xy=(fig[1][i].axis()[0], fig[1][i].axis()[3]), xycoords='data', va='top', ha='left',
+					bbox=dict(boxstyle='round', fc='w', lw=1))
+
+	#if title != None :
+	#	fig[0].text(0,0, title, va='baseline', ha='left', size='x-small')
+	if label != None :
+	        [ax.legend(loc='lower right', frameon=True) for ax in fig[1]]
+	        
+	[ax.set_xlabel(xlabel, loc='right') for ax in fig[1]]
+	fig[1][0].set_ylabel(ylabel, loc='top')
+	[ax.set_xlim(0, 3) for ax in fig[1]]
+	[ax.set_ylim(0, 3) for ax in fig[1]]
+	if saveas != None :
+		sfigs.save_figure(fig[0], outpath, saveas, png=True, pdf=False, pkl=False)
+	if show :
+		plt.show()
