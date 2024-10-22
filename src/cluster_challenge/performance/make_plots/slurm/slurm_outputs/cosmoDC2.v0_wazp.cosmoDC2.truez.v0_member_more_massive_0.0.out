@@ -1,0 +1,27 @@
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+* Date:                 Mon Sep 25 12:46:44 CEST 2023
+* Job name:             plotting_cosmoDC2.v0_wazp.cosmoDC2.truez.v0
+* Job id:               46018508
+* User:                 rsolomon
+* Account:              lsst
+* Submit host:          cca014
+* Partition:            htc
+* Quality of service:   normal
+* Nodelist:             ccwslurm0068
+****************************************************************
+    * ClEvar used in matching: 0.14.1
+    * ClEvar used in matching: 0.14.1
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+Date: Mon Sep 25 12:49:32 CEST 2023
+Job informations can be found using these commands:
+Accounting:
+sacct -j 46018508
+Efficiency:
+seff 46018508
+****************************************************************

@@ -1,0 +1,27 @@
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+* Date:                 Wed Jul  3 11:09:02 CEST 2024
+* Job name:             prepare_catalogs
+* Job id:               17747057
+* User:                 rsolomon
+* Account:              lsst
+* Submit host:          cca014
+* Partition:            lsst
+* Quality of service:   normal
+* Nodelist:             ccwslurm2012
+****************************************************************
+Producing reduced dmagTests_2.0 catalog
+outpath = /sps/lsst/groups/clusters/wazp_validation_project/cosmoDC2_v1.1.4_small/dmag_tests/dmag_2.0/
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+Date: Wed Jul  3 11:09:33 CEST 2024
+Job informations can be found using these commands:
+Accounting:
+sacct -j 17747057
+Efficiency:
+seff 17747057
+****************************************************************

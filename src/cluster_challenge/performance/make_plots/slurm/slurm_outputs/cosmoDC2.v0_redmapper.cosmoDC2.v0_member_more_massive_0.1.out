@@ -1,0 +1,27 @@
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+* Date:                 Mon Sep 25 12:48:01 CEST 2023
+* Job name:             plotting_cosmoDC2.v0_redmapper.cosmoDC2.v0
+* Job id:               46018725
+* User:                 rsolomon
+* Account:              lsst
+* Submit host:          cca014
+* Partition:            htc
+* Quality of service:   normal
+* Nodelist:             ccwslurm0047
+****************************************************************
+    * ClEvar used in matching: 0.14.1
+    * ClEvar used in matching: 0.14.1
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+Date: Mon Sep 25 12:50:42 CEST 2023
+Job informations can be found using these commands:
+Accounting:
+sacct -j 46018725
+Efficiency:
+seff 46018725
+****************************************************************

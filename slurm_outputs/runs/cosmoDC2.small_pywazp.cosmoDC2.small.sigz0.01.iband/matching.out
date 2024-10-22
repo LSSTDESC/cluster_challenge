@@ -1,0 +1,44 @@
+**********************************************************************
+*                         SLURM Batch System                         *
+*              IN2P3 Computing Centre, Villeurbanne FR               *
+**********************************************************************
+* Date:                 Thu Aug  1 12:19:57 CEST 2024
+* Job name:             matching
+* Job id:               20053846
+* User:                 rsolomon
+* Account:              lsst
+* Submit host:          cca014
+* Partition:            lsst
+* Quality of service:   normal
+* Nodelist:             ccwslurm2003
+* Operating System:     CentOS Linux release 7.9.2009 (Core)
+* Architecture:         x86_64
+**********************************************************************
+loading from /sps/lsst/groups/clusters/cluster_comparison_project/before_matching/halos/cosmoDC2.small/...
+/pbs/home/r/rsolomon/.local/lib/python3.10/site-packages/clevar-0.14.1-py3.10.egg/clevar/catalog/catalog.py:728: UserWarning: Some galaxies were not members of the cluster catalog. They are stored in leftover_members attribute.
+  warnings.warn(
+cosmoDC2.small catalog is loaded...
+loading from /sps/lsst/groups/clusters/cluster_comparison_project/before_matching/pywazp/cosmoDC2.small.sigz0.01/iband/...
+/pbs/home/r/rsolomon/.local/lib/python3.10/site-packages/clevar-0.14.1-py3.10.egg/clevar/catalog/catalog.py:728: UserWarning: Some galaxies were not members of the cluster catalog. They are stored in leftover_members attribute.
+  warnings.warn(
+pywazp.cosmoDC2.small.sigz0.01.iband catalog is loaded...
+OUTPATH = /sps/lsst/groups/clusters/cluster_comparison_project/after_matching/cosmoDC2.small_pywazp.cosmoDC2.small.sigz0.01/iband/member_matching/fshare_0.0_pref_more_massive/
+MATCHING...
+977,340 members were matched.
+Traceback (most recent call last):
+  File "/pbs/throng/lsst/users/rsolomon/cluster_challenge/src/cluster_challenge/matching/matching.py", line 115, in <module>
+    mt.match_from_config(cats[0], cats[1], match_config)
+  File "/pbs/home/r/rsolomon/.local/lib/python3.10/site-packages/clevar-0.14.1-py3.10.egg/clevar/match/membership.py", line 393, in match_from_config
+    match_config["shared_members_file"],
+KeyError: 'shared_members_file'
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+Date: Thu Aug  1 12:23:48 CEST 2024
+Job informations can be found using these commands:
+Accounting:
+sacct -j 20053846
+Efficiency:
+seff 20053846
+****************************************************************

@@ -1,0 +1,27 @@
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+* Date:                 Sat May 11 13:06:04 CEST 2024
+* Job name:             prepare_catalogs
+* Job id:               11859218
+* User:                 rsolomon
+* Account:              lsst
+* Submit host:          cca018
+* Partition:            lsst
+* Quality of service:   normal
+* Nodelist:             ccwslurm2010
+****************************************************************
+Producing reduced wazp.cosmoDC2.sigz0.01 catalog
+outpath = /sps/lsst/groups/clusters/cluster_comparison_project/before_matching/wazp/cosmoDC2.sigz0.01/
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+Date: Sat May 11 13:07:40 CEST 2024
+Job informations can be found using these commands:
+Accounting:
+sacct -j 11859218
+Efficiency:
+seff 11859218
+****************************************************************
