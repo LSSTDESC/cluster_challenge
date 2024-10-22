@@ -1,55 +1,68 @@
 
-import time
-import subprocess
 import os, sys, yaml
+import numpy as np
+
+from clevar.catalog import ClCatalog
+from clevar.match import get_matched_masks
+
 import src.saving_figures as sfigs
-
-current_dir = os.path.dirname(__file__)
-
-
-def slurm_submit(task, config, job_list=[]) :
-	slurm_mem = 8
-	time.sleep(5)
-
-	with open(config) as fstream :
-		cfg = yaml.safe_load(fstream)
-
-	cat1 = cfg['cats']['cat1']
-	cat2 = cfg['cats']['cat2']
-	
-	mt_method = cfg['matching']['method']
-	mt_pref   = cfg['matching']['pref']
-	if mt_method == 'member' :
-		mt_params = [cfg['matching']['minimum_share_fraction']]
-	else :
-		mt_params = [cfg['matching']['delta_z'], cfg['matching']['match_radius']]
-	
-	slogs_path = f"{current_dir}/slurm_outputs/{cat1}_{cat2}/{mt_method}/{mt_pref}/"
-	if not os.path.exists(slogs_path) :
-		os.makedirs(slogs_path)
-
-	dep = ""
-	if job_list != [] :
-		dep = " --dependency=afterany"
-		for job in job_list:
-			dep += f':{job}'
-
-	cmd  = f"sbatch --partition=lsst,htc --job-name=plotting -t 0-05:00 -n 2 --mem {slurm_mem}G -D {current_dir} -L sps -o {slogs_path}{task}.out <<?\n"
-	cmd += "#!/usr/bin/bash\n"
-	cmd += f"source /pbs/throng/lsst/software/desc/common/miniconda/setup_current_python.sh\n"
-	cmd += f"conda activate /sps/lsst/users/rsolomon/conda_envs/desc_dev/\n"
-	
-	cmd += f"python {current_dir}/{task}.py {config}"
-
-	res = subprocess.run(cmd, shell=True, capture_output=True)
-	job_id = str(res.stdout).split("batch job ")[1].split("\\")[0]
-	print(job_id)
-	
-	return job_id
+from src.plotting_functions import make_bins, plot_hist
+from src.pltFunc_matchingMetrics import make_ROC_curve, make_PurityCompleteness_curve
 
 
-cfg = sys.argv[1]
-#job_id = slurm_submit('mass_richness', cfg)
-job_id = slurm_submit('scaling', cfg)
-slurm_submit('redshift', cfg, job_list=[job_id])
-slurm_submit('matching_metrics', cfg)
+
+config = sys.argv[1]
+
+# open config files
+with open(config) as fstream:
+	cfg = yaml.safe_load(fstream)
+
+cat1 = cfg['cats']['cat1']
+cat2 = cfg['cats']['cat2']
+inpath = sfigs.make_path(cfg, base=cfg['paths']['performance']['in'])
+outpath = sfigs.make_path(cfg, base=cfg['paths']['performance']['out'], addon='matching_metrics')
+
+
+## read the catalogs.
+cats = {cat1: ClCatalog.read_full(os.path.join(inpath, f"{cat1}.fits")),
+	cat2: ClCatalog.read_full(os.path.join(inpath, f"{cat2}.fits"))}
+
+z_bins    = make_bins('redshift', cfg, grain='both')
+mass_bins = make_bins('mass', cfg, grain='both')
+rich_bins = make_bins('richness', cfg, grain='both')
+
+## share useful parameters between catalogs (SNR, halo_mass, richness, ...)
+mt_mask_halo, mt_mask_cluster = get_matched_masks(cats[cat1], cats[cat2], 'cross')
+
+cats[cat1]['snr_cl'] = 1e4
+cats[cat1]['snr_cl'][mt_mask_halo] = cats[cat2]['snr'][mt_mask_cluster]
+
+cats[cat1]['richness_cl'] = 1e6
+cats[cat1]['richness_cl'][mt_mask_halo] = cats[cat2]['mass'][mt_mask_cluster]
+
+cats[cat2]['halo_mass'] = 1e18
+cats[cat2]['halo_mass'][mt_mask_cluster] = cats[cat1]['mass'][mt_mask_halo]
+
+cats[cat2]['sz'] = np.zeros_like(cats[cat2]['mass'])
+cats[cat2]['sz'][mt_mask_cluster] = cats[cat1]['z_cl'][mt_mask_halo]
+
+cats[cat2]['halo_richness'] = 1e6
+cats[cat2]['halo_richness'][mt_mask_cluster] = cats[cat1]['rich'][mt_mask_halo]
+
+## make ROC curve
+cut = (cats[cat2]['halo_mass'] > 1e14) & (cats[cat2]['sz']<1.5)
+fig, TPR, FPR = make_ROC_curve(cats[cat2][cut])
+
+saveas = 'ROCcurve'
+sfigs.save_figure(fig, outpath, saveas=saveas)
+
+
+## make Purity-Completeness curve
+fig, snrSteps, c1, p1, t1 = make_PurityCompleteness_curve(cats[cat1], cats[cat2])
+saveas = 'PurityCompleteness_Mgt1e14_zlt1.5'
+sfigs.save_figure(fig, outpath, saveas=saveas)
+
+fig, snrSteps, c2, p2, t2 = make_PurityCompleteness_curve(cats[cat1], cats[cat2], massRange=[10**13.5, 1e17])
+saveas = 'PurityCompleteness_Mgt1e13.5_zlt1.5'
+sfigs.save_figure(fig, outpath, saveas=saveas)
+
