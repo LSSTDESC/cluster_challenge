@@ -16,8 +16,8 @@ def create_slurm_script(task, config):
 
     scr = __file__.replace('utils.py', '')
 
-    logPath = os.path.join(slurm_cfg['logPath'].replace('TMP', scr+'../'), param_cfg['name'])
-    scriptPath = os.path.join(slurm_cfg['scriptPath'].replace('TMP', scr_'../'), param_cfg['name'])
+    logPath = os.path.join(slurm_cfg['logPath'].replace('TMP', scr+'/../../'), param_cfg['name'])
+    scriptPath = os.path.join(slurm_cfg['scriptPath'].replace('TMP', scr+'../../'), param_cfg['name'])
 
     logFile = os.path.join(logPath, slurm_cfg['logFile'][task])
     script = os.path.join(scriptPath, slurm_cfg['scriptFile'][task])

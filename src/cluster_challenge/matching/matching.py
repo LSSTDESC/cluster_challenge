@@ -60,18 +60,19 @@ def mt_footprint(config, cats) :
 ## COLLECT THE CATALOGS TO MATCH.
 cats = []
 for c in ['cat1', 'cat2'] :
-	print(f"loading from\n\t{inpath[c]['cluster']}...")
-	if os.path.exists(inpath[c]['cluster']) & os.path.exists(inpath[c]['member']) :
-		cltags = cfg['cat_keys'][c]['cluster']
-		mbtags = cfg['cat_keys'][c]['member']
+    print(f"{inpath[c]['cluster']}")
+    print(f"loading from\n\t{inpath[c]['cluster']}...")
+    if os.path.exists(inpath[c]['cluster']) & os.path.exists(inpath[c]['member']) :
+    	cltags = cfg['cat_keys'][c]['cluster']
+    	mbtags = cfg['cat_keys'][c]['member']
+    
+    	cat = ClCatalog.read(inpath[c]['cluster'], c, tags=cltags, full=False)
+    	cat.read_members(inpath[c]['member'], tags=mbtags, full=False)
+    	cats.append(cat)
+    else :
+    	sys.exit(f"The {cfg['cats'][c]} catalog does not exist.")
+    print(f"{cfg['cats'][c]} catalog is loaded...")
 
-		cat = ClCatalog.read(inpath[c]['cluster'], c, tags=cltags, full=False)
-		cat.read_members(inpath[c]['member'], tags=mbtags, full=False)
-		cats.append(cat)
-	else :
-		sys.exit(f"The {cfg['cats'][c]} catalog does not exist.")
-	print(f"{cfg['cats'][c]} catalog is loaded...")
-	
 
 ## APPLY FOOTPRINT MATCHING
 print("matching footprints...")
