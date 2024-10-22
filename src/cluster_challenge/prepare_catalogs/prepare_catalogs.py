@@ -32,29 +32,17 @@ cl_table, mb_table = get_cl_and_mb_tables(cfg)
 
 
 ### HALOS CATALOG DOES NOT HAVE PMEM VALUES
-#if cfg['algo'] == 'halos' :
-#	mb_table['pmem'] = np.ones_like(mb_table['z_mb'])
 if 'pmem' not in mb_table.colnames :
 	mb_table['pmem'] = np.ones_like(mb_table['z_mb'])
 
 
 ## APPLY CUTS
-#cl_table['n200-n500kpc'] = cl_table['mass'] - cl_table['n500kpc']
 if 'cuts' in cfg.keys() :
 	for key in cfg['cuts'].keys() :
-		if key == 'n200-n500kpc' :
-			cut = np.array((cl_table['mass'] - cl_table['n500kpc']) > 0)
-		else :
-			cut = np.array([eval(cfg['cuts'][key]) for _ in cl_table[key]])
+		cut = np.array([eval(cfg['cuts'][key]) for _ in cl_table[key]])
 		cl_table = cl_table[cut]
 	mb_table = mb_table[np.isin(mb_table['clid_mb'], cl_table['id_cl'])]
 
-#if cfg['algo'] != 'halos' :
-#	## REMOVE NON-CLUSTER MEMBERS
-#	mb_table = mb_table[np.isin(mb_table['clid_mb'], cl_table['id_cl'])]
-
-#if cfg['algo'] == 'redmapper' :	## REDMAPPER DOES NOT HAVE SNR COMPUTED FOR THE CLUSTERS
-#	cl_table['snr_cl'] = cl_table['mass'] / cl_table['mass_err']
 
 
 ## WRITE TABLES TO FILES

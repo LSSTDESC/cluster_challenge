@@ -7,8 +7,8 @@ from astropy.io import fits
 
 def get_cl_and_mb_tables(cfg) :
 	try :
-		cl_table = Table(fits.open(cfg['cat_path']['cluster'])[1].data)
-		mb_table = Table(fits.open(cfg['cat_path']['member'])[1].data)
+		cl_table = Table.read(cfg['cat_path']['cluster'])
+		mb_table = Table.read(cfg['cat_path']['member'])
 	except :
 		cl_table, mb_table = redmapper_cat_open(cat_name=cfg['gcr_name'])
 
