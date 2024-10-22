@@ -1,0 +1,28 @@
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+* Date:                 Wed Jun 19 09:39:55 CEST 2024
+* Job name:             matching
+* Job id:               16159150
+* User:                 rsolomon
+* Account:              lsst
+* Submit host:          cca018
+* Partition:            lsst
+* Quality of service:   normal
+* Nodelist:             ccwslurm2006
+****************************************************************
+loading from /sps/lsst/groups/clusters/cluster_comparison_project/before_matching/pywazp/cosmoDC2.sigz0.01/iband/...
+/var/spool/slurmd/job16159150/slurm_script: line 11: 41880 Killed                  python -u /pbs/throng/lsst/users/rsolomon/cluster_challenge/src/cluster_challenge/matching/matching.py runConfigs/pywazp.cosmoDC2.sigz0.01.iband_pywazp.cosmoDC2.sigz0.01.zband/fshare_0.0_pref_more_massive.cfg
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+Date: Wed Jun 19 09:42:14 CEST 2024
+Job informations can be found using these commands:
+Accounting:
+sacct -j 16159150
+Efficiency:
+seff 16159150
+****************************************************************
+slurmstepd: error: Detected 1 oom_kill event in StepId=16159150.batch. Some of the step tasks have been OOM Killed.

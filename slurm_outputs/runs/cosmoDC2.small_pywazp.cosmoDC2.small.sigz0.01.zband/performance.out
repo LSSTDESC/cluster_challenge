@@ -1,0 +1,41 @@
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+* Date:                 Wed Jun  5 12:47:50 CEST 2024
+* Job name:             performance
+* Job id:               14514480
+* User:                 rsolomon
+* Account:              lsst
+* Submit host:          cca018
+* Partition:            lsst
+* Quality of service:   normal
+* Nodelist:             ccwslurm2004
+****************************************************************
+Traceback (most recent call last):
+  File "/pbs/throng/lsst/users/rsolomon/cluster_challenge/src/cluster_challenge/performance/performance.py", line 27, in <module>
+    cats = {cat1: ClCatalog.read_full(os.path.join(inpath, f"{cat1}.fits")),
+  File "/sps/lsst/users/rsolomon/conda_envs/desc_dev/lib/python3.10/site-packages/clevar-0.14.1-py3.10.egg/clevar/catalog/catalog.py", line 433, in read_full
+    data = ClData.read(filename)
+  File "/sps/lsst/users/rsolomon/conda_envs/desc_dev/lib/python3.10/site-packages/clevar-0.14.1-py3.10.egg/clevar/catalog/tagdata.py", line 95, in read
+    return ClData(APtable.read(*args, **kwargs))
+  File "/sps/lsst/users/rsolomon/conda_envs/desc_dev/lib/python3.10/site-packages/astropy/table/connect.py", line 62, in __call__
+    out = self.registry.read(cls, *args, **kwargs)
+  File "/sps/lsst/users/rsolomon/conda_envs/desc_dev/lib/python3.10/site-packages/astropy/io/registry/core.py", line 197, in read
+    fileobj = ctx.__enter__()
+  File "/sps/lsst/users/rsolomon/conda_envs/desc_dev/lib/python3.10/contextlib.py", line 135, in __enter__
+    return next(self.gen)
+  File "/sps/lsst/users/rsolomon/conda_envs/desc_dev/lib/python3.10/site-packages/astropy/utils/data.py", line 271, in get_readable_fileobj
+    fileobj = io.FileIO(name_or_obj, 'r')
+FileNotFoundError: [Errno 2] No such file or directory: '/sps/lsst/groups/clusters/cluster_comparison_project/after_matching/cosmoDC2.small_pywazp.cosmoDC2.small.sigz0.01/zband/member_matching/fshare_0.0_pref_more_massive/cosmoDC2.small.fits'
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+Date: Wed Jun  5 12:48:46 CEST 2024
+Job informations can be found using these commands:
+Accounting:
+sacct -j 14514480
+Efficiency:
+seff 14514480
+****************************************************************

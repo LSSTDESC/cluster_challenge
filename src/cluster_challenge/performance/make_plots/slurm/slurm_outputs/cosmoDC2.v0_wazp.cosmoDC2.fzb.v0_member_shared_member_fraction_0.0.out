@@ -1,0 +1,35 @@
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+* Date:                 Mon Sep 25 12:47:24 CEST 2023
+* Job name:             plotting_cosmoDC2.v0_wazp.cosmoDC2.fzb.v0
+* Job id:               46018684
+* User:                 rsolomon
+* Account:              lsst
+* Submit host:          cca014
+* Partition:            htc
+* Quality of service:   normal
+* Nodelist:             ccwslurm0048
+****************************************************************
+/sps/lsst/users/rsolomon/conda_envs/desc_dev/lib/python3.10/site-packages/scipy/optimize/_minpack_py.py:881: OptimizeWarning: Covariance of the parameters could not be estimated
+  warnings.warn('Covariance of the parameters could not be estimated',
+Traceback (most recent call last):
+  File "/pbs/throng/lsst/users/rsolomon/cluster_challenge/src/cluster_challenge/performance/make_plots/slurm/../make_plots.py", line 195, in <module>
+    params = [curve_fit(richness_mass_relation, cl[first]['log10_mass'][matches[first]][when_zbin==i],
+  File "/pbs/throng/lsst/users/rsolomon/cluster_challenge/src/cluster_challenge/performance/make_plots/slurm/../make_plots.py", line 195, in <listcomp>
+    params = [curve_fit(richness_mass_relation, cl[first]['log10_mass'][matches[first]][when_zbin==i],
+  File "/sps/lsst/users/rsolomon/conda_envs/desc_dev/lib/python3.10/site-packages/scipy/optimize/_minpack_py.py", line 795, in curve_fit
+    raise ValueError("`ydata` must not be empty!")
+ValueError: `ydata` must not be empty!
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+Date: Mon Sep 25 12:48:57 CEST 2023
+Job informations can be found using these commands:
+Accounting:
+sacct -j 46018684
+Efficiency:
+seff 46018684
+****************************************************************

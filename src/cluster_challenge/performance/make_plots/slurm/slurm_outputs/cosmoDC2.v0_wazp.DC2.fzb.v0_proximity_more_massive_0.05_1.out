@@ -1,0 +1,44 @@
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+* Date:                 Mon Sep 25 12:57:56 CEST 2023
+* Job name:             plotting_cosmoDC2.v0_wazp.DC2.fzb.v0
+* Job id:               46020711
+* User:                 rsolomon
+* Account:              lsst
+* Submit host:          cca014
+* Partition:            htc
+* Quality of service:   normal
+* Nodelist:             ccwslurm0181
+****************************************************************
+Making directory:	/sps/lsst/users/rsolomon/web/desc/cluster_comparison_project/cosmoDC2_wazp.DC2.fzb/v0_v0/proximity_matching/deltaz_0.05_matchradius_1.0mpc_pref_more_massive/onsky/png/
+Making directory:	/sps/lsst/users/rsolomon/web/desc/cluster_comparison_project/cosmoDC2_wazp.DC2.fzb/v0_v0/proximity_matching/deltaz_0.05_matchradius_1.0mpc_pref_more_massive/onsky/pdf/
+Making directory:	/sps/lsst/users/rsolomon/web/desc/cluster_comparison_project/cosmoDC2_wazp.DC2.fzb/v0_v0/proximity_matching/deltaz_0.05_matchradius_1.0mpc_pref_more_massive/onsky/.pickle/
+Making directory:	/sps/lsst/users/rsolomon/web/desc/cluster_comparison_project/cosmoDC2_wazp.DC2.fzb/v0_v0/proximity_matching/deltaz_0.05_matchradius_1.0mpc_pref_more_massive/onsky/png/display/
+Making directory:	/sps/lsst/users/rsolomon/web/desc/cluster_comparison_project/cosmoDC2_wazp.DC2.fzb/v0_v0/proximity_matching/deltaz_0.05_matchradius_1.0mpc_pref_more_massive/redshifts/png/
+Making directory:	/sps/lsst/users/rsolomon/web/desc/cluster_comparison_project/cosmoDC2_wazp.DC2.fzb/v0_v0/proximity_matching/deltaz_0.05_matchradius_1.0mpc_pref_more_massive/redshifts/pdf/
+Making directory:	/sps/lsst/users/rsolomon/web/desc/cluster_comparison_project/cosmoDC2_wazp.DC2.fzb/v0_v0/proximity_matching/deltaz_0.05_matchradius_1.0mpc_pref_more_massive/redshifts/.pickle/
+Making directory:	/sps/lsst/users/rsolomon/web/desc/cluster_comparison_project/cosmoDC2_wazp.DC2.fzb/v0_v0/proximity_matching/deltaz_0.05_matchradius_1.0mpc_pref_more_massive/redshifts/png/display/
+Making directory:	/sps/lsst/users/rsolomon/web/desc/cluster_comparison_project/cosmoDC2_wazp.DC2.fzb/v0_v0/proximity_matching/deltaz_0.05_matchradius_1.0mpc_pref_more_massive/richness/png/
+Making directory:	/sps/lsst/users/rsolomon/web/desc/cluster_comparison_project/cosmoDC2_wazp.DC2.fzb/v0_v0/proximity_matching/deltaz_0.05_matchradius_1.0mpc_pref_more_massive/richness/pdf/
+Making directory:	/sps/lsst/users/rsolomon/web/desc/cluster_comparison_project/cosmoDC2_wazp.DC2.fzb/v0_v0/proximity_matching/deltaz_0.05_matchradius_1.0mpc_pref_more_massive/richness/.pickle/
+Making directory:	/sps/lsst/users/rsolomon/web/desc/cluster_comparison_project/cosmoDC2_wazp.DC2.fzb/v0_v0/proximity_matching/deltaz_0.05_matchradius_1.0mpc_pref_more_massive/richness/png/display/
+Making directory:	/sps/lsst/users/rsolomon/web/desc/cluster_comparison_project/cosmoDC2_wazp.DC2.fzb/v0_v0/proximity_matching/deltaz_0.05_matchradius_1.0mpc_pref_more_massive/density/png/display/
+    * ClEvar used in matching: 0.14.1
+    * ClEvar used in matching: 0.14.1
+Making directory:	/sps/lsst/users/rsolomon/web/desc/cluster_comparison_project/cosmoDC2_wazp.DC2.fzb/v0_v0/proximity_matching/deltaz_0.05_matchradius_1.0mpc_pref_more_massive/completeness_purity/png/
+Making directory:	/sps/lsst/users/rsolomon/web/desc/cluster_comparison_project/cosmoDC2_wazp.DC2.fzb/v0_v0/proximity_matching/deltaz_0.05_matchradius_1.0mpc_pref_more_massive/completeness_purity/pdf/
+Making directory:	/sps/lsst/users/rsolomon/web/desc/cluster_comparison_project/cosmoDC2_wazp.DC2.fzb/v0_v0/proximity_matching/deltaz_0.05_matchradius_1.0mpc_pref_more_massive/completeness_purity/.pickle/
+Making directory:	/sps/lsst/users/rsolomon/web/desc/cluster_comparison_project/cosmoDC2_wazp.DC2.fzb/v0_v0/proximity_matching/deltaz_0.05_matchradius_1.0mpc_pref_more_massive/completeness_purity/png/display/
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+Date: Mon Sep 25 12:59:24 CEST 2023
+Job informations can be found using these commands:
+Accounting:
+sacct -j 46020711
+Efficiency:
+seff 46020711
+****************************************************************

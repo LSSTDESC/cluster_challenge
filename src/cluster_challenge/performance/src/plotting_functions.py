@@ -22,37 +22,6 @@ from src.fit_func import linear, lawnchair, gauss
 set_style()
 
 
-def make_inpath(cats, mt_method, mt_pref, mt_params, base='/sps/lsst/groups/clusters/cluster_comparison_project/after_matching/') :
-
-	(first, last) = np.argsort([c[0] for c in cats])
-
-	inpath  = base
-	inpath += f"{'.'.join(cats[first][:-1])}_{'.'.join(cats[last][:-1])}/"          ## EXAMPLE INPUT: cosmoDC2_v1 wazp_cosmoDC2.fzb_v0 proximity
-	inpath += f"{cats[first][-1]}_{cats[last][-1]}/"                                ## RESULTING INPATH: /cosmoDC2_wazp.cosmoDC2.fzb/v1_v0/
-	
-	if mt_method == 'proximity' :
-	        inpath += f"proximity_matching/deltaz_{mt_params[0]}_matchradius_{mt_params[1]}mpc_pref_{mt_pref}/"
-	else :
-	        inpath += f"member_matching/fshare_{mt_params[0]}_pref_{mt_pref}/"
-	
-	return inpath
-
-
-def make_outpath(cats, mt_method, mt_pref, mt_params, base='/sps/lsst/users/rsolomon/web/desc/cluster_comparison_project/') :
-
-	(first, last) = np.argsort([c[0] for c in cats])
-
-	outpath  = base
-	outpath += f"{'.'.join(cats[first][:-1])}_{'.'.join(cats[last][:-1])}/"
-	outpath += f"{cats[first][-1]}_{cats[last][-1]}/"
-	
-	if mt_method == 'proximity' :
-	        outpath += f"proximity_matching/deltaz_{mt_params[0]}_matchradius_{mt_params[1]}mpc_pref_{mt_pref}/"
-	else :
-	        outpath += f"member_matching/fshare_{mt_params[0]}_pref_{mt_pref}/"
-
-	return outpath
-
 
 def make_bins(param, cfg, log=False, units=None, grain='both') :
 	'''

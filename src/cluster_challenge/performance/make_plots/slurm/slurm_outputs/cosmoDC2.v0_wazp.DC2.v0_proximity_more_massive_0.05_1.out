@@ -1,0 +1,39 @@
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+* Date:                 Mon Sep 25 12:47:34 CEST 2023
+* Job name:             plotting_cosmoDC2.v0_wazp.DC2.v0
+* Job id:               46018688
+* User:                 rsolomon
+* Account:              lsst
+* Submit host:          cca014
+* Partition:            htc
+* Quality of service:   normal
+* Nodelist:             ccwslurm0022
+****************************************************************
+Traceback (most recent call last):
+  File "/pbs/throng/lsst/users/rsolomon/cluster_challenge/src/cluster_challenge/performance/make_plots/slurm/../make_plots.py", line 57, in <module>
+    cl.append(Table(fits.open(inpath + '.'.join(c) + '.fits')[1].data))
+  File "/sps/lsst/users/rsolomon/conda_envs/desc_dev/lib/python3.10/site-packages/astropy/io/fits/hdu/hdulist.py", line 175, in fitsopen
+    return HDUList.fromfile(name, mode, memmap, save_backup, cache,
+  File "/sps/lsst/users/rsolomon/conda_envs/desc_dev/lib/python3.10/site-packages/astropy/io/fits/hdu/hdulist.py", line 410, in fromfile
+    return cls._readfrom(fileobj=fileobj, mode=mode, memmap=memmap,
+  File "/sps/lsst/users/rsolomon/conda_envs/desc_dev/lib/python3.10/site-packages/astropy/io/fits/hdu/hdulist.py", line 1062, in _readfrom
+    fileobj = _File(fileobj, mode=mode, memmap=memmap, cache=cache)
+  File "/sps/lsst/users/rsolomon/conda_envs/desc_dev/lib/python3.10/site-packages/astropy/io/fits/file.py", line 170, in __init__
+    self._open_filename(fileobj, mode, overwrite)
+  File "/sps/lsst/users/rsolomon/conda_envs/desc_dev/lib/python3.10/site-packages/astropy/io/fits/file.py", line 562, in _open_filename
+    self._file = open(self.name, IO_FITS_MODES[mode])
+FileNotFoundError: [Errno 2] No such file or directory: '/sps/lsst/groups/clusters/cluster_comparison_project/after_matching/cosmoDC2_wazp.DC2/v0_v0/proximity_matching/deltaz_0.05_matchradius_1.0mpc_pref_more_massive/cosmoDC2.v0.fits'
+****************************************************************
+*                      SLURM Batch System                      *
+*           IN2P3 Computing Centre, Villeurbanne FR            *
+****************************************************************
+Date: Mon Sep 25 12:48:55 CEST 2023
+Job informations can be found using these commands:
+Accounting:
+sacct -j 46018688
+Efficiency:
+seff 46018688
+****************************************************************
