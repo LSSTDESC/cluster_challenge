@@ -16,8 +16,8 @@ def create_slurm_script(task, config):
 
     scr = __file__.replace('utils.py', '')
 
-    logPath = os.path.join(slurm_cfg['logPath'], param_cfg['name'])
-    scriptPath = os.path.join(slurm_cfg['scriptPath'], param_cfg['name'])
+    logPath = os.path.join(slurm_cfg['logPath'].replace('TMP', scr+'../'), param_cfg['name'])
+    scriptPath = os.path.join(slurm_cfg['scriptPath'].replace('TMP', scr_'../'), param_cfg['name'])
 
     logFile = os.path.join(logPath, slurm_cfg['logFile'][task])
     script = os.path.join(scriptPath, slurm_cfg['scriptFile'][task])
@@ -38,8 +38,6 @@ def create_slurm_script(task, config):
     f.write(f"#SBATCH --ntasks=4\n")
     f.write(f"#SBATCH --output={logFile}\n")
     f.write(f"#SBATCH --mem={slurm_cfg['memory'][task]}GB\n")
-    f.write(f"source /pbs/throng/lsst/software/desc/common/miniconda/setup_current_python.sh\n")
-    f.write(f"conda activate /sps/lsst/users/rsolomon/conda_envs/desc_dev/\n")
     f.write(f"python -u {os.path.join(scr, task, task+'.py')} {config}\n")
     f.close()
     return script
