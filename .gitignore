@@ -1,5 +1,4 @@
 slurm_outputs/
 slurm_scripts/
 runConfigs/*
-src/__pycache__/
-src/cluster_challenge/__pycache__/
+**/__pycache__
